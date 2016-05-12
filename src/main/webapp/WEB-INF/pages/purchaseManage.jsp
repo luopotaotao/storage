@@ -7,7 +7,8 @@
     <title>采购单列表</title>
     <jsp:include page="common.jsp"/>
 
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/purchase.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/purchase.js"></script>
+    <script type="text/javascript" src="resources/js/databox-formatter.js"></script>
 </head>
 <body>
 <table id="dg" class="easyui-datagrid" title="采购单" fit="true"
@@ -18,12 +19,14 @@
         <th field="cb" checkbox="true" align="center"></th>
         <th data-options="field:'billNo',width:80">采购单号</th>
         <th data-options="field:'statName',width:80">单据状态</th>
+        <th data-options="field:'stat',width:80" hidden="true">单据状态</th>
         <th data-options="field:'billDate',width:80,formatter:
         function(value,row){ if(value) value = new Date(value);
         return value?value.getFullYear()+'-'+value.getMonth()+'-'+value.getDate():'';}">单据日期
         </th>
         <th data-options="field:'supplierName',width:80">供应商</th>
         <th data-options="field:'warehouseName',width:80">入库仓库</th>
+        <th field="warehouseId" hidden="true">warehouseId</th>
         <th data-options="field:'total',width:80">采购总金额</th>
     </tr>
     </thead>
@@ -33,6 +36,8 @@
     <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
     <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
     <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+    <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
+    <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
 </div>
 <%--以下为编辑面板的内容--%>
 <div id="editPanel" class="easyui-dialog" title="编辑" style="padding:10px;width:700px;height:450px;"
@@ -41,44 +46,54 @@
         <input type="hidden" name="id" id="id">
         <table cellspacing="8px">
             <tr>
-                <td>采购单号：</td>
-                <td><input class="easyui-textbox" type="text" name="billNo" style="width:173px"
+                <td class="label">采购单号：</td>
+                <td><input class="easyui-textbox" readonly type="text" name="billNo" style="width:173px"
                            data-options="required:true,missingMessage:'必填字段'">
                 </td>
 
-                <td>单据日期：</td>
+				 <td class="label">单据状态：</td>
+                <td>
+                    <select class="easyui-combobox" readonly name="stat" id="stat" style="width:173px;" data-options="
+                    valueField: 'valueField',
+                    textField: 'textField',
+                    method:'get',
+                    url: 'dic/purchaseStatus',editable:false">
+                    </select>
+                </td>
+                
+                
+            </tr>
+            <tr>
+               	<td class="label">单据日期：</td>
                 <td>
                     <input id="billDate" class="easyui-datebox" name="billDate"
                            style="width:173px" data-options="editable:false">
                 </td>
-            </tr>
-            <tr>
-                <td>单据状态：</td>
+
+                <td class="label">出库仓库：</td>
                 <td>
-                    <select class="easyui-combobox" name="stat" style="width:173px;" data-options="
+                    <select class="easyui-combobox input" name="warehouseId" id="warehouseId" style="width:173px;" data-options="
+                    required:true,
+                    editable:false,
                     valueField: 'id',
                     textField: 'text',
-                    
-                    url: '${pageContext.request.contextPath}/billStat/comboList',required:true,editable:false,missingMessage:'必填字段'">
+                    method:'get',
+                    url: 'warehouse/comboList',
+                    onSelect:function(ret){
+                        var rows = $('#t2_dg').datagrid('getRows');
+                        if(rows&&rows.length>0){
+                            $.messager.confirm('系统提示','重新选择仓库需要重新填写出租明细,是否继续?？',function(r){
+                                if (r){
+                                    $('#t2_dg').datagrid('loadData',{total:0,rows:[]});
+                                }
+                            });
+                        }
+                    }">
                     </select>
-                </td>
-
-                <td>入库仓库：</td>
-                <td>
-                    <select class="easyui-combobox" name="warehouseId" style="width:173px;" data-options="
-                    valueField: 'id',
-                    textField: 'text',
-                    url: '${pageContext.request.contextPath}/warehouse/comboList'">
-                    </select>
-                </td>
             </tr>
 
             <tr>
-                <td>入库数量：</td>
-                <td><input class="easyui-numberbox" type="text" name="total" id="total" style="width:173px"
-                           data-options="min:1,required:true"></td>
-
-                <td>供应商：</td>
+            	<td class="label">供应商：</td>
                 <td>
                     <select class="easyui-combobox" name="supplierId" style="width:173px;" data-options="
                     valueField: 'id',
@@ -87,6 +102,13 @@
                     </select>
 
                 </td>
+                
+                <td class="label">采购总金额：</td>
+                <td>
+                	<input class="input" readonly type="text" name="total" id="total" style="width:173px">
+                </td>
+
+                
             </tr>
         </table>
 
@@ -148,8 +170,8 @@
                         <td><input class="easyui-numberbox" type="text" name="itemAmount" id="itemAmount"
                                    style="width:150px"
                                    data-options="min:1,precision:0,required:true,onChange:function(newValue,oldValue){
-                        	var itemPrice = $('#itemPrice').numberbox('getValue');
-                        	$('#itemTotal').numberbox('setValue',newValue*itemPrice);
+                        	var price = $('#itemPrice').numberbox('getValue');
+                        	$('#itemTotal').numberbox('setValue',newValue*price);
                         }"></td>
 
                     </tr>
