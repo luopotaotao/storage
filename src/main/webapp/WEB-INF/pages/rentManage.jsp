@@ -58,7 +58,7 @@
         <th data-options="field:'endDate',width:80,hidden:true">
             使用结束时间
         </th>
-        <th data-options="field:'endDateStr',width:80,formatter:function(value,row){ if(row.beginDate) {return new Date(row.beginDate).format('yyyy-MM-dd')};}">
+        <th data-options="field:'endDateStr',width:80,formatter:function(value,row){ if(row.endDate) {return new Date(row.endDate).format('yyyy-MM-dd')};}">
             使用结束时间
         </th>
 

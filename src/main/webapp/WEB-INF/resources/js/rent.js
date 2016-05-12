@@ -19,12 +19,12 @@ $(function () {
 
         $('#btn_edit_save').bind('click', save);
         $('#btn_edit_close').bind('click', closeEditPanel);
-        $('#start_time').datebox({
+        $('#beginDate').datebox({
             onSelect: function (date) {
                 calcRentDays(this);
             }
         });
-        $('#end_time').datebox({
+        $('#endDate').datebox({
             onSelect: function (date) {
                 calcRentDays(this);
             }
@@ -34,8 +34,8 @@ $(function () {
     }
 
     function calcRentDays(which) {
-        var start = $('#start_time').datebox('getValue');
-        var end = $('#end_time').datebox('getValue');
+        var start = $('#beginDate').datebox('getValue');
+        var end = $('#endDate').datebox('getValue');
 
         if (start && end) {
             start = new Date(start);
@@ -97,13 +97,14 @@ $(function () {
                 $.currentItem = row;
 
                 $('#editForm').form('load', $.currentItem);
-                $('#beginDate').datebox('setValue',new Date($.currentItem.beginDate).format('yyyy-MM-dd'));
-                $('#endDate').datebox('setValue',new Date($.currentItem.endDate).format('yyyy-MM-dd'));
+
                 setEditable($.currentItem.billStat != 1);//已完成状态不可编辑
                 t2Query();
                 initSkuCombo($.currentItem.id);
                 $('#editPanel').dialog('open');
 
+                $('#beginDate').datebox('setValue',typeof $.currentItem.beginDate == 'string'?$.currentItem.beginDate:new Date($.currentItem.beginDate).format('yyyy-MM-dd'));
+                $('#endDate').datebox('setValue',typeof $.currentItem.endDate == 'string'?$.currentItem.endDate:new Date($.currentItem.endDate).format('yyyy-MM-dd'));
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
@@ -226,6 +227,8 @@ $(function () {
             }).complete(function (e) {
                 $.messager.progress('close');
             });
+        }else{
+            $.messager.alert('系统提示!', '请修正表单中有问题的字段!!');
         }
 
 
@@ -246,21 +249,26 @@ $(function () {
             });
         }
         if (ids && ids.length > 0) {
-            $.ajax({
-                url: t1Url + '/finish',
-                type: 'post',
-                dataType: 'json',
-                data: {ids: ids}
-            }).success(function (ret) {
-                if (ret && ret.flag) {
-                    $.messager.alert('系统提示', '审核完成!');
-                    query();
-                } else {
-                    $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+            $.messager.confirm('确认','出租单确认是不可逆流程，是否确认审核？',function (r) {
+                if(r){
+                    $.ajax({
+                        url: t1Url + '/finish',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {ids: ids}
+                    }).success(function (ret) {
+                        if (ret && ret.flag) {
+                            $.messager.alert('系统提示', '审核完成!');
+                            query();
+                        } else {
+                            $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+                        }
+                    }).error(function (e) {
+                        $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+                    });
                 }
-            }).error(function (e) {
-                $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
             });
+
         } else {
             $.messager.alert('系统提示', '请选择未完成的条目进行审核!');
         }
@@ -308,9 +316,9 @@ $(function () {
             $.ajax({
                 url: 'sku/getAvailableSkuInfo',
                 type: 'get',
-                data: {billId: $.currentItem.id},
+                data: {billId: $('#id').val()},
                 dataType: 'json',
-                async: false
+                async: true
             }).success(function (ret) {
                 $('#skuId').combobox({
                         valueField: 'id',
@@ -401,6 +409,8 @@ $(function () {
             delete $.t2CurrentItem;
             $('#t2EditForm').form('clear');
             $('#t2EditPanel').dialog('close');
+        }else{
+            $.messager.alert('系统提示!', '请修正表单中有问题的字段!!');
         }
     }
 
