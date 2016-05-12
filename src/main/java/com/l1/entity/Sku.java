@@ -12,8 +12,6 @@ public class Sku {
 	private Integer sizeDtlId;
 	private String sizeDtlName;
 
-	private Integer warehouseId;
-	private String warehouseName;
 	private String imgSuffix;
 	private Integer amount;
 
@@ -81,22 +79,6 @@ public class Sku {
 
 	public void setSizeDtlName(String sizeDtlName) {
 		this.sizeDtlName = sizeDtlName;
-	}
-
-	public Integer getWarehouseId() {
-		return warehouseId;
-	}
-
-	public void setWarehouseId(Integer warehouseId) {
-		this.warehouseId = warehouseId;
-	}
-
-	public String getWarehouseName() {
-		return warehouseName;
-	}
-
-	public void setWarehouseName(String warehouseName) {
-		this.warehouseName = warehouseName;
 	}
 
 	public String getImgSuffix() {

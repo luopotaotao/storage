@@ -13,8 +13,6 @@
         <result property="colorName" column="colorName"/>
         <result property="sizeDtlId" column="sizeDtlId"/>
         <result property="sizeDtlName" column="sizeDtlName"/>
-        <result property="warehouseId" column="warehouseId"/>
-        <result property="warehouseName" column="warehouseName"/>
         <result property="imgSuffix" column="imgSuffix"/>
         <result property="amount" column="amount"/>
         <result property="text" column="text"/>
@@ -22,12 +20,11 @@
 
     <sql id="v_sku">
       SELECT * FROM (
-        SELECT sku.*,item.name itemName,item.rental1 itemPrice,color.name colorName,sizedtl.name sizeDtlName,warehouse.name warehouseName
+        SELECT sku.*,item.name itemName,item.rental1 itemPrice,color.name colorName,sizedtl.name sizeDtlName
         FROM tb_sku sku
           LEFT JOIN tb_item item ON sku.itemId = item.id
            LEFT JOIN tb_color color ON sku.colorId = color.id
            LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
-           LEFT JOIN tb_warehouse warehouse ON sku.warehouseId = warehouse.id
            ) v_sku
     </sql>
 

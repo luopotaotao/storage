@@ -489,7 +489,6 @@ CREATE TABLE `tb_sku` (
   `itemId` bigint(20) DEFAULT NULL,
   `colorId` bigint(20) DEFAULT NULL,
   `sizeDtlId` bigint(20) DEFAULT NULL,
-  `warehouseId` varchar(20) DEFAULT NULL,
   `text` varchar(20) DEFAULT NULL,
   `hasImage` tinyint(1) DEFAULT NULL,
   `imgSuffix` varchar(64) DEFAULT NULL,
@@ -499,7 +498,7 @@ CREATE TABLE `tb_sku` (
 
 /*Data for the table `tb_sku` */
 
-insert  into `tb_sku`(`id`,`itemId`,`colorId`,`sizeDtlId`,`warehouseId`,`text`,`hasImage`,`imgSuffix`,`comment`) values (28,10,6,12,NULL,'132',NULL,NULL,NULL),(29,10,6,13,NULL,'132',NULL,NULL,NULL),(30,10,7,12,NULL,'132',NULL,NULL,NULL),(31,10,7,13,NULL,'132',NULL,NULL,NULL);
+insert  into `tb_sku`(`id`,`itemId`,`colorId`,`sizeDtlId`,`text`,`hasImage`,`imgSuffix`,`comment`) values (28,10,6,12,'132',NULL,NULL,NULL),(29,10,6,13,'132',NULL,NULL,NULL),(30,10,7,12,'132',NULL,NULL,NULL),(31,10,7,13,'132',NULL,NULL,NULL);
 
 /*Table structure for table `tb_supplier` */
 
