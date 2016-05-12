@@ -27,7 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="update_time" column="update_time" />
 	</resultMap>
 
-	<insert id="save" parameterType="Purchase">
+	<insert id="save" parameterType="Purchase" useGeneratedKeys="true" keyProperty="id">
 		insert into
 		tb_purchase(id,billNo,billDate,total,supplierId,supplierName,warehouseId,warehouseName,
 		stat,statName,create_time,create_by,update_by,update_time,makerName,makerId)
@@ -92,22 +92,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<select id="find" parameterType="Map" resultMap="PurchaseResult">
-		SELECT p.billDate,p.billNo,p.id,p.stat,s.name AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
+		SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
 		FROM tb_purchase p 
-		JOIN tb_billstat s ON p.stat=s.id 
-		JOIN tb_supplier ss ON  p.supplierId = ss.id 
-		JOIN tb_warehouse w ON p.warehouseId= w.id
+		LEFT JOIN (SELECT
+        valueField,
+        textField
+        FROM
+        tb_dic
+        WHERE keyWord = 'purchaseStatus') d
+        ON p.stat = d.valueField 
+		LEFT JOIN tb_supplier ss ON  p.supplierId = ss.id 
+		LEFT JOIN tb_warehouse w ON p.warehouseId= w.id
 		<where>
 			<if test="supplierName !=null and supplierName !='' ">
-				and supplierName like #{supplierName}
+				and ss.supplierName like #{supplierName}
 			</if>
 			
 			<if test="billNo !=null and billNo !='' ">
-				and billNo like #{billNo}
+				and p.billNo like #{billNo}
 			</if>
 			
 			<if test="stat!=null and stat!='' ">
-				and stat=#{stat}
+				and p.stat=#{stat}
 			</if>
 		</where>
 		<if test="start!=null and size!=null">
@@ -116,21 +122,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="findByIds" resultMap="PurchaseResult">
-		select *
-		from tb_purchase where id in
+	    SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
+		FROM tb_purchase p 
+		LEFT JOIN (SELECT
+        valueField,
+        textField
+        FROM
+        tb_dic
+        WHERE keyWord = 'rentBillStatus') d
+        ON p.stat = d.valueField 
+		LEFT JOIN tb_supplier ss ON  p.supplierId = ss.id 
+		LEFT JOIN tb_warehouse w ON p.warehouseId= w.id
+		where p.id in
 		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 			#{item}
 		</foreach>
 	</select>
 
 	<select id="findById" parameterType="int" resultMap="PurchaseResult">
-		select *
-		from tb_purchase
-		where id =#{id}
+		SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
+		FROM tb_purchase p 
+		LEFT JOIN (SELECT
+        valueField,
+        textField
+        FROM
+        tb_dic
+        WHERE keyWord = 'rentBillStatus') d
+        ON p.stat = d.valueField 
+		LEFT JOIN tb_supplier ss ON  p.supplierId = ss.id 
+		LEFT JOIN tb_warehouse w ON p.warehouseId= w.id
+		
+		where p.id =#{id}
 	</select>
-
-
-
+	
 	<select id="getTotal" parameterType="Map" resultType="Long">
 		select count(*) from tb_purchase
 		<where>
@@ -153,4 +177,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		id=#{id}
 	</delete>
 
+	<update id="finish">
+        UPDATE tb_purchase set stat = 1 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
+    <update id="unfinish">
+        UPDATE tb_purchase set stat = 0 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
 </mapper> 
