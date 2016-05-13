@@ -37,9 +37,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				id=#{id},
 			</if>
 			
-			<if test="itemName!=null and itemName!='' ">
-				itemName=#{itemName},
-			</if>
 			<if test="itemPrice!=null and itemPrice!='' ">
 				itemPrice=#{itemPrice},
 			</if>
@@ -49,13 +46,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="itemTotal !=null">
 				itemTotal=#{itemTotal},
 			</if>
-			<if test="warehouseName!=null">
-				warehouseName=#{warehouseName},
-			</if>
-			<if test="warehouseId !=null">
-				warehouseId=#{warehouseId},
-			</if>
-			
 		</set>
 		where dtlId=#{dtlId}
 	</update>
@@ -68,9 +58,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="dtlId!=null and dtlId!='' ">
 				and dtlId= #{dtlId}
-			</if>
-			<if test="stat!=null and stat!='' ">
-				and stat=#{stat}
 			</if>
 		</where>
 		<if test="start!=null and size!=null">

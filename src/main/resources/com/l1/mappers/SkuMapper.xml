@@ -66,10 +66,9 @@
         </if>
     </select>
     <select id="findForCombo"  resultType="map">
-        SELECT sku.id,item.name text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
-
-        <if test="billId!=null">
-            WHERE sku.id NOT IN (SELECT skuId FROM tb_rentdtl WHERE id=#{billId})
+        SELECT distinct sku.id,item.name text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
+        <if test="billId!=null and tableName !=null ">
+            WHERE sku.id NOT IN (SELECT skuId FROM ${tableName} WHERE id=#{billId})
         </if>
     </select>
 

@@ -113,20 +113,31 @@ public class PurchaseServiceImpl implements PurchaseService {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @Override
-  public int updatePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> dtls) {
-    if (purchase.getBillDate()==null || purchase.getBillNo().trim().length()<=0) {
-      String billNo = seqService.next("CG");
-      purchase.setBillNo(billNo);
+  public int updatePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> insertList, List<PurchaseDtl> updateList,
+			Integer[] deleted) {
+    if (purchase.getBillNo()==null || purchase.getBillNo().trim().length()<=0) {
+	      String billNo = seqService.next("CG");
+	      purchase.setBillNo(billNo);
     }
     
     int id = this.update(purchase);
-    purchaseDtlDao.deleteByPuchaseId(purchase.getId());
-
-    if (dtls != null && dtls.size() > 0) {
-      for (PurchaseDtl dtl : dtls) {
-        dtl.setId(purchase.getId());
-      }
-      purchaseDtlDao.batchSave(dtls);
+    if (insertList.size()>0) {
+		for(PurchaseDtl dtl:insertList){
+			dtl.setId(purchase.getId());
+		}
+		
+		purchaseDtlDao.batchSave(insertList);
+	}
+    
+    if (updateList.size()>0) {
+    	for(PurchaseDtl dtl:updateList){
+    		dtl.setId(purchase.getId());
+    		purchaseDtlDao.update(dtl);
+		}
+	}
+    
+    if (deleted != null && deleted.length>0) {
+    	purchaseDtlDao.deleteByDtlIds(deleted);
     }
 
     return id;

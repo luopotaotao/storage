@@ -308,7 +308,7 @@ $(function () {
             $.ajax({
                 url: 'sku/getAvailableSkuInfo',
                 type: 'get',
-                data: {billId: $.currentItem.id},
+                data: {billId: $.currentItem.id,tableName:'tb_rentdtl'},
                 dataType: 'json',
                 async: false
             }).success(function (ret) {

@@ -27,11 +27,13 @@ public interface PurchaseService {
 
   public Integer delete(Integer[] ids);
   
-  public int savePurchaseWithDetails(Purchase purchase,List<PurchaseDtl> dtls);
-  public int updatePurchaseWithDetails(Purchase purchase,List<PurchaseDtl> dtls);
-
   public int finish(Integer[] ids, Integer[] warehouseIds);
 
   int unfinish(Integer[] ids, Integer[] warehouseIds);
+
+  public int updatePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> insertList, List<PurchaseDtl> updateList,
+		Integer[] deleted);
+
+  public int savePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> insertList);
   
 }

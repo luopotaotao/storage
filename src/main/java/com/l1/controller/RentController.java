@@ -216,6 +216,7 @@ public class RentController {
         ret.put("flag",count>0);
         return ret;
     }
+    
     private class WrappedJSON {
         private JSONObject source;
 

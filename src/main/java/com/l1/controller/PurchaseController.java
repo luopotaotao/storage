@@ -18,6 +18,7 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,26 +96,28 @@ public class PurchaseController {
 
   @RequestMapping(value = "/save", method = RequestMethod.POST)
   @ResponseBody
-  public Map<String, Object> save(Purchase purchase, String details) {
+  public Map<String, Object> save(Purchase purchase,@RequestParam(value = "inserted",required = false) String insertedStr,
+          @RequestParam(value = "updated",required = false) String updatedStr,
+          @RequestParam(value = "deleted",required = false) Integer[] deleted, BindingResult err) {
     purchase.setCreate_time(DateUtil.now());
-    List<PurchaseDtl> detailList = null;
-    if (details != null && details.trim().length() > 0) {
-      detailList = new LinkedList<PurchaseDtl>();
-      JSONArray array = JSONArray.fromObject(details);
-      if (array != null && array.size() > 0) {
-        for (int i = 0; i < array.size(); i++) {
-          JSONObject item = array.getJSONObject(i);
-          PurchaseDtl dtl = jsonToPurchaseDtl(item);
-          detailList.add(dtl);
-        }
-      }
-    }
-
+    
+    List<PurchaseDtl> updateList = null;
+    if (purchase.getId()!=null && purchase.getId()>0) {
+		if (updatedStr!=null && updatedStr.length()>0) {
+			updateList = jsonArrayToDetailList(JSONArray.fromObject(updatedStr));
+		}
+	}
+    
+    List<PurchaseDtl> insertList=null;
+    if (insertedStr!=null && insertedStr.length()>0) {
+    	insertList = jsonArrayToDetailList(JSONArray.fromObject(insertedStr));
+	}
+    
     int count = 0;
-    if (purchase.getId() != null) {
-      count = purchaseService.updatePurchaseWithDetails(purchase, detailList);
+    if (purchase.getId() != null && purchase.getId()>0) {
+      count = purchaseService.updatePurchaseWithDetails(purchase, insertList,updateList,deleted);
     } else {
-      count = purchaseService.savePurchaseWithDetails(purchase, detailList);
+      count = purchaseService.savePurchaseWithDetails(purchase, insertList);
     }
 
     Map<String, Object> ret = new HashMap<String, Object>();
@@ -122,19 +125,27 @@ public class PurchaseController {
     return ret;
   }
 
-  private PurchaseDtl jsonToPurchaseDtl(JSONObject json) {
-    PurchaseDtl ret = new PurchaseDtl();
-    // ret.setDtlId(json.get("dtlId")==null?null:json.getInt("dtlId"));
-    ret.setSkuId(json.get("skuId") instanceof JSONNull || json.getString("skuId").length() < 1
-        ? -1
-        : Integer.parseInt(json.getString("skuId")));
-    ret.setItemName(json.get("itemName") instanceof JSONNull ? "" : json.getString("itemName"));
-    ret.setItemPrice(BigDecimal.valueOf(json.getDouble("itemPrice")));
-    ret.setItemAmount(json.getInt("itemAmount"));
-    ret.setItemTotal(
-        json.get("itemTotal") instanceof JSONNull || json.getString("itemTotal").length() < 1
-            ? null
-            : BigDecimal.valueOf(json.getDouble("itemTotal")));
+  private List<PurchaseDtl> jsonArrayToDetailList(JSONArray array) {
+	  List<PurchaseDtl> dtls = new LinkedList<PurchaseDtl>();
+	  if (array!=null && array.size()>0) {
+		for(int i=0;i<array.size();i++){
+			dtls.add(jsonToPurchaseDtl(array.getJSONObject(i)));
+		}
+	  }
+	  
+	return dtls;
+}
+
+private PurchaseDtl jsonToPurchaseDtl(JSONObject json) {
+	WrappedJSON item = new WrappedJSON(json);
+	PurchaseDtl ret = new PurchaseDtl();
+	
+    ret.setDtlId(item.getInteger("dtlId"));
+    ret.setSkuId(item.getInteger("skuId"));
+    ret.setItemName(item.getString("itemName"));
+    ret.setItemPrice(item.getBigDecimal("itemPrice"));
+    ret.setItemAmount(item.getInteger("itemAmount"));
+    ret.setItemTotal(item.getBigDecimal("itemTotal"));
 
     return ret;
   }
@@ -226,6 +237,31 @@ public class PurchaseController {
     int count = purchaseService.finish(ids,warehouseIds);
     ret.put("flag", count > 0);
     return ret;
+  }
+  
+  
+  private class WrappedJSON {
+      private JSONObject source;
+
+      public WrappedJSON(JSONObject source) {
+          this.source = source;
+      }
+
+      public String getString(String key) {
+          return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getString(key);
+      }
+
+      public Integer getInteger(String key) {
+          return source.get(key)==null|| source.get(key) instanceof JSONNull ? null : source.getInt(key);
+      }
+
+      public Double getDouble(String key) {
+          return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getDouble(key);
+      }
+
+      public BigDecimal getBigDecimal(String key) {
+          return source.get(key)==null||source.get(key) instanceof JSONNull ? null : BigDecimal.valueOf(source.getDouble(key));
+      }
   }
 
 }

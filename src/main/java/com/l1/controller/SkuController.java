@@ -81,11 +81,13 @@ public class SkuController {
     }
     @RequestMapping("/getAvailableSkuInfo")
     @ResponseBody
-    public List<Map<String, String>> getAvailableSkuInfo(Integer billId) {
+    public List<Map<String, String>> getAvailableSkuInfo(Integer billId,String tableName) {
         Map<String, Object> map = new HashMap<String, Object>();
         if (billId != null) {
             map.put("billId",billId);
+            map.put("tableName", tableName);
         }
+        
         List<Map<String, String>> skuList = skuService.findForCombo(map);
         return skuList;
     }

@@ -7,16 +7,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<resultMap type="Purchase" id="PurchaseResult">
 		<result property="id" column="id" />
 		<result property="billNo" column="billNo" />
-		<result property="billDate" column="billDate" />
 		<result property="total" column="total" />
 
 		<result property="surplierId" column="surplierId" />
 		<result property="surplierName" column="surplierName" />
 		<result property="warehouseId" column="warehouseId" />
 		<result property="warehouseName" column="warehouseName" />
-		
-		<result property="makerId" column="makerId" />
-		<result property="makerName" column="makerName" />
 
 		<result property="stat" column="stat" />
 		<result property="statName" column="statName" />
@@ -29,10 +25,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="save" parameterType="Purchase" useGeneratedKeys="true" keyProperty="id">
 		insert into
-		tb_purchase(id,billNo,billDate,total,supplierId,supplierName,warehouseId,warehouseName,
-		stat,statName,create_time,create_by,update_by,update_time,makerName,makerId)
-		values(null,#{billNo},#{billDate},#{total},#{supplierId},#{supplierName},#{warehouseId},#{warehouseName},
-		#{stat},#{statName},#{create_time},#{create_by},#{update_by},#{update_time},#{makerName},#{makerId})
+		tb_purchase(id,billNo,total,supplierId,supplierName,warehouseId,warehouseName,
+		stat,statName,create_time,create_by,update_by,update_time)
+		values(null,#{billNo},#{total},#{supplierId},#{supplierName},#{warehouseId},#{warehouseName},
+		#{stat},#{statName},#{create_time},#{create_by},#{update_by},#{update_time})
 	</insert>
 
 	<update id="update" parameterType="Purchase">
@@ -41,9 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="billNo!=null and billNo!='' ">
 				billNo=#{billNo},
 			</if>
-			<if test="billDate !=null">
-				billDate=#{billDate},
-			</if>
+			
 			<if test="total !=null">
 				total=#{total},
 			</if>
@@ -52,28 +46,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				supplierId=#{supplierId},
 			</if>
 
-			<if test="supplierName !=null">
-				supplierName=#{supplierName},
-			</if>
-			
 			<if test="warehouseId!=null and warehouseId!='' ">
 				warehouseId=#{warehouseId},
 			</if>
-			<if test="warehouseName!=null and warehouseName!='' ">
-				warehouseName=#{warehouseName},
-			</if>
+			
 			<if test="stat!=null and stat!='' ">
 				stat=#{stat},
 			</if>
-			<if test="statName!=null and statName!='' ">
-				statName=#{statName},
-			</if>
-			<if test="makerName !=null">
-				makerName=#{makerName},
-			</if>
-			<if test="makerId !=null">
-				makerId=#{makerId},
-			</if>
+			
 			<if test="update_time !=null">
 				update_time=#{update_time},
 			</if>
@@ -92,8 +72,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<select id="find" parameterType="Map" resultMap="PurchaseResult">
-		SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
-		FROM tb_purchase p 
+		SELECT p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName, 
+		p.create_time,p.create_by FROM tb_purchase p 
 		LEFT JOIN (SELECT
         valueField,
         textField
@@ -122,7 +102,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="findByIds" resultMap="PurchaseResult">
-	    SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
+	    SELECT p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
 		FROM tb_purchase p 
 		LEFT JOIN (SELECT
         valueField,
@@ -140,7 +120,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="findById" parameterType="int" resultMap="PurchaseResult">
-		SELECT p.billDate,p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
+		SELECT p.billNo,p.id,p.stat,d.textField AS statName,p.supplierId,ss.supplierName,p.total,p.warehouseId,w.name AS warehouseName 
 		FROM tb_purchase p 
 		LEFT JOIN (SELECT
         valueField,

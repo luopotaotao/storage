@@ -6,11 +6,11 @@ import java.util.Map;
 import com.l1.entity.PurchaseDtl;
 
 public interface PurchaseDtlService {
-  public Integer add(PurchaseDtl color);
+  public Integer add(PurchaseDtl dtl);
 
   public int batchSave(List<PurchaseDtl> dtls);
 
-  public Integer update(PurchaseDtl color);
+  public Integer update(PurchaseDtl dtl);
 
   public List<PurchaseDtl> find(Map<String, Object> map);
 

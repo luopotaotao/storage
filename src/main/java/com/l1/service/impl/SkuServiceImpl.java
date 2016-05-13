@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.l1.entity.Image;
 import org.springframework.stereotype.Service;
 
 import com.l1.dao.SkuDao;
