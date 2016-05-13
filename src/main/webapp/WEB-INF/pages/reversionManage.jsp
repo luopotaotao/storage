@@ -57,10 +57,10 @@
         <th data-options="field:'endDateStr',width:80,formatter:function(value,row){ if(row.endDate) {return new Date(row.endDate).format('yyyy-MM-dd')};}">
             使用结束时间
         </th>
-        <th data-options="field:'returnDate',width:80,hidden:true">
+        <th data-options="field:'reversionDate',width:80,hidden:true">
             归还时间
         </th>
-        <th data-options="field:'returnDateStr',width:80,formatter:function(value,row){ if(row.returnDate) {return new Date(row.returnDate).format('yyyy-MM-dd')};}">
+        <th data-options="field:'reversionDateStr',width:80,formatter:function(value,row){ if(row.reversionDate) {return new Date(row.reversionDate).format('yyyy-MM-dd')};}">
             归还时间
         </th>
     </tr>
@@ -164,7 +164,7 @@
                     </select>
                 </td>
                 <td class="label">归还时间</td>
-                <td><input id="returnDate" class="easyui-datebox input" name="returnDate"
+                <td><input id="reversionDate" class="easyui-datebox input" name="reversionDate"
                            data-options="editable:false">
                 </td>
             </tr>
@@ -219,7 +219,7 @@
             <tr>
                 <th field="cb" checkbox="true" align="center"></th>
                 <th data-options="field:'id',width:80,hidden:true">id</th>
-                <th data-options="field:'dtlId',width:80,hidden:true">dtlId</th>
+                <th data-options="field:'reversionId',width:80,hidden:true">dtlId</th>
                 <th data-options="field:'skuId',width:80">SKU</th>
                 <th data-options="field:'itemId',hidden:true">商品Id</th>
                 <th data-options="field:'itemName',width:80">商品名称</th>
@@ -227,11 +227,11 @@
                 <th data-options="field:'colorName',width:80">颜色</th>
                 <th data-options="field:'sizeId',hidden:true">尺码Id</th>
                 <th data-options="field:'sizeName',width:80">尺码</th>
-                <th data-options="field:'returnStat',hidden:true">归还状态码</th>
-                <th data-options="field:'returnStatName',width:80,align:'right'">归还状态</th>
+                <th data-options="field:'reversionStat',hidden:true">归还状态码</th>
+                <th data-options="field:'reversionStatName',width:80,align:'right'">归还状态</th>
                 <th data-options="field:'price',width:80,align:'right'">单价</th>
-                <th data-options="field:'rentAmount',width:60,align:'right'">出租数量</th>
-                <th data-options="field:'returnAmount',width:60,align:'right'">归还数量</th>
+                <th data-options="field:'itemAmount',width:60,align:'right'">出租数量</th>
+                <th data-options="field:'reversionAmount',width:60,align:'right'">归还数量</th>
                 <th data-options="field:'itemRent',width:60">出租金额</th>
                 <th data-options="field:'itemRepo',width:60,align:'center'">押金</th>
                 <th data-options="field:'itemCompensate',width:60,align:'center'">赔偿金</th>

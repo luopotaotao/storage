@@ -251,6 +251,7 @@ $(function () {
         if (ids && ids.length > 0) {
             $.messager.confirm('确认','出租单确认是不可逆流程，是否确认审核？',function (r) {
                 if(r){
+                    $('body').loading('执行中,请稍后...');
                     $.ajax({
                         url: t1Url + '/finish',
                         type: 'post',
@@ -265,6 +266,8 @@ $(function () {
                         }
                     }).error(function (e) {
                         $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+                    }).complete(function () {
+                        $('body').loaded();
                     });
                 }
             });
@@ -313,6 +316,7 @@ $(function () {
     function initSkuCombo() {
         var rows = $('#t2_dg').datagrid('getRows');
         if (!rows || rows.length < 1) {
+            $('body').loading('加载SKU列表信息,请稍等...');
             $.ajax({
                 url: 'sku/getAvailableSkuInfo',
                 type: 'get',
@@ -355,6 +359,8 @@ $(function () {
                 )
             }).error(function () {
                 $.messager.alert('系统提示', '加载SKU信息失败!');
+            }).complete(function () {
+                $('body').loaded();
             });
         }
 
@@ -389,21 +395,6 @@ $(function () {
                     $('#t2_dg').datagrid('updateRow', {index: index, row: item});
                 }
 
-                //保存时将一选sku从选项中删除
-                // var rows = $('#t2_dg').datagrid('getRows');
-                // if (rows && rows.length) {
-                //     var data = $('#skuId').combobox('getData');
-                //     if(data&&data.length){
-                //         $.each(rows, function (i, row) {
-                //             $.each(data,function (i, item) {
-                //                 if(row['skuId']==item.id){
-                //                     data.remove(item);
-                //                 }
-                //             });
-                //         });
-                //     }
-                //
-                // }
             }
             calcTotal();
             delete $.t2CurrentItem;
@@ -479,6 +470,8 @@ $(function () {
     }
 
     $.loadSkuInfo = function (id) {
+        $('body').loading('查询SKU详细信息,请稍后...');
+
         $.ajax({
             url: 'sku/findById',
             type: 'get',
@@ -496,7 +489,7 @@ $(function () {
         }).error(function () {
             $.messager.alert('系统提示', '加载SKU信息失败!');
         }).complete(function () {
-
+            $('body').loaded();
         });
     }
 })

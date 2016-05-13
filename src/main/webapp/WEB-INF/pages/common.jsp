@@ -6,4 +6,5 @@
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/easyui-loading.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/resources/easyui/locale/easyui-lang-zh_CN.js"></script>

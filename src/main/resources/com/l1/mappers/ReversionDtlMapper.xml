@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.l1.dao.ReturnDtlDao">
+<mapper namespace="com.l1.dao.ReversionDtlDao">
 
-	<resultMap type="ReturnDtl" id="ReturnDtlResult">
+	<resultMap type="ReversionDtl" id="ReversionDtlResult">
 		<result property="id" column="id"/>
 		<result property="dtlId" column="dtlId"/>
 		<result property="itemName" column="itemName"/>
@@ -21,12 +21,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		
 	</resultMap>
 	
-	<insert id="add" parameterType="ReturnDtl">
+	<insert id="add" parameterType="ReversionDtl">
 		insert into tb_returndtl(dtlid,id,skuId,itemName,itemPrice,itemAmount,itemRent,itemRepo,itemDamage,stat,statName,warehouseId,warehouseName) 
 		values(null,#{id},#{skuId},#{itemName},#{itemPrice},#{itemAmount},#{itemRent},#{itemRepo},#{itemDamage},#{stat},#{statName},#{warehouseId},#{warehouseName})
 	</insert>
 	
-	<update id="update" parameterType="ReturnDtl">
+	<update id="update" parameterType="ReversionDtl">
 		update tb_returndtl
 		<set>
 			<if test="skuId!=null and skuId!='' ">
@@ -69,7 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where dtlId=#{dtlId}
 	</update>
 	
-	<select id="find" parameterType="Map" resultMap="ReturnDtlResult">
+	<select id="find" parameterType="Map" resultMap="ReversionDtlResult">
 		select * from tb_returndtl
 		<where>
 			<if test="id!=null and id!='' ">
@@ -87,12 +87,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findByIds" parameterType="string" resultMap="ReturnDtlResult">
+	<select id="findByIds" parameterType="string" resultMap="ReversionDtlResult">
 		select * from tb_returndtl
 		where id in (#{ids})
 	</select>
 	
-	<select id="findById" parameterType="int" resultMap="ReturnDtlResult">
+	<select id="findById" parameterType="int" resultMap="ReversionDtlResult">
 		select * from tb_returndtl
 		where dtlId =#{dtlId}
 	</select>

@@ -2,10 +2,10 @@ package com.l1.controller;
 
 import com.l1.entity.BillStat;
 import com.l1.entity.PageBean;
-import com.l1.entity.ReturnDtl;
+import com.l1.entity.ReversionDtl;
 import com.l1.entity.Sku;
 import com.l1.service.BillStatService;
-import com.l1.service.ReturnDtlService;
+import com.l1.service.ReversionDtlService;
 import com.l1.service.SkuService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -28,10 +28,10 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("/returnDtl")
-public class ReturnDtlController {
-    @Resource
-    private ReturnDtlService returnDtlService;
+@RequestMapping("/reversionDtl")
+public class ReversionDtlController {
+//    @Resource
+    private ReversionDtlService reversionDtlService;
 
     @Resource
     private BillStatService billStatService;
@@ -50,20 +50,20 @@ public class ReturnDtlController {
     @RequestMapping("/list")
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, ReturnDtl s_returnDtl,
+                                    @RequestParam(value = "rows", required = false) String rows, ReversionDtl s_reversionDtl,
                                     HttpServletResponse response) throws Exception {
         PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", s_returnDtl.getId());
+        map.put("id", s_reversionDtl.getId());
         map.put("start", pageBean.getStart());
         map.put("size", pageBean.getPageSize());
 
-        List<ReturnDtl> returnDtlList = returnDtlService.find(map);
-        Long total = returnDtlService.getTotal(map);
+        List<ReversionDtl> reversionDtlList = reversionDtlService.find(map);
+        Long total = reversionDtlService.getTotal(map);
 
         Map<String, Object> result = new HashMap<String, Object>();
 
-        result.put("rows", returnDtlList);
+        result.put("rows", reversionDtlList);
         result.put("total", total);
 
         return result;
@@ -75,12 +75,12 @@ public class ReturnDtlController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", id);
 
-        List<ReturnDtl> linkManList = returnDtlService.find(map);
+        List<ReversionDtl> linkManList = reversionDtlService.find(map);
         Map<String, Object> result = new HashMap<String, Object>();
         //TODO        jsonConfig.setExcludes(new String[]{"customer"});
 
 
-        Long total = returnDtlService.getTotal(map);
+        Long total = reversionDtlService.getTotal(map);
         result.put("rows", linkManList);
         result.put("total", total);
         return result;
@@ -88,15 +88,15 @@ public class ReturnDtlController {
 
     @RequestMapping(value = "/save11", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(ReturnDtl returnDtl) {
-        if (returnDtl != null && returnDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(returnDtl.getStat());
+    public Map<String, Object> save(ReversionDtl reversionDtl) {
+        if (reversionDtl != null && reversionDtl.getStat() > 0) {
+            BillStat billStat = billStatService.findById(reversionDtl.getStat());
             if (billStat != null) {
-                returnDtl.setStatName(billStat.getName());
+                reversionDtl.setStatName(billStat.getName());
             }
         }
 
-        returnDtlService.add(returnDtl);
+        reversionDtlService.add(reversionDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -104,23 +104,23 @@ public class ReturnDtlController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> update(ReturnDtl returnDtl) {
+    public Map<String, Object> update(ReversionDtl reversionDtl) {
 
-        if (returnDtl != null && returnDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(returnDtl.getStat());
+        if (reversionDtl != null && reversionDtl.getStat() > 0) {
+            BillStat billStat = billStatService.findById(reversionDtl.getStat());
             if (billStat != null) {
-                returnDtl.setStatName(billStat.getName());
+                reversionDtl.setStatName(billStat.getName());
             }
         }
 
-        if (returnDtl != null && returnDtl.getSkuId() > 0) {
-            Sku sku = skuService.findById(returnDtl.getSkuId());
+        if (reversionDtl != null && reversionDtl.getSkuId() > 0) {
+            Sku sku = skuService.findById(reversionDtl.getSkuId());
             if (sku != null) {
-                returnDtl.setItemName(sku.getItemName());
+                reversionDtl.setItemName(sku.getItemName());
             }
         }
 
-        returnDtlService.update(returnDtl);
+        reversionDtlService.update(reversionDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -129,7 +129,7 @@ public class ReturnDtlController {
     @RequestMapping(value = "remove", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> remove(@RequestParam(value = "ids[]") String[] ids) {
-        returnDtlService.delete(ids);
+        reversionDtlService.delete(ids);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -137,42 +137,42 @@ public class ReturnDtlController {
 
     @RequestMapping(value = "/findById", method = RequestMethod.GET)
     @ResponseBody
-    public ReturnDtl findById(@RequestParam("id") int id) {
-        ReturnDtl returnDtl = returnDtlService.findById(id);
-        return returnDtl;
+    public ReversionDtl findById(@RequestParam("id") int id) {
+        ReversionDtl reversionDtl = reversionDtlService.findById(id);
+        return reversionDtl;
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(ReturnDtl returnDtl, @RequestParam("id") int id) throws Exception {
-        returnDtl.setId(id);
-        if (returnDtl != null && returnDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(returnDtl.getStat());
+    public Map<String, Object> save(ReversionDtl reversionDtl, @RequestParam("id") int id) throws Exception {
+        reversionDtl.setId(id);
+        if (reversionDtl != null && reversionDtl.getStat() > 0) {
+            BillStat billStat = billStatService.findById(reversionDtl.getStat());
             if (billStat != null) {
-                returnDtl.setStatName(billStat.getName());
+                reversionDtl.setStatName(billStat.getName());
             }
         }
 
-        if (returnDtl != null && returnDtl.getSkuId() > 0) {
-            Sku sku = skuService.findById(returnDtl.getSkuId());
+        if (reversionDtl != null && reversionDtl.getSkuId() > 0) {
+            Sku sku = skuService.findById(reversionDtl.getSkuId());
             if (sku != null) {
-                returnDtl.setItemName(sku.getItemName());
+                reversionDtl.setItemName(sku.getItemName());
             }
         }
 
-        int resultTotal = 0; // 操作的记录条数
-        if (returnDtl.getDtlId() == null) {
-            resultTotal = returnDtlService.add(returnDtl);
-        } else {
-            resultTotal = returnDtlService.update(returnDtl);
-        }
+//        int resultTotal = 0; // 操作的记录条数
+//        if (reversionDtl.getDtlId() == null) {
+//            resultTotal = reversionDtlService.add(reversionDtl);
+//        } else {
+//            resultTotal = reversionDtlService.update(reversionDtl);
+//        }
 
         Map<String, Object> result = new HashMap<String, Object>();
-        if (resultTotal > 0) {
-            result.put("success", true);
-        } else {
-            result.put("success", false);
-        }
+//        if (resultTotal > 0) {
+//            result.put("success", true);
+//        } else {
+//            result.put("success", false);
+//        }
 
         return result;
     }
@@ -181,7 +181,7 @@ public class ReturnDtlController {
     @ResponseBody
     public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids) throws Exception {
         if (ids != null && ids.length > 0) {
-            returnDtlService.delete(ids);
+            reversionDtlService.delete(ids);
         }
 
         Map<String, Object> result = new HashMap<String, Object>();

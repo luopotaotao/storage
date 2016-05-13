@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.l1.dao.ReturnMainDao">
+<mapper namespace="com.l1.dao.ReversionDao">
 
-	<resultMap type="Reversion" id="ReturnMainResult">
+	<resultMap type="Reversion" id="ReversionResult">
 		<result property="id" column="id"/>
 		<result property="billNo" column="billNo"/>
 		<result property="customerName" column="customerName"/>
@@ -109,7 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where id=#{id}
 	</update>
 	
-	<select id="find" parameterType="Map" resultMap="ReturnMainResult">
+	<select id="find" parameterType="Map" resultMap="ReversionResult">
 		select * from tb_return
 		<where>
 			<if test="name!=null and name!='' ">
@@ -127,12 +127,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="findByIds" parameterType="string" resultMap="ReturnMainResult">
+	<select id="findByIds" parameterType="string" resultMap="ReversionResult">
 		select * from tb_return
 		where id in (#{ids})
 	</select>
 	
-	<select id="findById" parameterType="int" resultMap="ReturnMainResult">
+	<select id="findById" parameterType="int" resultMap="ReversionResult">
 		select * from tb_return
 		where id =#{id}
 	</select>
