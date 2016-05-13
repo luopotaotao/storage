@@ -56,6 +56,13 @@ public class RentController {
         return "rentManage";
     }
 
+    @RequestMapping(value = "/listFinishedForCombo",method = RequestMethod.GET)
+    @ResponseBody
+    public List<Map<Integer,String>> listFinishedForCombo(){
+        List<Map<Integer,String>> ret = rentService.findListFinishedForCombo();
+        return ret;
+    }
+
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
@@ -152,44 +159,6 @@ public class RentController {
         ret.put("flag", true);
         return ret;
     }
-
-//    @RequestMapping(value = "/save11")
-//    @ResponseBody
-//    public Map<String, Object> save1(Rent rent) throws Exception {
-//        Integer warehouseId = rent.getWarehouseId();
-//        if (warehouseId != null && warehouseId > 0) {
-//            Warehouse warehouse = warehouseService.findById(warehouseId);
-//            if (warehouse != null) {
-//                rent.setWarehouseName(warehouse.getName());
-//            }
-//        }
-//
-//        Integer statId = rent.getStat();
-//        if (statId != null && statId > 0) {
-//            BillStat billStat = billStatService.findById(statId);
-//            if (billStat != null) {
-//                rent.setStatName(billStat.getName());
-//            }
-//        }
-//
-//        int resultTotal = 0; // 操作的记录条数
-//        if (rent.getId() == null) {
-//            rent.setCreate_time(DateUtil.now());
-//            resultTotal = rentService.add(rent);
-//        } else {
-//            rent.setUpdate_time(DateUtil.now());
-//            resultTotal = rentService.update(rent);
-//        }
-//
-//        Map<String, Object> result = new HashMap<String, Object>();
-//        if (resultTotal > 0) {
-//            result.put("success", true);
-//        } else {
-//            result.put("success", false);
-//        }
-//
-//        return result;
-//    }
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody

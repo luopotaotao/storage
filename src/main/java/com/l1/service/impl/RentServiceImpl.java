@@ -128,4 +128,9 @@ public class RentServiceImpl implements RentService {
         return rentDao.finish(ids);
     }
 
+    @Override
+    public List<Map<Integer, String>> findListFinishedForCombo() {
+        return rentDao.findListFinishedForCombo();
+    }
+
 }

@@ -97,10 +97,20 @@
             </tr>
             <tr>
                 <td class="label">出租单号</td>
-                <td><input class="easyui-textbox input" data-options="disabled:true" name="rentBillNo"
-                           id="rentBillNo" readonly>
+                <td>
+                    <select class="easyui-combobox input" name="rentBillNo" id="rentBillNo" style="width:120px;"
+                            data-options="
+                                    required:true,
+                                    valueField: 'id',
+                                    textField: 'billNo',
+                                    method:'get',
+                                    url:'${pageContext.request.contextPath}/rent/listFinishedForCombo',
+                                    onSelect:function(rec){$.reversion.loadRentBillInfo(rec);}
+
+                                    ">
+                    </select>
                 </td>
-                <td class="label">单据状态</td>
+                <td class="label">出租单状态</td>
                 <td>
                     <select class="easyui-combobox input" name="rentBillStat" id="rentBillStat" style="width:120px;"
                             data-options="
@@ -111,34 +121,21 @@
                     </select>
                 </td>
             </tr>
-            <%--<tr>--%>
-                <%--<td class="label">归还状态</td>--%>
-                <%--<td colspan="2">--%>
-                    <%--<select class="easyui-combobox input" name="stat" id="stat" style="width:120px;"--%>
-                            <%--data-options="--%>
-                            <%--disabled:true,--%>
-                            <%--valueField: 'valueField',--%>
-                            <%--textField: 'textField',--%>
-                            <%--method:'get',--%>
-                            <%--url: 'dic/rentStatus'">--%>
-                    <%--</select>--%>
-                <%--</td>--%>
-                <%--<td></td>--%>
-            <%--</tr>--%>
             <tr>
                 <td class="label">客户</td>
-                <td><input class="easyui-textbox input" type="text" name="customerName">
+                <td><input class="easyui-textbox input" data-options="disabled:true" type="text" name="customerName">
                 </td>
                 <td class="label">证件号</td>
-                <td><input class="easyui-textbox input" type="text" name="customerCard">
+                <td><input class="easyui-textbox input" data-options="disabled:true" type="text" name="customerCard">
             </tr>
             <tr>
                 <td class="label">联系电话</td>
-                <td><input class="easyui-textbox input" type="text" name="customerPhone">
+                <td><input class="easyui-textbox input" data-options="disabled:true" type="text" name="customerPhone">
                 </td>
                 </td>
                 <td class="label">地址</td>
-                <td colspan="3"><input class="easyui-textbox input" type="text" name="customerAddr"></td>
+                <td><input class="easyui-textbox input" data-options="disabled:true" type="text" name="customerAddr">
+                </td>
             </tr>
             <tr>
 
@@ -150,71 +147,67 @@
                     valueField: 'id',
                     textField: 'text',
                     method:'get',
-                    url: 'warehouse/comboList',
-                    onSelect:function(ret){
-                        var rows = $('#t2_dg').datagrid('getRows');
-                        if(rows&&rows.length>0){
-                            $.messager.confirm('系统提示','重新选择仓库需要重新填写归还明细,是否继续?？',function(r){
-                                if (r){
-                                    $('#t2_dg').datagrid('loadData',{total:0,rows:[]});
-                                }
-                            });
-                        }
-                    }">
+                    url: 'warehouse/comboList'">
                     </select>
                 </td>
                 <td class="label">归还时间</td>
                 <td><input id="reversionDate" class="easyui-datebox input" name="reversionDate"
-                           data-options="editable:false">
+                           data-options="editable:false,required:true">
                 </td>
             </tr>
             <tr>
                 <td class="label">物流供应商</td>
                 <td>
-                    <select class="easyui-combobox input" name="supplierId" data-options="
-                    editable:false,
-                    valueField: 'id',
-                    textField: 'text',
-                    url: '${pageContext.request.contextPath}/supplier/comboList'">
-                    </select>
+                    <input type="hidden" name="supplierId">
+                    <input class="easyui-textbox input" data-options="disabled:true" name="supplierName">
                 </td>
                 <td class="label">归还快递单号</td>
-                <td><input class="easyui-textbox input" type="text" name="returnBillNo">
+                <td><input class="easyui-textbox input" data-options="disabled:true" type="text" name="expressBillNo">
                 </td>
 
             </tr>
             <tr>
                 <td class="label">使用开始时间</td>
-                <td><input id="beginDate" class="easyui-datebox input" name="beginDate"
-                           data-options="editable:false,required:true">
+                <td><input id="beginDate" class="easyui-textbox input" name="beginDate"
+                           data-options="disabled:true">
                 </td>
 
 
                 <td class="label">使用结束时间</td>
-                <td><input id="endDate" class="easyui-datebox input" name="endDate"
-                           data-options="editable:false,required:true">
+                <td><input id="endDate" class="easyui-textbox input" name="endDate"
+                           data-options="disabled:true">
                 </td>
             </tr>
 
             <tr>
                 <td class="label">租金总金额</td>
-                <td><input class="easyui-numberbox input" readonly type="text" name="rentMoney" id="rentMoney">
+                <td><input class="easyui-numberbox input" data-options="disabled:true" type="text" name="rentMoney"
+                           id="rentMoney">
                 </td>
-                <td class="label">押金总额</td>
-                <td><input class="easyui-numberbox input" readonly type="text" name="repoMoney" id="repoMoney">
+                <td class="label">押金总金额</td>
+                <td><input class="easyui-numberbox input" data-options="disabled:true" type="text" name="repoMoney"
+                           id="repoMoney">
                 </td>
             </tr>
             <tr>
+                <td class="label">赔偿总金额</td>
+                <td><input class="easyui-numberbox input" data-options="disabled:true" type="text" name="compensateMoney"
+                           id="compensateMoney">
+                </td>
                 <td class="label">操作员</td>
                 <td><input class="easyui-textbox input" readonly type="text" name="createdBy" id="createdBy">
-                </td>
-                </td>
             </tr>
         </table>
     </form>
     <div id="t2_panel">
         <table id="t2_dg" class="easyui-datagrid" title="归还明细"
-               data-options="pagination:false,rownumbers:true,singleSelect:false,method:'get',toolbar:'#t2_menu'">
+               data-options="pagination:false,rownumbers:true,singleSelect:true,method:'get',toolbar:'#t2_menu',
+               rowStyler: function(index,row){
+                    if (!row.reversionAmount){
+                        return 'background-color:#FFDCDC;';
+                    }
+                }
+        ">
             <thead>
             <tr>
                 <th field="cb" checkbox="true" align="center"></th>
@@ -229,7 +222,7 @@
                 <th data-options="field:'sizeName',width:80">尺码</th>
                 <th data-options="field:'reversionStat',hidden:true">归还状态码</th>
                 <th data-options="field:'reversionStatName',width:80,align:'right'">归还状态</th>
-                <th data-options="field:'price',width:80,align:'right'">单价</th>
+                <th data-options="field:'itemPrice',width:80,align:'right'">单价</th>
                 <th data-options="field:'itemAmount',width:60,align:'right'">出租数量</th>
                 <th data-options="field:'reversionAmount',width:60,align:'right'">归还数量</th>
                 <th data-options="field:'itemRent',width:60">出租金额</th>
@@ -240,10 +233,8 @@
             </thead>
         </table>
         <div id="t2_menu" style="padding:2px 5px;">
-            <%--<a id="btn_t2_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>--%>
-            <a id="btn_t2_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
-            <a id="btn_t2_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
-            <a id="btn_t2_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+            <a id="btn_t2_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
+            <a id="btn_t2_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改明细</a>
         </div>
         <div id="t2EditPanel" class="easyui-dialog" title="编辑" style="padding:10px;width:700px;"
              data-options="modal:true,closed:true,buttons: '#t2EditPanel-buttons'">
@@ -253,8 +244,8 @@
                     <tr>
                         <td>SKU</td>
                         <td>
-                            <select class="easyui-combobox" name="skuId" id="skuId" style="width:150px;">
-                            </select>
+                            <input class="easyui-textbox" data-options="disabled:true" name="skuId" id="skuId"
+                                   style="width:150px;">
                         </td>
                         <td>商品名称</td>
                         <td>
@@ -277,37 +268,34 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>数量</td>
+                        <td>归还状态</td>
+                        <td>
+                            <select class="easyui-textbox" data-options="required:true" name="reversionStat"
+                                    id="reversionStat"
+                                    style="width:150px">
+
+                            </select>
+                        </td>
+                        <td>单价</td>
+                        <td>
+                            <input class="easyui-textbox" type="text" name="itemPrice" id="itemPrice"
+                                   style="width:150px"
+                                   data-options="disabled:true">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>出租数量</td>
                         <td>
                             <input class="easyui-numberbox" type="text" name="itemAmount" id="itemAmount"
                                    style="width:150px"
-                                   data-options="min:1,precision:0,required:true,missingMessage:'请填写数量',
-                               onChange:function(newValue,oldValue){
-                                    var itemPrice = $('#itemPrice').numberbox('getValue');
-                                    $('#itemRent').numberbox('setValue',newValue*itemPrice);
-                                }">
+                                   data-options="disabled:true">
                         </td>
-                        <td>当前库存</td>
+                        <td>归还数量</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="amount"
+                            <input class="easyui-numberbox" data-options="required:true" name="reversionAmount" id="reversionAmount"
                                    style="width:150px">
                         </td>
-                    </tr>
-                    <tr>
-                        <td>单价</td>
-                        <td>
-                            <input class="easyui-numberbox" type="text" name="itemPrice" id="itemPrice"
-                                   style="width:150px"
-                                   data-options="min:0,precision:2,required:true,
-                               onChange:function(newValue,oldValue){
-                                    var amount= $('#itemAmount').numberbox('getValue');
-                                    $('#itemRent').numberbox('setValue',newValue*amount);
-                                }">
-                        </td>
-                        <td></td>
-                        <td></td>
-
-
                     </tr>
                     <tr>
                         <td>金额</td>
@@ -316,8 +304,14 @@
                                    style="width:150px"></td>
 
                         <td>押金</td>
-                        <td><input class="easyui-numberbox" type="text" name="itemRepo" style="width:150px">
+                        <td><input class="easyui-numberbox" data-options="disabled:true" type="text" name="itemRepo" style="width:150px">
                         </td>
+                    </tr>
+                    <tr>
+                        <td>赔偿金</td>
+                        <td><input class="easyui-numberbox" type="text" name="itemCompensate"
+                                   id="itemCompensate"
+                                   style="width:150px"></td>
                     </tr>
                 </table>
             </form>

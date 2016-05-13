@@ -173,7 +173,9 @@
               ON r.billStat = d.valueField
               where r.id = #{id}
 	</select>
-
+    <select id="findListFinishedForCombo" resultType="map">
+        SELECT id,billNo FROM tb_rent WHERE billStat=2
+    </select>
 
     <select id="getTotal" parameterType="map" resultType="Long">
         select count(*) from tb_rent

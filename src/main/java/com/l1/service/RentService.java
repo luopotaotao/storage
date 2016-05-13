@@ -33,4 +33,6 @@ public interface RentService {
     int updateWithDetails(Rent rent, List<RentDtl> inserted,List<RentDtl> updated,Integer[] ids);
 
     int finish(Integer[] ids);
+
+    List<Map<Integer,String>> findListFinishedForCombo();
 }
