@@ -5,19 +5,19 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.l1.entity.Reversion;
 import org.springframework.stereotype.Service;
 
 import com.l1.dao.ReturnMainDao;
-import com.l1.entity.ReturnMain;
-import com.l1.service.ReturnMainService;
+import com.l1.service.ReturnService;
 
 @Service("returnMainService")
-public class ReturnMainServiceImpl implements ReturnMainService {
+public class ReturnServiceImpl implements ReturnService {
   @Resource
   private ReturnMainDao returnMainDao;
 
   @Override
-  public List<ReturnMain> find(Map<String, Object> map) {
+  public List<Reversion> find(Map<String, Object> map) {
     return returnMainDao.find(map);
   }
 
@@ -27,13 +27,13 @@ public class ReturnMainServiceImpl implements ReturnMainService {
   }
 
   @Override
-  public Integer add(ReturnMain returnMain) {
-    return returnMainDao.add(returnMain);
+  public Integer add(Reversion reversion) {
+    return returnMainDao.add(reversion);
   }
 
   @Override
-  public Integer update(ReturnMain returnMain) {
-    return returnMainDao.update(returnMain);
+  public Integer update(Reversion reversion) {
+    return returnMainDao.update(reversion);
   }
 
   @Override
@@ -47,7 +47,7 @@ public class ReturnMainServiceImpl implements ReturnMainService {
   }
 
   @Override
-  public List<ReturnMain> findByIds(String ids) {
+  public List<Reversion> findByIds(String ids) {
     return returnMainDao.findByIds(ids);
   }
 
@@ -57,13 +57,13 @@ public class ReturnMainServiceImpl implements ReturnMainService {
   }
 
   @Override
-  public ReturnMain findById(Integer id) {
+  public Reversion findById(Integer id) {
     return returnMainDao.findById(id);
   }
 
   @Override
-  public int save(ReturnMain returnMain) {
-		return returnMainDao.save(returnMain);
+  public int save(Reversion reversion) {
+		return returnMainDao.save(reversion);
   }
 
 }

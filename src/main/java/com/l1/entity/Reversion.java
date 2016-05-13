@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class ReturnMain {
+public class Reversion {
   private Integer id;
   private String billNo;
 

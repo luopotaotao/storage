@@ -1,30 +1,31 @@
 package com.l1.dao;
 
-import com.l1.entity.ReturnMain;
+import com.l1.entity.Reversion;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+
 @Repository
 public interface ReturnMainDao {
-  public List<ReturnMain> find(Map<String, Object> map);
+    List<Reversion> find(Map<String, Object> map);
 
-  public List<ReturnMain> findByIds(String ids);
+    List<Reversion> findByIds(String ids);
 
-  public ReturnMain findById(Integer id);
+    Reversion findById(Integer id);
 
-  public List<String> findNamesByIds(String ids);
+    List<String> findNamesByIds(String ids);
 
-  public Long getTotal(Map<String, Object> map);
+    Long getTotal(Map<String, Object> map);
 
-  public Integer add(ReturnMain color);
+    Integer add(Reversion color);
 
-  public Integer update(ReturnMain color);
+    Integer update(Reversion color);
 
-  public Integer delete(String[] ids);
+    Integer delete(String[] ids);
 
-  public Integer deleteById(int id);
+    Integer deleteById(int id);
 
-  public int save(ReturnMain rent);
+    int save(Reversion rent);
 
 }
