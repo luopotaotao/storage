@@ -168,6 +168,17 @@ public class ReversionController {
         Reversion reversion = reversionService.findById(id);
         return reversion;
     }
+
+    @RequestMapping(value = "loadAvailableRentBillNos",method = RequestMethod.GET)
+    @ResponseBody
+    public List<Map<Integer,String>> loadAvailableRentBillNos(){
+        return reversionService.loadAvailableRentBillNos();
+    }
+    @RequestMapping(value = "loadReversionFromRent",method = RequestMethod.GET)
+    @ResponseBody
+    public Reversion loadReversionFromRent(Integer rentId){
+        return reversionService.loadReversionFromRent(rentId);
+    }
     @RequestMapping(value = "/finish",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> finish(@RequestParam(value = "ids[]")Integer[] ids){

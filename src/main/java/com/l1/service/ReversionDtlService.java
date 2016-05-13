@@ -20,4 +20,6 @@ public interface ReversionDtlService {
     void delete(String[] ids);
 
     ReversionDtl findById(int id);
+
+    List<ReversionDtl> loadRentDtlsForReversion(Integer id);
 }

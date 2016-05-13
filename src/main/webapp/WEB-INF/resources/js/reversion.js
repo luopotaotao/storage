@@ -6,8 +6,8 @@ $(function () {
     bindHandlers();
     bindT2Handlers();
     $.extend({reversion: {loadRentBillInfo: loadRentBillInfo}});
-    var t1Url = 'rent';
-    var t2Url = 'rentDtl'
+    var t1Url = 'reversion';
+    var t2Url = 'reversionDtl'
 
     function bindHandlers() {
         $('a.easyui-linkbutton').unbind();
@@ -327,7 +327,7 @@ $(function () {
         if (rentBillId) {
             $('#editPanel').loading('加载出租单据信息中,请稍后...');
             $.ajax({
-                url: 'rent/findById',
+                url: 'reversion/loadReversionFromRent',
                 type: 'get',
                 data: {id: rentBillId},
                 dataType: 'json'
@@ -352,7 +352,7 @@ $(function () {
         if (id) {
             $('#editPanel').loading('加载出租单明细信息中,请稍后...');
             $.ajax({
-                url: 'rentDtl/findAllById',
+                url: 'reversionDtl/findAllById',
                 type: 'get',
                 data: {id: id},
                 dataType: 'json'

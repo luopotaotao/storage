@@ -6,9 +6,6 @@ public class ReversionDtl {
     private Integer id;
     private Integer reversionId;
 
-    private int stat;
-    private String statName;
-
     private Integer skuId;
     private Integer itemId;
     private String itemName;
@@ -41,22 +38,6 @@ public class ReversionDtl {
 
     public void setReversionId(Integer reversionId) {
         this.reversionId = reversionId;
-    }
-
-    public int getStat() {
-        return stat;
-    }
-
-    public void setStat(int stat) {
-        this.stat = stat;
-    }
-
-    public String getStatName() {
-        return statName;
-    }
-
-    public void setStatName(String statName) {
-        this.statName = statName;
     }
 
     public Integer getSkuId() {

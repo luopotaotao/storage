@@ -1,8 +1,10 @@
 package com.l1.service.impl;
 
+import com.l1.dao.ReversionDao;
 import com.l1.entity.Reversion;
 import com.l1.entity.ReversionDtl;
 import com.l1.service.ReversionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.Map;
 
 @Repository("reversionService")
 public class ReversionServiceImpl implements ReversionService{
+    @Autowired
+    private ReversionDao reversionDao;
     @Override
     public List<Reversion> find(Map<String, Object> map) {
-        return null;
+        return reversionDao.find(map);
     }
 
     @Override
@@ -52,5 +56,15 @@ public class ReversionServiceImpl implements ReversionService{
     @Override
     public int finish(Integer[] ids) {
         return 0;
+    }
+
+    @Override
+    public List<Map<Integer, String>> loadAvailableRentBillNos() {
+        return reversionDao.loadAvailableRentBillNos();
+    }
+
+    @Override
+    public Reversion loadReversionFromRent(Integer rentId) {
+        return reversionDao.loadReversionFromRent(rentId);
     }
 }

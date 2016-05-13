@@ -1,6 +1,5 @@
 package com.l1.controller;
 
-import com.l1.entity.BillStat;
 import com.l1.entity.RentDtl;
 import com.l1.entity.Sku;
 import com.l1.service.BillStatService;
@@ -124,10 +123,10 @@ public class RentDtlController {
     @ResponseBody
     public Map<String, Object> save(RentDtl rentDtl, @RequestParam("id") int id)
             throws Exception {
-        rentDtl.setId(id);
+        rentDtl.setRentId(id);
 
         int resultTotal = 0; // 操作的记录条数
-        if (rentDtl.getDtlId() == null) {
+        if (rentDtl.getId() == null) {
             resultTotal = rentDtlService.add(rentDtl);
         } else {
             resultTotal = rentDtlService.update(rentDtl);

@@ -1,16 +1,12 @@
 package com.l1.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.l1.dao.RentDtlDao;
-import com.l1.dao.SeqDao;
 import com.l1.entity.RentDtl;
-import com.l1.entity.Seq;
 import com.l1.service.SeqService;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +89,7 @@ public class RentServiceImpl implements RentService {
         int id = this.save(rent);
         if (details != null && details.size() > 0) {
             for (RentDtl item : details) {
-                item.setId(id);
+                item.setRentId(id);
             }
             rentDtlDao.batchSave(details);
         }
@@ -106,13 +102,13 @@ public class RentServiceImpl implements RentService {
         int id = this.update(rent);
         if (inserted != null && inserted.size() > 0) {
             for (RentDtl item : inserted) {
-                item.setId(rent.getId());
+                item.setRentId(rent.getId());
             }
             rentDtlDao.batchSave(inserted);
         }
         if (updated != null && updated.size() > 0) {
             for (RentDtl item : updated) {
-                item.setId(rent.getId());
+                item.setRentId(rent.getId());
                 rentDtlDao.update(item);
             }
         }

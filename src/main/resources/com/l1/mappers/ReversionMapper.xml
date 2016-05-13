@@ -1,165 +1,209 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.l1.dao.ReversionDao">
 
-	<resultMap type="Reversion" id="ReversionResult">
-		<result property="id" column="id"/>
-		<result property="billNo" column="billNo"/>
-		<result property="customerName" column="customerName"/>
-		<result property="warehouseId" column="warehouseId"/>
-		<result property="warehouseName" column="warehouseName"/>
-		<result property="customerPhone" column="customerPhone"/>
-		<result property="customerAddr" column="customerAddr"/>
-		<result property="customerCard" column="customerCard"/>
-		<result property="stat" column="stat"/>
-		<result property="statName" column="statName"/>
-		
-		<result property="rentDay" column="rentDay"/>
-		<result property="rentMoney" column="rentMoney"/>
-		<result property="repoMoney" column="repoMoney"/>
-		<result property="damageMoney" column="damageMoney"/>
-		<result property="beginDate" column="beginDate"/>
-		<result property="endDate" column="endDate"/>
-		<result property="expressBillNo" column="expressBillNo"/>
-		<result property="rentBillNo" column="rentBillNo"/>
-		<result property="supplierId" column="supplierId"/>
-		
-		
-		<result property="create_by" column="create_by"/>
-		<result property="create_time" column="create_time"/>
-		<result property="update_by" column="update_by"/>
-		<result property="update_time" column="update_time"/>
-	</resultMap>
-	
-	<insert id="save" parameterType="Reversion">
-		insert into tb_return(id,billNo,customerName,warehouseId,stat,statName,create_time,warehouseName,customerPhone,customerAddr,customerCard
+    <resultMap type="Reversion" rentId="ReversionResult">
+        <result property="rentId" column="rentId"/>
+        <result property="billNo" column="billNo"/>
+        <result property="billStat" column="billStat"/>
+        <result property="rentBillId" column="rentBillId"/>
+        <result property="rentBillNo" column="rentBillNo"/>
+        <result property="rentBillStat" column="rentBillStat"/>
+        <result property="rentBillStatName" column="rentBillStatName"/>
+        <result property="warehouseId" column="warehouseId"/>
+        <result property="warehouseName" column="warehouseName"/>
+        <result property="customerName" column="customerName"/>
+        <result property="customerPhone" column="customerPhone"/>
+        <result property="customerAddr" column="customerAddr"/>
+        <result property="customerCard" column="customerCard"/>
+        <result property="supplierId" column="supplierId"/>
+        <result property="expressBillNo" column="expressBillNo"/>
+        <result property="beginDate" column="beginDate"/>
+        <result property="endDate" column="endDate"/>
+        <result property="reversionDate" column="reversionDate"/>
+        <result property="rentMoney" column="rentMoney"/>
+        <result property="repoMoney" column="repoMoney"/>
+        <result property="compensateMoney" column="compensateMoney"/>
+        <result property="create_by" column="create_by"/>
+        <result property="update_by" column="update_by"/>
+        <result property="create_time" column="create_time"/>
+        <result property="update_time" column="update_time"/>
+    </resultMap>
+
+    <sql rentId="v_reversion">
+		SELECT
+              r.*,w.`name` warehouseName,s.`supplierName`,d.textField billStatName
+            FROM
+              tb_reversion r
+              LEFT JOIN
+              tb_warehouse w
+              ON r.warehouseId = w.rentId
+              LEFT JOIN
+              tb_supplier s
+              ON
+              r.supplierId = s.rentId
+                LEFT JOIN
+              (SELECT
+                valueField,
+                textField
+              FROM
+                tb_dic
+              WHERE keyWord = 'rentBillStatus') d
+              ON r.rentBillStat = d.valueField
+	</sql>
+
+    <select rentId="loadAvailableRentBillNos" resultMap="ReversionResult">
+		SELECT rentId,billNo FROM tb_rent WHERE billStat=2
+	</select>
+    <select rentId="loadReversionFromRent" resultMap="ReversionResult">
+        <include refid="v_reversion"/>
+        where r.rentId = #{rentId}
+    </select>
+    <select rentId="find" parameterType="map" resultMap="ReversionResult">
+        <include refid="v_reversion"/>
+        <where>
+            <if test="name!=null and name!='' ">
+                and name like #{name}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code like #{code}
+            </if>
+            <if test="stat!=null and stat!='' ">
+                and stat=#{stat}
+            </if>
+        </where>
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <insert rentId="save" parameterType="Reversion">
+		insert into tb_return(rentId,billNo,customerName,warehouseId,stat,statName,create_time,warehouseName,customerPhone,customerAddr,customerCard
 		,rentDay,rentMoney,repoMoney,damageMoney,beginDate,endDate,expressBillNo,rentBillNo,supplierId)
 		values(null,#{billNo},#{customerName},#{warehouseId},#{stat},#{statName},#{create_time},#{warehouseName},#{customerPhone},#{customerAddr},#{customerCard}
 		,#{rentDay},#{rentMoney},#{repoMoney},#{damageMoney},#{beginDate},#{endDate},#{expressBillNo},#{rentBillNo},#{supplierId})
 	</insert>
-	
-	<update id="update" parameterType="Reversion">
-		update tb_return
-		<set>
-			<if test="billNo!=null and billNo!='' ">
-				billNo=#{billNo},
-			</if>
-			
-			<if test="customerName!=null and customerName!='' ">
-				customerName=#{customerName},
-			</if>
-			
-			<if test="warehouseId!=null and warehouseId!='' ">
-				warehouseId=#{warehouseId},
-			</if>
-			<if test="warehouseName!=null and warehouseName!='' ">
-				warehouseName=#{warehouseName},
-			</if>
-			<if test="stat!=null and stat!='' ">
-				stat=#{stat},
-			</if>
-			<if test="statName!=null and statName!='' ">
-				statName=#{statName},
-			</if>
-			<if test="update_time!=null">
-				update_time=#{update_time},
-			</if>
-			<if test="customerPhone!=null">
-				customerPhone=#{customerPhone},
-			</if>
-			<if test="customerAddr!=null">
-				customerAddr=#{customerAddr},
-			</if>
-			<if test="customerCard!=null">
-				customerCard=#{customerCard},
-			</if>
-			<if test="rentDay!=null">
-				rentDay=#{rentDay},
-			</if>
-			
-			<if test="repoMoney!=null">
-				repoMoney=#{repoMoney},
-			</if>
-			<if test="rentMoney!=null">
-				rentMoney=#{rentMoney},
-			</if>
-			
-			<if test="damageMoney !=null">
-				damageMoney=#{damageMoney},
-			</if>
-			<if test="beginDate!=null">
-				beginDate=#{beginDate},
-			</if>
-			<if test="endDate!=null">
-				endDate=#{endDate},
-			</if>
-			<if test="expressBillNo!=null">
-				expressBillNo=#{expressBillNo},
-			</if>
-			
-			<if test="rentBillNo !=null">
-				rentBillNo=#{rentBillNo},
-			</if>
-			<if test="supplierId!=null">
-				supplierId=#{supplierId},
-			</if>
-		</set>
-		where id=#{id}
-	</update>
-	
-	<select id="find" parameterType="Map" resultMap="ReversionResult">
+
+    <update rentId="update" parameterType="Reversion">
+        update tb_return
+        <set>
+            <if test="billNo!=null and billNo!='' ">
+                billNo=#{billNo},
+            </if>
+
+            <if test="customerName!=null and customerName!='' ">
+                customerName=#{customerName},
+            </if>
+
+            <if test="warehouseId!=null and warehouseId!='' ">
+                warehouseId=#{warehouseId},
+            </if>
+            <if test="warehouseName!=null and warehouseName!='' ">
+                warehouseName=#{warehouseName},
+            </if>
+            <if test="stat!=null and stat!='' ">
+                stat=#{stat},
+            </if>
+            <if test="statName!=null and statName!='' ">
+                statName=#{statName},
+            </if>
+            <if test="update_time!=null">
+                update_time=#{update_time},
+            </if>
+            <if test="customerPhone!=null">
+                customerPhone=#{customerPhone},
+            </if>
+            <if test="customerAddr!=null">
+                customerAddr=#{customerAddr},
+            </if>
+            <if test="customerCard!=null">
+                customerCard=#{customerCard},
+            </if>
+            <if test="rentDay!=null">
+                rentDay=#{rentDay},
+            </if>
+
+            <if test="repoMoney!=null">
+                repoMoney=#{repoMoney},
+            </if>
+            <if test="rentMoney!=null">
+                rentMoney=#{rentMoney},
+            </if>
+
+            <if test="damageMoney !=null">
+                damageMoney=#{damageMoney},
+            </if>
+            <if test="beginDate!=null">
+                beginDate=#{beginDate},
+            </if>
+            <if test="endDate!=null">
+                endDate=#{endDate},
+            </if>
+            <if test="expressBillNo!=null">
+                expressBillNo=#{expressBillNo},
+            </if>
+
+            <if test="rentBillNo !=null">
+                rentBillNo=#{rentBillNo},
+            </if>
+            <if test="supplierId!=null">
+                supplierId=#{supplierId},
+            </if>
+        </set>
+        where rentId=#{rentId}
+    </update>
+
+    <select rentId="find" parameterType="Map" resultMap="ReversionResult">
+        select * from tb_return
+        <where>
+            <if test="name!=null and name!='' ">
+                and name like #{name}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code like #{code}
+            </if>
+            <if test="stat!=null and stat!='' ">
+                and stat=#{stat}
+            </if>
+        </where>
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select rentId="findByIds" parameterType="string" resultMap="ReversionResult">
 		select * from tb_return
-		<where>
-			<if test="name!=null and name!='' ">
-				and name like #{name}
-			</if>
-			<if test="code!=null and code!='' ">
-				and code like #{code}
-			</if>
-			<if test="stat!=null and stat!='' ">
-				and stat=#{stat}
-			</if>
-		</where>
-		<if test="start!=null and size!=null">
-			limit #{start},#{size}
-		</if>
+		where rentId in (#{ids})
 	</select>
-	
-	<select id="findByIds" parameterType="string" resultMap="ReversionResult">
+
+    <select rentId="findById" parameterType="int" resultMap="ReversionResult">
 		select * from tb_return
-		where id in (#{ids})
+		where rentId =#{rentId}
 	</select>
-	
-	<select id="findById" parameterType="int" resultMap="ReversionResult">
-		select * from tb_return
-		where id =#{id}
-	</select>
-	
-	
-	
-	<select id="getTotal" parameterType="Map" resultType="Long">
-		select count(*) from tb_return
-		<where>
-			<if test="name!=null and name!='' ">
-				and name like #{name}
-			</if>
-			<if test="code!=null and code!='' ">
-				and code like #{code}
-			</if>
-		</where>
-	</select>
-	
-	<delete id="delete">
-		DELETE FROM tb_return where id IN
-		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-			#{item}
-		</foreach>
+
+
+    <select rentId="getTotal" parameterType="Map" resultType="Long">
+        select count(*) from tb_return
+        <where>
+            <if test="name!=null and name!='' ">
+                and name like #{name}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code like #{code}
+            </if>
+        </where>
+    </select>
+
+    <delete rentId="delete">
+        DELETE FROM tb_return where rentId IN
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete rentId="deleteById" parameterType="int">
+		DELETE FROM tb_return where rentId=#{rentId}
 	</delete>
-	
-	<delete id="deleteById" parameterType="int">
-		DELETE FROM tb_return where id=#{id}
-	</delete>
-	
+
 </mapper> 

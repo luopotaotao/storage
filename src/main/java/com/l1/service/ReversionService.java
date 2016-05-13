@@ -25,4 +25,8 @@ public interface ReversionService {
     int updateWithDetails(Reversion reversion, List<ReversionDtl> inserted, List<ReversionDtl> updated, Integer[] deleted);
 
     int finish(Integer[] ids);
+
+    List<Map<Integer,String>> loadAvailableRentBillNos();
+
+    Reversion loadReversionFromRent(Integer rentId);
 }

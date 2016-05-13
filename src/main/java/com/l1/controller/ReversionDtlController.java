@@ -30,7 +30,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/reversionDtl")
 public class ReversionDtlController {
-//    @Resource
+    @Resource
     private ReversionDtlService reversionDtlService;
 
     @Resource
@@ -69,20 +69,13 @@ public class ReversionDtlController {
         return result;
     }
 
-    @RequestMapping("/findAllById")
+    @RequestMapping(value = "/loadRentDtlsForReversion",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "id", required = false) String id) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
-
-        List<ReversionDtl> linkManList = reversionDtlService.find(map);
+    public Map<String, Object> list(@RequestParam(value = "id", required = false) Integer id) throws Exception {
+        List<ReversionDtl> linkManList = reversionDtlService.loadRentDtlsForReversion(id);
         Map<String, Object> result = new HashMap<String, Object>();
-        //TODO        jsonConfig.setExcludes(new String[]{"customer"});
-
-
-        Long total = reversionDtlService.getTotal(map);
         result.put("rows", linkManList);
-        result.put("total", total);
+        result.put("total", linkManList.size());
         return result;
     }
 

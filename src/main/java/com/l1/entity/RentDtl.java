@@ -3,8 +3,8 @@ package com.l1.entity;
 import java.math.BigDecimal;
 
 public class RentDtl {
+	private Integer rentId;
 	private Integer id;
-	private Integer dtlId;
 
 	private Integer skuId;
 	private String itemName;
@@ -14,20 +14,20 @@ public class RentDtl {
 	private BigDecimal itemRent;
 	private BigDecimal itemRepo;
 
+	public Integer getRentId() {
+		return rentId;
+	}
+
+	public void setRentId(Integer rentId) {
+		this.rentId = rentId;
+	}
+
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Integer getDtlId() {
-		return dtlId;
-	}
-
-	public void setDtlId(Integer dtlId) {
-		this.dtlId = dtlId;
 	}
 
 	public Integer getSkuId() {
