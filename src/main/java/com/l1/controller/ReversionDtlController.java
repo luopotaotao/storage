@@ -79,39 +79,10 @@ public class ReversionDtlController {
         return result;
     }
 
-    @RequestMapping(value = "/save11", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> save(ReversionDtl reversionDtl) {
-        if (reversionDtl != null && reversionDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(reversionDtl.getStat());
-            if (billStat != null) {
-                reversionDtl.setStatName(billStat.getName());
-            }
-        }
-
-        reversionDtlService.add(reversionDtl);
-        Map<String, Object> ret = new HashMap<String, Object>();
-        ret.put("flag", true);
-        return ret;
-    }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> update(ReversionDtl reversionDtl) {
-
-        if (reversionDtl != null && reversionDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(reversionDtl.getStat());
-            if (billStat != null) {
-                reversionDtl.setStatName(billStat.getName());
-            }
-        }
-
-        if (reversionDtl != null && reversionDtl.getSkuId() > 0) {
-            Sku sku = skuService.findById(reversionDtl.getSkuId());
-            if (sku != null) {
-                reversionDtl.setItemName(sku.getItemName());
-            }
-        }
 
         reversionDtlService.update(reversionDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -139,19 +110,6 @@ public class ReversionDtlController {
     @ResponseBody
     public Map<String, Object> save(ReversionDtl reversionDtl, @RequestParam("id") int id) throws Exception {
         reversionDtl.setId(id);
-        if (reversionDtl != null && reversionDtl.getStat() > 0) {
-            BillStat billStat = billStatService.findById(reversionDtl.getStat());
-            if (billStat != null) {
-                reversionDtl.setStatName(billStat.getName());
-            }
-        }
-
-        if (reversionDtl != null && reversionDtl.getSkuId() > 0) {
-            Sku sku = skuService.findById(reversionDtl.getSkuId());
-            if (sku != null) {
-                reversionDtl.setItemName(sku.getItemName());
-            }
-        }
 
 //        int resultTotal = 0; // 操作的记录条数
 //        if (reversionDtl.getDtlId() == null) {

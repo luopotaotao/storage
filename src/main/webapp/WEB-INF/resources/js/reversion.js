@@ -70,7 +70,6 @@ $(function () {
 
                 setEditable($.currentItem.billStat != 1);//已完成状态不可编辑
                 t2Query();
-                initSkuCombo($.currentItem.id);
                 $('#editPanel').dialog('open');
             }
         } else {
@@ -297,7 +296,7 @@ $(function () {
 
 
     function t2Query() {
-        var url = t2Url + '/findAllById?id=' + $.currentItem['id'];
+        var url = t2Url + '/loadRentDtlsForReversion?id=' + $.currentItem['id'];
         $.ajax({
             url: url,
             dataType: 'json',

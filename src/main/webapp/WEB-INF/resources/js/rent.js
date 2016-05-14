@@ -64,7 +64,6 @@ $(function () {
     function toAdd() {
 
         setEditable(true);
-        $.currentItem = {};
         $('#editForm').form('clear');
         $('#editPanel').dialog('open');
 
@@ -94,17 +93,15 @@ $(function () {
 
                 formatDate(row, ['beginDate', 'endDate', 'create_time', 'update_time']);
 
-                $.currentItem = row;
+                $('#editForm').form('load', row);
 
-                $('#editForm').form('load', $.currentItem);
-
-                setEditable($.currentItem.billStat != 1);//已完成状态不可编辑
+                setEditable(row.billStat != 1);//已完成状态不可编辑
                 t2Query();
-                initSkuCombo($.currentItem.id);
+                initSkuCombo(row.id);
                 $('#editPanel').dialog('open');
 
-                $('#beginDate').datebox('setValue',typeof $.currentItem.beginDate == 'string'?$.currentItem.beginDate:new Date($.currentItem.beginDate).format('yyyy-MM-dd'));
-                $('#endDate').datebox('setValue',typeof $.currentItem.endDate == 'string'?$.currentItem.endDate:new Date($.currentItem.endDate).format('yyyy-MM-dd'));
+                $('#beginDate').datebox('setValue', typeof row.beginDate == 'string' ? row.beginDate : new Date(row.beginDate).format('yyyy-MM-dd'));
+                $('#endDate').datebox('setValue', typeof row.endDate == 'string' ? row.endDate : new Date(row.endDate).format('yyyy-MM-dd'));
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
@@ -171,44 +168,49 @@ $(function () {
 
     function save() {
         if ($('#editForm').form('validate')) {
+            var dtls = $('#t2_dg').datagrid('getRows');
+            if(!dtls||dtls.length<1){
+                $.messager.alert('系统提示','请添加出租明细信息!');
+                return;
+            }
+            var rent = {};
             $('#editForm input').each(function (i, val) {
                 var name = $(val).attr('name');
                 if (name && $(val).val()) {
-                    $.currentItem[name] = $(val).val();
+                    rent[name] = $(val).val();
                 }
             });
 
-            if ($.currentItem.id) {
+            if (rent.id) {
                 var deleted = $('#t2_dg').datagrid('getChanges', 'deleted');
                 if (deleted && deleted.length > 0) {
                     var deletedIds = [];
                     $.each(deleted, function (i, row) {
-                        deletedIds.push(row['dtlId']);
+                        deletedIds.push(row['id']);
                     });
-                    $.currentItem.deleted = deletedIds;
+                    rent.deleted = deletedIds;
                 }
                 var updated = $('#t2_dg').datagrid('getChanges', 'updated');
                 if (updated && updated.length > 0) {
-                    $.currentItem.updated = JSON.stringify(updated);
+                    rent.updated = JSON.stringify(updated);
                 }
             }
             var inserted = $('#t2_dg').datagrid('getChanges', 'inserted');
             if (inserted && inserted.length > 0) {
-                $.currentItem.inserted = JSON.stringify(inserted);
+                rent.inserted = JSON.stringify(inserted);
             }
 
             $.ajax({
                 url: t1Url + '/save',
                 type: 'post',
-                data: $.currentItem
+                data: rent
             }).success(function (ret) {
                 if (ret && ret.flag) {
                     $.messager.alert('系统提示!', '保存成功!');
                     //如果是修改的话不关闭当前页面,新增的话才关闭
-                    if ($.currentItem.id) {
-                        $.get(t1Url + '/findById', {id: $.currentItem.id}, function (data) {
+                    if ($('#id').val()) {
+                        $.get(t1Url + '/findById', {id: rent.id}, function (data) {
                             formatDate(data, ['beginDate', 'endDate', 'create_time', 'update_time']);
-                            $.currentItem = data;
                             $('#editForm').form('load', data);
                         });
                         query();
@@ -227,7 +229,7 @@ $(function () {
             }).complete(function (e) {
                 $.messager.progress('close');
             });
-        }else{
+        } else {
             $.messager.alert('系统提示!', '请修正表单中有问题的字段!!');
         }
 
@@ -249,8 +251,8 @@ $(function () {
             });
         }
         if (ids && ids.length > 0) {
-            $.messager.confirm('确认','出租单确认是不可逆流程，是否确认审核？',function (r) {
-                if(r){
+            $.messager.confirm('确认', '出租单确认是不可逆流程，是否确认审核？', function (r) {
+                if (r) {
                     $('body').loading('执行中,请稍后...');
                     $.ajax({
                         url: t1Url + '/finish',
@@ -285,16 +287,16 @@ $(function () {
             $.messager.alert('系统提示', '该仓库所有sku都已选择,无法继续添加,如需修改,请编辑明细信息!');
             return;
         }
-        //没有id且t2_dg没有数据,说明是没有初始化过的,需要初始化
         var warehouseId = $('#warehouseId').combobox('getValue');
         if (!warehouseId) {
             $.messager.alert('系统提示', '填写明细单前请选择出库仓库');
             return;
         }
-        $.t2CurrentItem = {};
-        $('#t2EditPanel').dialog('open');
+        $.t2CurrentItem = {rentId: $('#id').val()};
         $('#t2EditForm').form('clear');
-        $('#t2EditForm').form('load', {dtlId: $.t2CurrentItem});
+        $('#t2EditForm').form('load', $.t2CurrentItem);
+        $('#t2EditPanel').dialog('open');
+
     }
 
     function t2ToEdit() {
@@ -304,8 +306,7 @@ $(function () {
                 $.messager.alert('系统提示!', '只能对一行进行编辑!')
             } else if (rows.length == 1) {
                 $('#t2EditForm').form('clear');
-                $.t2CurrentItem = rows[0];
-                $('#t2EditForm').form('load', $.t2CurrentItem);
+                $('#t2EditForm').form('load', rows[0]);
                 $('#t2EditPanel').dialog('open');
             }
         } else {
@@ -370,37 +371,38 @@ $(function () {
     function t2Save() {
         if ($('#t2EditForm').form('validate')) {
 
-            var item = $.t2CurrentItem;
-            if (item) {
-                $('#t2EditForm input').each(function (i, val) {
-                    var key = $(val).attr('name');
-                    if (key) {
-                        item[key] = $(val).val();
-                    }
-                });
-                //保存时将一选sku从选项中删除
-                var skuInfo = $('#skuId').combobox('getData');
-                $.each(skuInfo, function (i, rec) {
-                    if (item.skuId == rec.id) {
-                        item.skuName = rec.text;
-                        skuInfo.splice(i, 1);
-                        $('#skuId').combobox('loadData', skuInfo);
-                        return false;
-                    }
-                });
-                if (!item.dtlId) {
-                    $('#t2_dg').datagrid('appendRow', item);
-                } else {
-                    var index = $('#t2_dg').datagrid('getRowIndex', item);
-                    $('#t2_dg').datagrid('updateRow', {index: index, row: item});
-                }
+            var row = $('#t2_dg').datagrid('getChecked')[0];
+            var index = row ? $('#t2_dg').datagrid('getRowIndex', row) : null;
+            var item = {};
 
+            $('#t2EditForm input').each(function (i, val) {
+                var key = $(val).attr('name');
+                if (key) {
+                    item[key] = $(val).val();
+                }
+            });
+            //保存时将一选sku从选项中删除
+            var skuInfo = $('#skuId').combobox('getData');
+            $.each(skuInfo, function (i, rec) {
+                if (item.skuId == rec.id) {
+                    item.skuName = rec.text;
+                    skuInfo.splice(i, 1);
+                    $('#skuId').combobox('loadData', skuInfo);
+                    return false;
+                }
+            });
+            if (!item.id) {
+                $('#t2_dg').datagrid('appendRow', item);
+            } else {
+                $('#t2_dg').datagrid('updateRow', {index: index, row: item});
             }
+
+
             calcTotal();
             delete $.t2CurrentItem;
             $('#t2EditForm').form('clear');
             $('#t2EditPanel').dialog('close');
-        }else{
+        } else {
             $.messager.alert('系统提示!', '请修正表单中有问题的字段!!');
         }
     }
@@ -444,7 +446,8 @@ $(function () {
     }
 
     function t2Query() {
-        var url = t2Url + '/findAllById?id=' + $.currentItem['id'];
+        var url = t2Url + '/findAllById?rentId=' + $('#id').val();
+        $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
         $.ajax({
             url: url,
             dataType: 'json',
@@ -465,7 +468,6 @@ $(function () {
     }
 
     function t2CloseEditPanel() {
-        $.currentItem = null;
         $('#t2EditPanel').dialog('close');
     }
 
@@ -479,6 +481,8 @@ $(function () {
             dataType: 'json'
         }).success(function (ret) {
             if (ret && ret.id) {
+                ret.skuId = ret.id;
+                delete ret.id;
                 $('#t2EditForm').form('load', ret);
                 if (ret.suffix) {
                     $('#skuImage').attr('src', 'resources/images/upload' + ret.id + ret.suffix);

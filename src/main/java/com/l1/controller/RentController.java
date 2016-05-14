@@ -97,13 +97,13 @@ public class RentController {
     public Map<String, Object> save(Rent rent,
                                     @RequestParam(value = "inserted",required = false) String insertedStr,
                                     @RequestParam(value = "updated",required = false) String updatedStr,
-                                    @RequestParam(value = "deleted",required = false) Integer[] deleted, BindingResult err) {
+                                    @RequestParam(value = "deleted[]",required = false) Integer[] deleted, BindingResult err) {
         rent.setCreate_time(DateUtil.now());
         List<RentDtl> inserted = null;
         List<RentDtl> updated = null;
         if(rent.getId()!=null&&rent.getId()>0){
             if(updatedStr!=null&&updatedStr.length()>0){
-                inserted = jsonArrayToRentDetailList(JSONArray.fromObject(updatedStr));
+                updated = jsonArrayToRentDetailList(JSONArray.fromObject(updatedStr));
             }
         }
         if(insertedStr!=null&&insertedStr.length()>0){
@@ -136,8 +136,9 @@ public class RentController {
     private RentDtl jsonToRentDetail(JSONObject json) {
         WrappedJSON item = new WrappedJSON(json);
         RentDtl ret = new RentDtl();
-        ret.setDtlId(item.getInteger("dtlId"));
+        ret.setId(item.getInteger("id"));
         ret.setSkuId(item.getInteger("skuId"));
+        ret.setRentId(item.getInteger("rentId"));
         ret.setItemName(item.getString("itemName"));
 //        ret.setStat(json.getInt("stat"));
         ret.setItemPrice(item.getBigDecimal("itemPrice"));
@@ -193,19 +194,25 @@ public class RentController {
         }
 
         public String getString(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getString(key);
+            return isAvailable(key) ? null : source.getString(key);
         }
 
         public Integer getInteger(String key) {
-            return source.get(key)==null|| source.get(key) instanceof JSONNull ? null : source.getInt(key);
+            return isAvailable(key) ? null : source.getInt(key);
         }
 
         public Double getDouble(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getDouble(key);
+            return isAvailable(key) ? null : source.getDouble(key);
         }
 
         public BigDecimal getBigDecimal(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : BigDecimal.valueOf(source.getDouble(key));
+            return isAvailable(key) ? null : BigDecimal.valueOf(source.getDouble(key));
         }
+
+        private boolean isAvailable(String key){
+            Object val = source.get(key);
+            return val==null||val instanceof JSONNull || (val instanceof String && ((String) val).isEmpty());
+        }
+
     }
 }

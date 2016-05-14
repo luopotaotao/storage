@@ -46,61 +46,23 @@
     <update id="update" parameterType="com.l1.entity.Rent">
         update tb_rent
         <set>
-            <if test="billNo!=null and billNo!='' ">
-                billNo=#{billNo},
-            </if>
-
-            <if test="customerName!=null and customerName!='' ">
-                customerName=#{customerName},
-            </if>
-
-            <if test="warehouseId!=null and warehouseId!='' ">
-                warehouseId=#{warehouseId},
-            </if>
-            <if test="stat!=null and stat!='' ">
-                stat=#{stat},
-            </if>
-            <if test="billStat!=null and billStat!='' ">
-                stat=#{billStat},
-            </if>
-            <if test="update_time!=null">
-                update_time=#{update_time},
-            </if>
-            <if test="customerPhone!=null">
-                customerPhone=#{customerPhone},
-            </if>
-            <if test="customerAddr!=null">
-                customerAddr=#{customerAddr},
-            </if>
-            <if test="customerCard!=null">
-                customerCard=#{customerCard},
-            </if>
-            <if test="rentDay!=null">
-                rentDay=#{rentDay},
-            </if>
-
-            <if test="repoMoney!=null">
-                repoMoney=#{repoMoney},
-            </if>
-            <if test="rentMoney!=null">
-                rentMoney=#{rentMoney},
-            </if>
-            <if test="beginDate!=null">
-                beginDate=#{beginDate},
-            </if>
-            <if test="endDate!=null">
-                endDate=#{endDate},
-            </if>
-            <if test="expressBillNo!=null">
-                expressBillNo=#{expressBillNo},
-            </if>
-
-            <if test="returnBillNo!=null">
-                returnBillNo=#{returnBillNo},
-            </if>
-            <if test="supplierId!=null">
-                supplierId=#{supplierId},
-            </if>
+            billNo=#{billNo},
+            customerName=#{customerName},
+            warehouseId=#{warehouseId},
+            stat=#{stat},
+            stat=#{billStat},
+            update_time=#{update_time},
+            customerPhone=#{customerPhone},
+            customerAddr=#{customerAddr},
+            customerCard=#{customerCard},
+            rentDay=#{rentDay},
+            repoMoney=#{repoMoney},
+            rentMoney=#{rentMoney},
+            beginDate=#{beginDate},
+            endDate=#{endDate},
+            expressBillNo=#{expressBillNo},
+            returnBillNo=#{returnBillNo},
+            supplierId=#{supplierId},
         </set>
         where id=#{id}
     </update>

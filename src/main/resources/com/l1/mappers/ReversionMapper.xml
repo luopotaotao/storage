@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.l1.dao.ReversionDao">
 
-    <resultMap type="Reversion" rentId="ReversionResult">
+    <resultMap type="Reversion" id="ReversionResult">
         <result property="rentId" column="rentId"/>
         <result property="billNo" column="billNo"/>
         <result property="billStat" column="billStat"/>
@@ -32,7 +32,7 @@
         <result property="update_time" column="update_time"/>
     </resultMap>
 
-    <sql rentId="v_reversion">
+    <sql id="v_reversion">
 		SELECT
               r.*,w.`name` warehouseName,s.`supplierName`,d.textField billStatName
             FROM
@@ -54,14 +54,14 @@
               ON r.rentBillStat = d.valueField
 	</sql>
 
-    <select rentId="loadAvailableRentBillNos" resultMap="ReversionResult">
+    <select id="loadAvailableRentBillNos" resultMap="ReversionResult">
 		SELECT rentId,billNo FROM tb_rent WHERE billStat=2
 	</select>
-    <select rentId="loadReversionFromRent" resultMap="ReversionResult">
+    <select id="loadReversionFromRent" resultMap="ReversionResult">
         <include refid="v_reversion"/>
         where r.rentId = #{rentId}
     </select>
-    <select rentId="find" parameterType="map" resultMap="ReversionResult">
+    <select id="find" resultMap="ReversionResult">
         <include refid="v_reversion"/>
         <where>
             <if test="name!=null and name!='' ">
@@ -78,14 +78,14 @@
             limit #{start},#{size}
         </if>
     </select>
-    <insert rentId="save" parameterType="Reversion">
+    <insert id="save" parameterType="Reversion">
 		insert into tb_return(rentId,billNo,customerName,warehouseId,stat,statName,create_time,warehouseName,customerPhone,customerAddr,customerCard
 		,rentDay,rentMoney,repoMoney,damageMoney,beginDate,endDate,expressBillNo,rentBillNo,supplierId)
 		values(null,#{billNo},#{customerName},#{warehouseId},#{stat},#{statName},#{create_time},#{warehouseName},#{customerPhone},#{customerAddr},#{customerCard}
 		,#{rentDay},#{rentMoney},#{repoMoney},#{damageMoney},#{beginDate},#{endDate},#{expressBillNo},#{rentBillNo},#{supplierId})
 	</insert>
 
-    <update rentId="update" parameterType="Reversion">
+    <update id="update" parameterType="Reversion">
         update tb_return
         <set>
             <if test="billNo!=null and billNo!='' ">
@@ -151,39 +151,39 @@
                 supplierId=#{supplierId},
             </if>
         </set>
-        where rentId=#{rentId}
+        where id=#{rentId}
     </update>
 
-    <select rentId="find" parameterType="Map" resultMap="ReversionResult">
-        select * from tb_return
-        <where>
-            <if test="name!=null and name!='' ">
-                and name like #{name}
-            </if>
-            <if test="code!=null and code!='' ">
-                and code like #{code}
-            </if>
-            <if test="stat!=null and stat!='' ">
-                and stat=#{stat}
-            </if>
-        </where>
-        <if test="start!=null and size!=null">
-            limit #{start},#{size}
-        </if>
-    </select>
+    <!--<select id="find" parameterType="Map" resultMap="ReversionResult">-->
+        <!--select * from tb_return-->
+        <!--<where>-->
+            <!--<if test="name!=null and name!='' ">-->
+                <!--and name like #{name}-->
+            <!--</if>-->
+            <!--<if test="code!=null and code!='' ">-->
+                <!--and code like #{code}-->
+            <!--</if>-->
+            <!--<if test="stat!=null and stat!='' ">-->
+                <!--and stat=#{stat}-->
+            <!--</if>-->
+        <!--</where>-->
+        <!--<if test="start!=null and size!=null">-->
+            <!--limit #{start},#{size}-->
+        <!--</if>-->
+    <!--</select>-->
 
-    <select rentId="findByIds" parameterType="string" resultMap="ReversionResult">
+    <select id="findByIds" parameterType="string" resultMap="ReversionResult">
 		select * from tb_return
 		where rentId in (#{ids})
 	</select>
 
-    <select rentId="findById" parameterType="int" resultMap="ReversionResult">
+    <select id="findById" parameterType="int" resultMap="ReversionResult">
 		select * from tb_return
 		where rentId =#{rentId}
 	</select>
 
 
-    <select rentId="getTotal" parameterType="Map" resultType="Long">
+    <select id="getTotal" parameterType="Map" resultType="Long">
         select count(*) from tb_return
         <where>
             <if test="name!=null and name!='' ">
@@ -195,15 +195,15 @@
         </where>
     </select>
 
-    <delete rentId="delete">
+    <delete id="delete">
         DELETE FROM tb_return where rentId IN
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
     </delete>
 
-    <delete rentId="deleteById" parameterType="int">
-		DELETE FROM tb_return where rentId=#{rentId}
+    <delete id="deleteById" parameterType="int">
+		DELETE FROM tb_return where id=#{rentId}
 	</delete>
 
 </mapper> 

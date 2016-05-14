@@ -66,9 +66,9 @@ public class RentDtlController {
 
     @RequestMapping("/findAllById")
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "id", required = false) String id) throws Exception {
+    public Map<String, Object> list(@RequestParam(value = "rentId", required = false) String rentId) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
+        map.put("rentId", rentId);
 
         List<RentDtl> linkManList = rentDtlService.find(map);
         Map<String, Object> result = new HashMap<String, Object>();

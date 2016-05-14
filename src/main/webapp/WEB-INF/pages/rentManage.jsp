@@ -209,9 +209,7 @@
             <tr>
                 <th field="cb" checkbox="true" align="center"></th>
                 <th data-options="field:'id',width:80,hidden:true">id</th>
-                <th data-options="field:'dtlId',width:80,hidden:true">dtlId</th>
                 <th data-options="field:'skuId',width:80">SKU</th>
-                <th data-options="field:'itemName',width:80">商品名称</th>
                 <th data-options="field:'itemName',width:80">商品名称</th>
                 <th data-options="field:'itemPrice',width:80,align:'right'">单价</th>
                 <th data-options="field:'itemAmount',width:60,align:'right'">数量</th>
@@ -230,7 +228,8 @@
         <div id="t2EditPanel" class="easyui-dialog" title="编辑" style="padding:10px;width:700px;"
              data-options="modal:true,closed:true,buttons: '#t2EditPanel-buttons'">
             <form id="t2EditForm">
-                <input type="hidden" name="statName" id="statName">
+                <input name="id" type="hidden">
+                <input name="rentId" type="hidden">
                 <table>
                     <tr>
                         <td>SKU</td>
@@ -250,12 +249,12 @@
                     <tr>
                         <td>颜色</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="colorName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="colorName" id="colorName"
                                    style="width:150px">
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="sizeDtlName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName" id="sizeDtlName"
                                    style="width:150px">
                         </td>
                     </tr>
@@ -272,7 +271,7 @@
                         </td>
                         <td>当前库存</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="amount"
+                            <input class="easyui-textbox" data-options="disabled:true" name="amount" id="amount"
                                    style="width:150px">
                         </td>
                     </tr>
@@ -289,8 +288,6 @@
                         </td>
                         <td></td>
                         <td></td>
-
-
                     </tr>
                     <tr>
                         <td>金额</td>

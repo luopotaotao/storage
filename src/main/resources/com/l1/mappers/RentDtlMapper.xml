@@ -6,9 +6,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<resultMap type="RentDtl" id="RentDtlResult">
 		<result property="id" column="id"/>
-		<result property="dtlId" column="dtlId"/>
-		<result property="itemName" column="itemName"/>
+		<result property="rentId" column="rentId"/>
 		<result property="skuId" column="skuId"/>
+		<result property="itemName" column="itemName"/>
+		<result property="colorName" column="colorName"/>
+		<result property="sizeName" column="sizeName"/>
 		<result property="itemPrice" column="itemPrice"/>
 		<result property="itemAmount" column="itemAmount"/>
 		<result property="itemRent" column="itemRent"/>
@@ -16,39 +18,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	</resultMap>
 	
-	<insert id="add" parameterType="RentDtl" keyProperty="dtlId" keyColumn="dtlId" useGeneratedKeys="true">
-		insert into tb_rentdtl(id,skuId,itemName,itemPrice,itemAmount,itemRent,itemRepo)
-		values(#{id},#{skuId},#{itemName},#{itemPrice},#{itemAmount},#{itemRent},#{itemRepo})
+	<insert id="add" parameterType="RentDtl" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+		insert into tb_rentdtl(rentId,skuId,itemPrice,itemAmount,itemRent,itemRepo)
+		values(#{rentId},#{skuId},#{itemPrice},#{itemAmount},#{itemRent},#{itemRepo})
 	</insert>
 	<insert id="batchSave" parameterType="list">
-		insert into tb_rentdtl(id,skuId,itemName,itemPrice,itemAmount,itemRent,itemRepo)
+		insert into tb_rentdtl(rentId,skuId,itemPrice,itemAmount,itemRent,itemRepo)
 		values
 		<foreach item="item" index="index" collection="list"  separator=",">
-			(#{item.id},#{item.skuId},#{item.itemName},#{item.itemPrice},#{item.itemAmount},#{item.itemRent},#{item.itemRepo})
+			(#{item.rentId},#{item.skuId},#{item.itemPrice},#{item.itemAmount},#{item.itemRent},#{item.itemRepo})
 		</foreach>
 	</insert>
 
 	<update id="update" parameterType="RentDtl">
 		update tb_rentdtl
 		<set>
-			skuId=#{skuId},
-			itemName=#{itemName},
 			itemPrice=#{itemPrice},
 			itemAmount=#{itemAmount},
 			itemRent=#{itemRent},
 			itemRepo=#{itemRepo}
 		</set>
-		where dtlId=#{dtlId}
+		where id=#{id}
 	</update>
 	
 	<select id="find" parameterType="Map" resultMap="RentDtlResult">
-		select * from tb_rentdtl
+		SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+		FROM tb_rentdtl r
+		LEFT JOIN tb_sku sku ON r.skuId = sku.id
+		LEFT JOIN tb_item item ON sku.itemId = item.id
+		LEFT JOIN tb_color color ON sku.colorId = color.id
+		LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
 		<where>
-			<if test="id!=null and id!='' ">
-				and id = #{id}
+			<if test="rentId!=null and rentId!='' ">
+				and rentId = #{rentId}
 			</if>
-			<if test="dtlId!=null and dtlId!='' ">
-				and dtlId= #{dtlId}
+			<if test="id!=null and id!='' ">
+				and id= #{id}
 			</if>
 			<if test="stat!=null and stat!='' ">
 				and stat=#{stat}
@@ -66,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="findById" parameterType="int" resultMap="RentDtlResult">
 		select * from tb_rentdtl
-		where dtlId =#{dtlId}
+		where id =#{id}
 	</select>
 	
 	
@@ -81,14 +86,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<delete id="delete">
-		DELETE FROM tb_rentdtl where dtlId IN
+		DELETE FROM tb_rentdtl where id IN
 		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 			#{item}
 		</foreach>
 	</delete>
 	
 	<delete id="deleteById" parameterType="int">
-		DELETE FROM tb_rentdtl where dtlId=#{dtlId}
+		DELETE FROM tb_rentdtl where id=#{id}
 	</delete>
 	<delete id="deleteByRentId" parameterType="int">
 		DELETE FROM tb_rentdtl where id=#{id}
