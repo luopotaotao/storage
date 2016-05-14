@@ -25,7 +25,8 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public List<Image> find(Integer page, Integer rows) {
-        return imageDao.find();
+
+        return imageDao.find(page!=null&&rows!=null?(page-1)*rows:null,rows);
     }
     @Override
     public List<Image> findAll() {

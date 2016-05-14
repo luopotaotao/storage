@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -20,6 +21,7 @@
     </style>
     <script type="text/javascript">
         $(function () {
+            $.extend({image:{previewImage:previewImage}});
             bindHandlers();
             var t1Url = '/image';
 
@@ -34,10 +36,11 @@
             }
 
             function add() {
-                $.currentItem = null;
                 $('#id').combobox('reload');
-                $('#editForm').form('clear');
                 $('#editPanel').dialog('open');
+                $('#editForm').form('clear');
+                $('#skuId').combobox({readonly:false});
+
             }
 
             function edit() {
@@ -46,8 +49,8 @@
                     if (rows.length > 1) {
                         $.messager.alert('系统提示!', '只能对一行进行编辑!')
                     } else if (rows.length == 1) {
-                        $.currentItem = rows[0];
                         var url = t1Url + '/findById';
+                        $('#editPanel').loading('加载所选图片信息中,请稍后...');
                         $.ajax({
                             url: url,
                             data: {id: rows[0]['id']},
@@ -61,13 +64,15 @@
                             });
                             $('#editForm').form('load', ret);
                             $('#editPanel').dialog('open');
+                            $('#id').combobox({readonly:true});
+                            $('#id').combobox('setValue',ret.id);
                         }).error(function (err) {
-                            $.messager.alert('系统提示!', '获取数据!请重新尝试或联系管理员!');
+                            $.messager.alert('系统提示!', '获取数据失败,请重新尝试或联系管理员!');
+                        }).complete(function () {
+                            $('#editPanel').loaded();
                         });
                     }
-                }
-
-                else {
+                }else {
                     $.messager.alert('系统提示!', '请选择要编辑的行!')
                 }
             }
@@ -117,32 +122,32 @@
             }
 
             function save() {
-                if (!$.currentItem && !$('input[name="img"]').val()) {
+                var suffix = $('input[name="suffix"]').val();
+                var img = $('input[name=img]').val();
+                if (!suffix&&!img) {
                     $.messager.alert('系统提示', '请选择要上传的文件!');
                     return;
                 }
                 if ($('#editForm').form('validate')) {
                     $('#editForm').form('submit', {
-                                url: t1Url + ($.currentItem ? '/update' : '/save'),
+                                url: t1Url + (suffix ? '/update' : '/save'),
                                 ajax: false,
                                 onSubmit: function () {
-                                    $.messager.progress();
+                                    $('body').loading('保存中,请稍后...')
                                     return true;	// 返回false终止表单提交
                                 },
                                 success: function (ret) {
                                     ret = JSON.parse(ret);
                                     if (ret && ret.flag) {
-                                        $.messager.progress('close');	// 如果提交成功则隐藏进度条
+                                        $('#editPanel').loaded();
                                         $.messager.alert('系统提示!', '保存成功!');
                                         $('#editForm').form('clear');
                                         closeEditPanel();
                                         query();
-                                        $.currentItem = null;
                                     } else {
-                                        $.messager.progress('close');
                                         $.messager.alert('系统提示!', '保存失败,请重新尝试或联系管理员!');
                                     }
-
+                                    $('body').loaded();
                                 }
                             }
                     );
@@ -156,7 +161,8 @@
                 $('#imghead').attr('src', '');
             }
 
-            function previewImage(file) {
+            function previewImage() {
+                var file = $('input[name=img]')[0];
                 var MAX_WIDTH = 600;
                 var MAX_HEIGHT = 275;
                 var div = $('#preview');
@@ -249,6 +255,7 @@
 <div id="editPanel" class="easyui-dialog" title="编辑" style="padding:10px;width:650px;height:450px;"
      data-options="minimizable: true,maximizable: true,resizable: true,modal:true,closed:true,buttons: '#editPanel-buttons'">
     <form id="editForm" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="suffix">
         <table>
             <tr>
                 <td>SKU</td>
@@ -271,8 +278,7 @@
             <tr>
                 <td>文件</td>
                 <td>
-                    <input type="file" accept="image/*" class="easyui-filebox" name="img" data-options="required:true"
-                           onchange="$.previewImage(this)">
+                    <input accept="image/*" class="easyui-filebox" name="img" data-options="buttonText:'选择文件',required:true,width:200,onChange:function(){$.image.previewImage()}">
                 </td>
             </tr>
 

@@ -1,6 +1,7 @@
 package com.l1.dao;
 
 import com.l1.entity.Image;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ImageDao {
     int save(Image image);
-    List<Image> find();
+    List<Image> find(@Param("start") Integer start, @Param("rows") Integer rows);
     Image findById(int id);
     List<Image> findAll();
     int update(Image image);
