@@ -164,7 +164,7 @@ public class RentController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids) throws Exception {
+    public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids) throws Exception {
         if (ids != null && ids.length > 0) {
             rentService.delete(ids);
         }

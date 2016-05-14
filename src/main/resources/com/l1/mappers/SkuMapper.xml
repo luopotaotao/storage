@@ -67,10 +67,11 @@
     </select>
     <select id="findForCombo"  resultType="map">
         SELECT sku.id,item.name text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
-
+        WHERE sku.id in(SELECT skuId FROM tb_inventory inventory WHERE inventory.warehouseId=#{warehouseId})
         <if test="billId!=null">
-            WHERE sku.id NOT IN (SELECT skuId FROM tb_rentdtl WHERE id=#{billId})
+            and sku.id NOT IN (SELECT skuId FROM tb_rentdtl WHERE id=#{billId})
         </if>
+
     </select>
 
 

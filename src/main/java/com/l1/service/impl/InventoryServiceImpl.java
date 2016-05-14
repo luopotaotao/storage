@@ -61,4 +61,9 @@ public class InventoryServiceImpl implements InventoryService {
     return inventoryDao.delete(ids);
   }
 
+  @Override
+  public Integer getInventory(Integer warehouseId, Integer skuId) {
+    return inventoryDao.getInventory(warehouseId,skuId);
+  }
+
 }

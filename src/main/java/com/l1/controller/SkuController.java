@@ -81,8 +81,9 @@ public class SkuController {
     }
     @RequestMapping("/getAvailableSkuInfo")
     @ResponseBody
-    public List<Map<String, String>> getAvailableSkuInfo(Integer billId) {
+    public List<Map<String, String>> getAvailableSkuInfo(Integer warehouseId,Integer billId) {
         Map<String, Object> map = new HashMap<String, Object>();
+        map.put("warehouseId",warehouseId);
         if (billId != null) {
             map.put("billId",billId);
         }

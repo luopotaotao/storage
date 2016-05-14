@@ -3,6 +3,13 @@
  */
 
 $(function () {
+
+    $.extend({
+        rent: {
+            loadInventory: loadInventory,
+            loadSkuInfo: loadSkuInfo
+        }
+    })
     bindHandlers();
     bindT2Handlers();
     var t1Url = 'rent';
@@ -29,8 +36,6 @@ $(function () {
                 calcRentDays(this);
             }
         });
-
-
     }
 
     function calcRentDays(which) {
@@ -169,8 +174,8 @@ $(function () {
     function save() {
         if ($('#editForm').form('validate')) {
             var dtls = $('#t2_dg').datagrid('getRows');
-            if(!dtls||dtls.length<1){
-                $.messager.alert('系统提示','请添加出租明细信息!');
+            if (!dtls || dtls.length < 1) {
+                $.messager.alert('系统提示', '请添加出租明细信息!');
                 return;
             }
             var rent = {};
@@ -317,51 +322,59 @@ $(function () {
     function initSkuCombo() {
         var rows = $('#t2_dg').datagrid('getRows');
         if (!rows || rows.length < 1) {
-            $('body').loading('加载SKU列表信息,请稍等...');
+            $('#editPanel').loading('加载SKU列表信息,请稍等...');
             $.ajax({
                 url: 'sku/getAvailableSkuInfo',
                 type: 'get',
-                data: {billId: $('#id').val()},
+                data: {warehouseId: $('#warehouseId').val(), billId: $('#id').val()},
                 dataType: 'json',
                 async: true
             }).success(function (ret) {
-                $('#skuId').combobox({
-                        valueField: 'id',
-                        textField: 'text',
-                        data: ret,
-                        required: true,
-                        missingMessage: '必填字段',
-                        formatter: function (row) {
-                            var opts = $(this).combobox('options');
-                            return row[opts.valueField] + ' ' + row[opts.textField];
-                        },
-                        onHidePanel: function () {
-                            var val = $('input[name=skuId]').val();
-                            if (!val) {
-                                return;
-                            }
-                            var opt = $(this).combobox('options');
-                            var data = $(this).combobox('getData');
-                            var contains = false;
-                            for (var i = 0; i < data.length; i++) {
-                                if (data[i][opt.valueField] == val) {
-                                    $(this).combobox('setValue', val + ' ' + data[i][opt.textField]);
-                                    $('input[name=skuId]').val(val);
-                                    $.loadSkuInfo(val);
+                if($.isArray(ret)){
+                    if(ret.length<1){
+                        $.messager.alert('系统提示','该仓库内无可选SKU信息,请选择其他仓库!');
+                        $('#t2EditPanel').dialog('close');
+                        return;
+                    }
+                    $('#skuId').combobox({
+                            valueField: 'id',
+                            textField: 'text',
+                            data: ret,
+                            required: true,
+                            missingMessage: '必填字段',
+                            formatter: function (row) {
+                                var opts = $(this).combobox('options');
+                                return row[opts.valueField] + ' ' + row[opts.textField];
+                            },
+                            onHidePanel: function () {
+                                var val = $('input[name=skuId]').val();
+                                if (!val) {
                                     return;
                                 }
-                            }
-                            if (!contains) {
-                                $.messager.alert('系统提示', '只能从下拉框中选择值!');
-                                $(this).combobox('reset');
+                                var opt = $(this).combobox('options');
+                                var data = $(this).combobox('getData');
+                                var contains = false;
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i][opt.valueField] == val) {
+                                        $(this).combobox('setValue', val + ' ' + data[i][opt.textField]);
+                                        $('input[name=skuId]').val(val);
+                                        $.rent.loadSkuInfo(val);
+                                        return;
+                                    }
+                                }
+                                if (!contains) {
+                                    $.messager.alert('系统提示', '只能从下拉框中选择值!');
+                                    $(this).combobox('reset');
+                                }
                             }
                         }
-                    }
-                )
+                    );
+                }
+
             }).error(function () {
                 $.messager.alert('系统提示', '加载SKU信息失败!');
             }).complete(function () {
-                $('body').loaded();
+                $('#editPanel').loaded();
             });
         }
 
@@ -371,6 +384,16 @@ $(function () {
     function t2Save() {
         if ($('#t2EditForm').form('validate')) {
 
+            var amount = $('#amount').val();
+            if (!$.isNumeric(amount)) {
+                $.messager.alert('系统提示', '库存信息不明,请刷新库存信息!');
+                return;
+            } else {
+                if ($('#itemAmount').numberbox('getValue') > amount) {
+                    $.messager.alert('系统提示', '数量不可超过当前库存!');
+                    return;
+                }
+            }
             var row = $('#t2_dg').datagrid('getChecked')[0];
             var index = row ? $('#t2_dg').datagrid('getRowIndex', row) : null;
             var item = {};
@@ -471,7 +494,7 @@ $(function () {
         $('#t2EditPanel').dialog('close');
     }
 
-    $.loadSkuInfo = function (id) {
+    function loadSkuInfo(id) {
         $('body').loading('查询SKU详细信息,请稍后...');
 
         $.ajax({
@@ -494,6 +517,24 @@ $(function () {
             $.messager.alert('系统提示', '加载SKU信息失败!');
         }).complete(function () {
             $('body').loaded();
+        });
+    }
+
+    function loadInventory() {
+        $('#t2EditForm').loading('查询库存信息,请稍后...');
+        $.ajax({
+            url: '/inventory/getInventory',
+            data: {warehouseId: $('#warehouseId').val(), skuId: $('#skuId').val()},
+            type: 'get',
+            dataType: 'json'
+        }).success(function (ret) {
+            if (ret && $.isPlainObject(ret)) {
+                $('#amount').numberbox('setValue', ret.amount);
+            }
+        }).error(function () {
+            $.messager.alert('系统提示', '加载库存信息失败,请重新尝试或联系管理员!');
+        }).complete(function () {
+            $('#t2EditForm').loaded();
         });
     }
 })

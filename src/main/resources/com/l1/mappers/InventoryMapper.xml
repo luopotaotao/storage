@@ -106,6 +106,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where id =#{id}
 	</select>
 
+	<select id="getInventory" resultType="int">
+		SELECT amount FROM  tb_inventory WHERE warehouseId=#{0} and skuId=#{1}
+	</select>
 
 
 	<select id="getTotal" parameterType="Map" resultType="Long">

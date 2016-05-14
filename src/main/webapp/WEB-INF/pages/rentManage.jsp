@@ -254,7 +254,8 @@
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName" id="sizeDtlName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName"
+                                   id="sizeDtlName"
                                    style="width:150px">
                         </td>
                     </tr>
@@ -271,8 +272,16 @@
                         </td>
                         <td>当前库存</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="amount" id="amount"
-                                   style="width:150px">
+                            <input class="easyui-textbox"  name="amount" id="amount"
+                                   style="width:150px"
+                                   data-options="
+                                   editable:false,
+                                   icons: [{
+                                iconCls:'icon-reload',
+                                handler: function(e){
+                                    $.rent.loadInventory();
+                                }
+                            }]">
                         </td>
                     </tr>
                     <tr>

@@ -39,4 +39,12 @@ public class InventoryController {
         ret.put("rows",list);
         return ret;
     }
+
+    @RequestMapping(value = "getInventory",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Integer> getInventory(Integer warehouseId,Integer skuId){
+        Map<String,Integer> ret = new HashMap<String, Integer>();
+        ret.put("amount",inventoryService.getInventory(warehouseId,skuId));
+        return ret;
+    }
 }

@@ -27,4 +27,5 @@ public interface InventoryDao {
 
   public void save(Inventory inventory);
 
+  Integer getInventory(Integer warehouseId, Integer skuId);
 }

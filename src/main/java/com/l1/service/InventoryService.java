@@ -6,21 +6,23 @@ import java.util.Map;
 import com.l1.entity.Inventory;
 
 public interface InventoryService {
-  public List<Inventory> find(Map<String, Object> map);
+  List<Inventory> find(Map<String, Object> map);
 
-  public List<Inventory> findByIds(String[] ids);
+  List<Inventory> findByIds(String[] ids);
 
-  public Inventory findById(Integer id);
+  Inventory findById(Integer id);
 
-  public Long getTotal(Map<String, Object> map);
+  Long getTotal(Map<String, Object> map);
 
-  public Integer add(Inventory inventory);
+  Integer add(Inventory inventory);
 
-  public Integer update(Inventory inventory);
+  Integer update(Inventory inventory);
 
-  public Integer deleteById(Integer id);
+  Integer deleteById(Integer id);
 
-  public void save(Inventory inventory);
+  void save(Inventory inventory);
 
-  public Integer delete(String[] ids);
+  Integer delete(String[] ids);
+
+  Integer getInventory(Integer warehouseId, Integer skuId);
 }
