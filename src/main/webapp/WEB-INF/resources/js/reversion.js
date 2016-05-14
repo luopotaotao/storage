@@ -5,7 +5,11 @@
 $(function () {
     bindHandlers();
     bindT2Handlers();
-    $.extend({reversion: {loadRentBillInfo: loadRentBillInfo}});
+    $.extend({
+        reversion: {
+            loadRentBillInfo: loadRentBillInfo
+        }
+    });
     var t1Url = 'reversion';
     var t2Url = 'reversionDtl'
 
@@ -34,14 +38,15 @@ $(function () {
     function toAdd() {
 
         setEditable(true);
-        $.currentItem = {};
-        $('#editForm').form('clear');
-        $('#editPanel').dialog('open');
+        loadAvailableRentBillNos(function () {
+            $('#editForm').form('clear');
+            $('#editPanel').dialog('open');
+            $('#rentBillNo').combobox({disabled:false});
 
-        $('#billStat').combobox('setValue', 0);
-        $('#stat').combobox('setValue', 1);
+            $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
+        });
 
-        $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
+
     }
 
     function formatDate(obj, names) {
@@ -60,17 +65,17 @@ $(function () {
             if (rows.length > 1) {
                 $.messager.alert('系统提示!', '只能对一行进行编辑!')
             } else if (rows.length == 1) {
+                // loadAvailableRentBillNos();
                 var row = rows[0];
 
-                formatDate(row, ['beginDate', 'endDate', 'create_time', 'update_time']);
-
-                $.currentItem = row;
-
-                $('#editForm').form('load', $.currentItem);
-
-                setEditable($.currentItem.billStat != 1);//已完成状态不可编辑
+                formatDate(row, ['beginDate', 'endDate','reversionDate', 'create_time', 'update_time']);
+                $('#editForm').form('load', row);
+                setEditable(row.billStat != 1);//已完成状态不可编辑
                 t2Query();
                 $('#editPanel').dialog('open');
+                $('#rentBillNo').combobox({disabled:true});
+                $('#rentBillNo').combobox('setValue',row.rentBillNo);
+
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
@@ -153,30 +158,31 @@ $(function () {
             return;
         }
 
+        var reversion = {};
         $('#editForm input').each(function (i, val) {
             var name = $(val).attr('name');
             if (name && $(val).val()) {
-                $.currentItem[name] = $(val).val();
+                reversion[name] = $(val).val();
             }
         });
 
-        var updated = $('#t2_dg').datagrid('getChanges', 'updated');
-        if (updated && updated.length > 0) {
-            $.currentItem.updated = JSON.stringify(updated);
+        var details = $('#t2_dg').datagrid('getChanges', 'updated');
+        if (details && details.length > 0) {
+            reversion.details = JSON.stringify(details);
         }
 
+        $('#editPanel').loading('保存中,请稍后...');
         $.ajax({
             url: t1Url + '/save',
             type: 'post',
-            data: $.currentItem
+            data: reversion
         }).success(function (ret) {
             if (ret && ret.flag) {
                 $.messager.alert('系统提示!', '保存成功!');
                 //如果是修改的话不关闭当前页面,新增的话才关闭
-                if ($.currentItem.id) {
-                    $.get(t1Url + '/findById', {id: $.currentItem.id}, function (data) {
+                if ($('#id').val()) {
+                    $.get(t1Url + '/findById', {id: ('#id').val()}, function (data) {
                         formatDate(data, ['beginDate', 'endDate', 'create_time', 'update_time']);
-                        $.currentItem = data;
                         $('#editForm').form('load', data);
                     });
                     query();
@@ -193,7 +199,7 @@ $(function () {
         }).error(function (e) {
             $.messager.alert('系统提示!', '保存失败,请重新尝试或联系管理员!');
         }).complete(function (e) {
-            $.messager.progress('close');
+            $('#editPanel').loaded();
         });
 
 
@@ -247,8 +253,7 @@ $(function () {
                 $.messager.alert('系统提示!', '只能对一行进行编辑!')
             } else if (rows.length == 1) {
                 $('#t2EditForm').form('clear');
-                $.t2CurrentItem = rows[0];
-                $('#t2EditForm').form('load', $.t2CurrentItem);
+                $('#t2EditForm').form('load', rows[0]);
                 $('#t2EditPanel').dialog('open');
             }
         } else {
@@ -259,8 +264,9 @@ $(function () {
 
     function t2Save() {
         if ($('#t2EditForm').form('validate')) {
-
-            var item = $.t2CurrentItem;
+            var row = $('#t2_dg').datagrid('getChecked')[0];
+            var index = $('#t2_dg').datagrid('getRowIndex', row);
+            var item = {};
             if (item) {
                 $('#t2EditForm input').each(function (i, val) {
                     var key = $(val).attr('name');
@@ -268,11 +274,9 @@ $(function () {
                         item[key] = $(val).val();
                     }
                 });
-                var index = $('#t2_dg').datagrid('getRowIndex', item);
                 $('#t2_dg').datagrid('updateRow', {index: index, row: item});
             }
             calcTotal();
-            delete $.t2CurrentItem;
             $('#t2EditForm').form('clear');
             $('#t2EditPanel').dialog('close');
         } else {
@@ -296,7 +300,12 @@ $(function () {
 
 
     function t2Query() {
-        var url = t2Url + '/loadRentDtlsForReversion?id=' + $.currentItem['id'];
+        var url = null;
+        if($('#id').val()){
+            url = t2Url + '/findRentDtlsById?reversionId=' + $('#id').val();
+        }else{
+            url = t2Url + '/loadRentDtlsForReversion?rentId=' + $('#id').val();
+        }
         $.ajax({
             url: url,
             dataType: 'json',
@@ -317,43 +326,71 @@ $(function () {
     }
 
     function t2CloseEditPanel() {
-        $.currentItem = null;
         $('#t2EditPanel').dialog('close');
     }
 
-    function loadRentBillInfo(rec) {
-        var rentBillId = $.isPlainObject(rec) ? rec.id : rec;
-        if (rentBillId) {
-            $('#editPanel').loading('加载出租单据信息中,请稍后...');
+    function loadAvailableRentBillNos(callback) {
+        $('#editPanel').loading('加载可用出租单信息,请稍后...');
+        $.ajax({
+            url: 'reversion/loadAvailableRentBillNos',
+            type: 'get',
+            dataType: 'json'
+        }).success(function (ret) {
+            if (ret ) {
+                if( ret.length > 0){
+                    $('#rentBillNo').combobox({
+                        required: true,
+                        valueField: 'id',
+                        textField: 'billNo',
+                        data:ret,
+                        onSelect: function (rec) {
+                            loadRentBillInfo(rec.id);
+                        }
+                    });
+                    if(typeof callback=='function'){
+                        callback();
+                    }
+                }else{
+                    $.messager.alert('系统提示','没有已审核的出租单,无法新建归还单!');
+                }
+
+            }
+        }).error(function (e) {
+            $.messager.alert('系统提示', '加载出租单据信息失败,请刷新页面重新尝试或联系管理员!');
+        }).complete(function () {
+            $('#editPanel').loaded();
+        });
+    }
+
+    function loadRentBillInfo(rentId) {
+        if (rentId) {
+            $('#editPanel').loading('加载所选出租单信息中,请稍后...');
             $.ajax({
                 url: 'reversion/loadReversionFromRent',
                 type: 'get',
-                data: {id: rentBillId},
+                data: {rentId: rentId},
                 dataType: 'json'
             }).success(function (ret) {
-                if (ret && ret.id) {
+                if (ret && ret.rentBillId) {
                     formatDate(ret, ['beginDate', 'endDate']);
-                    try {
-                        $('#editForm').form('load', ret);
-                    } catch (e) {
-
-                    }
+                    $('#editForm').form('load', ret);
+                    loadRentBillDtlInfo(ret.rentBillId)
                 }
             }).error(function (e) {
-                $.messager.alert('系统提示', '加载出租单据信息失败,请刷新页面重新尝试或联系管理员!');
+                $.messager.alert('系统提示', '加载所选出租单信息失败,请刷新页面重新尝试或联系管理员!');
             }).complete(function () {
-                $('#editPanel').loaded(loadRentBillDtlInfo, rentBillId);
+                $('#editPanel').loaded();
             });
         }
     }
 
-    function loadRentBillDtlInfo(id) {
-        if (id) {
+    function loadRentBillDtlInfo(rentId) {
+        if (rentId) {
             $('#editPanel').loading('加载出租单明细信息中,请稍后...');
             $.ajax({
-                url: 'reversionDtl/findAllById',
+                url: 'reversionDtl/'+($('#id').val()?'findRentDtlsById':'loadRentDtlsForReversion'),
                 type: 'get',
-                data: {id: id},
+                data: $('#id').val()?{reversionId:$('#id').val()}:{rentId: rentId},
                 dataType: 'json'
             }).success(function (ret) {
                 if (ret && ret.rows) {

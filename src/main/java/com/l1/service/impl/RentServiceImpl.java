@@ -54,8 +54,10 @@ public class RentServiceImpl implements RentService {
         return rentDao.deleteById(id);
     }
 
+    @Transactional(isolation = Isolation.DEFAULT,propagation = Propagation.REQUIRES_NEW)
     @Override
-    public Integer delete(String[] ids) {
+    public Integer delete(Integer[] ids) {
+        rentDtlDao.deleteByRentIds(ids);
         return rentDao.delete(ids);
     }
 

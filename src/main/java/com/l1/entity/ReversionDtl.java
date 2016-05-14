@@ -6,12 +6,14 @@ public class ReversionDtl {
     private Integer id;
     private Integer reversionId;
 
+    //TODO 此处rentId应为Integer,但是设置为Integer之后会报类型转换错误
+    private String rentId;
     private Integer skuId;
     private Integer itemId;
     private String itemName;
     private BigDecimal itemPrice;
     private Integer itemAmount;
-
+    private String rentDtlId;
     private Integer colorId;
     private String colorName;
     private Integer sizeId;
@@ -19,10 +21,20 @@ public class ReversionDtl {
 
     private Integer reversionStat;
     private String reversionStatName;
+    private Integer reversionAmount;
 
     private BigDecimal itemRent;
     private BigDecimal itemRepo;
     private BigDecimal itemCompensate;
+
+
+    public String getRentDtlId() {
+        return rentDtlId;
+    }
+
+    public void setRentDtlId(String rentDtlId) {
+        this.rentDtlId = rentDtlId;
+    }
 
     public Integer getId() {
         return id;
@@ -38,6 +50,14 @@ public class ReversionDtl {
 
     public void setReversionId(Integer reversionId) {
         this.reversionId = reversionId;
+    }
+
+    public String getRentId() {
+        return rentId;
+    }
+
+    public void setRentId(String rentId) {
+        this.rentId = rentId;
     }
 
     public Integer getSkuId() {
@@ -126,6 +146,14 @@ public class ReversionDtl {
 
     public void setReversionStatName(String reversionStatName) {
         this.reversionStatName = reversionStatName;
+    }
+
+    public Integer getReversionAmount() {
+        return reversionAmount;
+    }
+
+    public void setReversionAmount(Integer reversionAmount) {
+        this.reversionAmount = reversionAmount;
     }
 
     public BigDecimal getItemRent() {

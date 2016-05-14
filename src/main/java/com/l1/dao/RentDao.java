@@ -21,7 +21,7 @@ public interface RentDao {
 
   Integer update(Rent color);
 
-  Integer delete(String[] ids);
+  Integer delete(Integer[] ids);
 
   Integer deleteById(int id);
 

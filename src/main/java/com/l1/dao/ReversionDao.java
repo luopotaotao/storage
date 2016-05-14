@@ -16,4 +16,10 @@ public interface ReversionDao {
     Reversion loadReversionFromRent(Integer rentId);
 
     List<Reversion> find(Map<String, Object> map);
+
+    int remove(Integer[] ids);
+
+    List<Reversion> loadReversionDtlsFromRentDtl(Integer rentId);
+
+    int save(Reversion reversion);
 }

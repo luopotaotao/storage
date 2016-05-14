@@ -71,14 +71,22 @@ public class ReversionDtlController {
 
     @RequestMapping(value = "/loadRentDtlsForReversion",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "id", required = false) Integer id) throws Exception {
-        List<ReversionDtl> linkManList = reversionDtlService.loadRentDtlsForReversion(id);
+    public Map<String, Object> loadRentDtlsForReversion(@RequestParam  Integer rentId) throws Exception {
+        List<ReversionDtl> list = reversionDtlService.loadRentDtlsForReversion(rentId);
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("rows", linkManList);
-        result.put("total", linkManList.size());
+        result.put("rows", list);
+        result.put("total", list.size());
         return result;
     }
-
+    @RequestMapping(value = "/findRentDtlsById",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> findRentDtlsById(Integer reversionId){
+        Map<String, Object> result = new HashMap<String, Object>();
+        List<ReversionDtl> list = reversionDtlService.findRentDtlsById(reversionId);
+        result.put("rows", list);
+        result.put("total", list.size());
+        return result;
+    }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody

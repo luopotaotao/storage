@@ -99,4 +99,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DELETE FROM tb_rentdtl where id=#{id}
 	</delete>
 
+	<delete id="deleteByReversionIds">
+		DELETE FROM tb_rentdtl where rentId IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
 </mapper> 

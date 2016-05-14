@@ -22,4 +22,6 @@ public interface ReversionDtlService {
     ReversionDtl findById(int id);
 
     List<ReversionDtl> loadRentDtlsForReversion(Integer id);
+
+    List<ReversionDtl> findRentDtlsById(Integer reversionId);
 }

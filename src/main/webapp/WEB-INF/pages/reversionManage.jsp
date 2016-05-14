@@ -22,14 +22,14 @@
 </head>
 <body>
 <table id="dg" class="easyui-datagrid" title="归还单" fit="true"
-       data-options="pagination:'true',rownumbers:true,singleSelect:false,selectOnCheck:true,url:'rent/list',method:'get',toolbar:'#menu'">
+       data-options="pagination:'true',rownumbers:true,singleSelect:false,selectOnCheck:true,url:'reversion/list',method:'get',toolbar:'#menu'">
     <thead data-options="frozen:true">
     <tr>
         <th field="id" width="50" align="center" hidden="true">ID</th>
         <th field="cb" checkbox="true" align="center"></th>
         <th data-options="field:'billNo',width:105">归还单号</th>
-        <th data-options="field:'billStat',hidden:true">单据状态Id</th>
-        <th data-options="field:'billStatName',width:80">单据状态</th>
+        <th data-options="field:'rentBillStat',hidden:true">单据状态Id</th>
+        <th data-options="field:'rentBillStatName',width:80">单据状态</th>
         <th data-options="field:'rentBillId',hidden:true">出租单号Id</th>
         <th data-options="field:'rentBillNo',width:80">出租单号</th>
         <th data-options="field:'rentBillStat',width:80">出租状态</th>
@@ -98,27 +98,16 @@
             <tr>
                 <td class="label">出租单号</td>
                 <td>
-                    <select class="easyui-combobox input" name="rentBillNo" id="rentBillNo" style="width:120px;"
-                            data-options="
-                                    required:true,
-                                    valueField: 'id',
-                                    textField: 'billNo',
-                                    method:'get',
-                                    url:'${pageContext.request.contextPath}/rent/listFinishedForCombo',
-                                    onSelect:function(rec){$.reversion.loadRentBillInfo(rec);}
-
-                                    ">
+                    <input type="hidden" name="rentBillId">
+                    <select class="easyui-combobox input" name="rentBillNo" id="rentBillNo" style="width:120px;">
                     </select>
                 </td>
                 <td class="label">出租单状态</td>
                 <td>
-                    <select class="easyui-combobox input" name="rentBillStat" id="rentBillStat" style="width:120px;"
-                            data-options="
-                    disabled:true,
-                    valueField: 'valueField',
-                    textField: 'textField',
-                    data:[{valueField:'0',textField:'未审核'},{valueField:'1',textField:'已审核'}]">
-                    </select>
+                    <input type="hidden" name="rentBillStat">
+                    <input class="easyui-textbox input" name="rentBillStatName" id="rentBillStatName" style="width:120px;"
+                            data-options="disabled:true">
+                    </input>
                 </td>
             </tr>
             <tr>
@@ -201,7 +190,7 @@
     </form>
     <div id="t2_panel">
         <table id="t2_dg" class="easyui-datagrid" title="归还明细"
-               data-options="pagination:false,rownumbers:true,singleSelect:true,method:'get',toolbar:'#t2_menu',
+               data-options="pagination:false,rownumbers:true,singleSelect:true,selectOnCheck:false,method:'get',toolbar:'#t2_menu',
                rowStyler: function(index,row){
                     if (!row.reversionAmount){
                         return 'background-color:#FFDCDC;';
@@ -239,7 +228,7 @@
         <div id="t2EditPanel" class="easyui-dialog" title="编辑" style="padding:10px;width:700px;"
              data-options="modal:true,closed:true,buttons: '#t2EditPanel-buttons'">
             <form id="t2EditForm">
-                <input type="hidden" name="statName" id="statName">
+                <input type="hidden" name="rentDtlId">
                 <table>
                     <tr>
                         <td>SKU</td>
@@ -249,6 +238,7 @@
                         </td>
                         <td>商品名称</td>
                         <td>
+                            <input type="hidden" name="itemId">
                             <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="itemName"
                                    style="width:150px">
                         </td>
@@ -258,22 +248,31 @@
                     <tr>
                         <td>颜色</td>
                         <td>
+                            <input type="hidden" name="colorId">
+
                             <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="colorName"
                                    style="width:150px">
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="sizeDtlName"
+                            <input type="hidden" name="sizeId">
+
+                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="sizeName"
                                    style="width:150px">
                         </td>
                     </tr>
                     <tr>
                         <td>归还状态</td>
                         <td>
-                            <select class="easyui-textbox" data-options="required:true" name="reversionStat"
+                            <select class="easyui-combobox" name="reversionStat"
                                     id="reversionStat"
+                                    data-options="required:true,
+                                            editable:false,
+                                            valueField: 'valueField',
+                                            textField: 'textField',
+                                            method:'get',
+                                            url: 'dic/reversionStatus'"
                                     style="width:150px">
-
                             </select>
                         </td>
                         <td>单价</td>

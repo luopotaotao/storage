@@ -4,6 +4,7 @@ import com.l1.entity.*;
 import com.l1.service.*;
 import com.l1.util.DateUtil;
 import com.l1.util.StringUtil;
+import com.l1.util.WrappedJSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
@@ -87,27 +88,18 @@ public class ReversionController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(Reversion reversion,
-                                    @RequestParam(value = "inserted",required = false) String insertedStr,
-                                    @RequestParam(value = "updated",required = false) String updatedStr,
-                                    @RequestParam(value = "deleted",required = false) Integer[] deleted, BindingResult err) {
+    public Map<String, Object> save(Reversion reversion,@RequestParam(value = "details",required = false) String detailsStr, BindingResult err) {
         reversion.setCreate_time(DateUtil.now());
-        List<ReversionDtl> inserted = null;
-        List<ReversionDtl> updated = null;
-        if(reversion.getId()!=null&&reversion.getId()>0){
-            if(updatedStr!=null&&updatedStr.length()>0){
-                inserted = jsonArrayToReversionDetailList(JSONArray.fromObject(updatedStr));
-            }
-        }
-        if(insertedStr!=null&&insertedStr.length()>0){
-            inserted = jsonArrayToReversionDetailList(JSONArray.fromObject(insertedStr));
+        List<ReversionDtl> details = null;
+        if(detailsStr!=null&&detailsStr.length()>0){
+            details = jsonArrayToReversionDetailList(JSONArray.fromObject(detailsStr));
         }
 
         int count = 0;
         if (reversion.getId() != null) {
-            count = reversionService.updateWithDetails(reversion, inserted,updated,deleted);
+            count = reversionService.update(reversion, details);
         } else {
-            count = reversionService.saveReversionWithDetails(reversion, inserted);
+            count = reversionService.save(reversion, details);
 
         }
         Map<String, Object> ret = new HashMap<String, Object>();
@@ -129,14 +121,16 @@ public class ReversionController {
     private ReversionDtl jsonToReversionDetail(JSONObject json) {
         WrappedJSON item = new WrappedJSON(json);
         ReversionDtl ret = new ReversionDtl();
-        ret.setSkuId(item.getInteger("skuId"));
-        ret.setItemName(item.getString("itemName"));
-//        ret.setStat(json.getInt("stat"));
-        ret.setItemPrice(item.getBigDecimal("itemPrice"));
+        ret.setId(item.getInteger("Id"));
+        ret.setReversionId(item.getInteger("reversionId"));
+        ret.setRentDtlId(item.getString("rentDtlId"));
+        ret.setReversionAmount(item.getInteger("reversionAmount"));
+        ret.setReversionStat(item.getInteger("reversionStat"));
 
-        ret.setItemAmount(item.getInteger("itemAmount"));
-
+        ret.setItemRent(item.getBigDecimal("itemRent"));
         ret.setItemRepo(item.getBigDecimal("itemRepo"));
+        ret.setItemCompensate(item.getBigDecimal("itemCompensate"));
+
         return ret;
     }
 
@@ -153,12 +147,13 @@ public class ReversionController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids) throws Exception {
+    public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids) throws Exception {
+        int count = 0;
         if (ids != null && ids.length > 0) {
-            reversionService.delete(ids);
+            count = reversionService.delete(ids);
         }
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", true);
+        result.put("flag", count>0);
         return result;
     }
 
@@ -186,28 +181,5 @@ public class ReversionController {
         int count = reversionService.finish(ids);
         ret.put("flag",count>0);
         return ret;
-    }
-    private class WrappedJSON {
-        private JSONObject source;
-
-        public WrappedJSON(JSONObject source) {
-            this.source = source;
-        }
-
-        public String getString(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getString(key);
-        }
-
-        public Integer getInteger(String key) {
-            return source.get(key)==null|| source.get(key) instanceof JSONNull ? null : source.getInt(key);
-        }
-
-        public Double getDouble(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : source.getDouble(key);
-        }
-
-        public BigDecimal getBigDecimal(String key) {
-            return source.get(key)==null||source.get(key) instanceof JSONNull ? null : BigDecimal.valueOf(source.getDouble(key));
-        }
     }
 }

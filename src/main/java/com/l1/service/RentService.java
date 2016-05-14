@@ -25,7 +25,7 @@ public interface RentService {
 
     int save(Rent rent);
 
-    Integer delete(String[] ids);
+    Integer delete(Integer[] ids);
 
     int saveRentWithDetails(Rent rent, List<RentDtl> details);
 

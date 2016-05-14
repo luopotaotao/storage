@@ -11,4 +11,10 @@ import java.util.List;
 @Repository
 public interface ReversionDtlDao {
     List<ReversionDtl> loadReversionDtlFromRentDtl(Integer id);
+
+    int batchSave(List<ReversionDtl> details);
+
+    List<ReversionDtl> findRentDtlsById(Integer id);
+
+    int deleteByReversionIds(Integer[] ids);
 }

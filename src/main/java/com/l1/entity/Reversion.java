@@ -20,6 +20,7 @@ public class Reversion {
     private String customerCard;
 
     private Integer supplierId;
+    private String supplierName;
     private String expressBillNo;
 
 
@@ -146,6 +147,14 @@ public class Reversion {
 
     public void setSupplierId(Integer supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public String getExpressBillNo() {

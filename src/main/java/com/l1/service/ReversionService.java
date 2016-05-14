@@ -16,13 +16,13 @@ public interface ReversionService {
 
     Long getTotal(Map<String, Object> map);
 
-    int saveReversionWithDetails(Reversion reversion, List<ReversionDtl> inserted);
+    int save(Reversion reversion, List<ReversionDtl> details);
 
-    void delete(String[] ids);
+    int delete(Integer[] ids);
 
     void update(Reversion reversion);
 
-    int updateWithDetails(Reversion reversion, List<ReversionDtl> inserted, List<ReversionDtl> updated, Integer[] deleted);
+    int update(Reversion reversion, List<ReversionDtl> details);
 
     int finish(Integer[] ids);
 

@@ -29,4 +29,6 @@ public interface RentDtlDao {
     void delete(Integer[] ids);
 
     int batchSave(List<RentDtl> details);
+
+    int deleteByRentIds(Integer[] ids);
 }

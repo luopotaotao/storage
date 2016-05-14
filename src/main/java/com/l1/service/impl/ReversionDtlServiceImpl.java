@@ -52,4 +52,9 @@ public class ReversionDtlServiceImpl implements ReversionDtlService{
     public List<ReversionDtl> loadRentDtlsForReversion(Integer id) {
         return reversionDtlDao.loadReversionDtlFromRentDtl(id);
     }
+
+    @Override
+    public List<ReversionDtl> findRentDtlsById(Integer id) {
+        return reversionDtlDao.findRentDtlsById(id);
+    }
 }

@@ -19,6 +19,7 @@
         <result property="customerAddr" column="customerAddr"/>
         <result property="customerCard" column="customerCard"/>
         <result property="supplierId" column="supplierId"/>
+        <result property="supplierName" column="supplierName"/>
         <result property="expressBillNo" column="expressBillNo"/>
         <result property="beginDate" column="beginDate"/>
         <result property="endDate" column="endDate"/>
@@ -34,32 +35,51 @@
 
     <sql id="v_reversion">
 		SELECT
-              r.*,w.`name` warehouseName,s.`supplierName`,d.textField billStatName
+              r.*,w.`name` warehouseName,s.`supplierName`,d.textField rentBillStatName
             FROM
               tb_reversion r
               LEFT JOIN
               tb_warehouse w
-              ON r.warehouseId = w.rentId
+              ON r.warehouseId = w.id
               LEFT JOIN
               tb_supplier s
               ON
-              r.supplierId = s.rentId
+              r.supplierId = s.id
                 LEFT JOIN
               (SELECT
                 valueField,
                 textField
               FROM
                 tb_dic
-              WHERE keyWord = 'rentBillStatus') d
+              WHERE keyWord = 'rentStatus') d
               ON r.rentBillStat = d.valueField
 	</sql>
 
-    <select id="loadAvailableRentBillNos" resultMap="ReversionResult">
-		SELECT rentId,billNo FROM tb_rent WHERE billStat=2
+    <select id="loadAvailableRentBillNos" resultType="map">
+		SELECT id,billNo FROM tb_rent WHERE billStat=1 and id not in(SELECT rentBillId FROM tb_reversion)
 	</select>
     <select id="loadReversionFromRent" resultMap="ReversionResult">
-        <include refid="v_reversion"/>
-        where r.rentId = #{rentId}
+		SELECT
+              r.id rentBillId,r.billNo rentBillNo,r.customerName,r.warehouseId,r.stat rentBillStat,0 billStat,r.rentDay,r.rentMoney,r.repoMoney,r.customerPhone,r.customerAddr,r.customerCard,r.supplierId,
+              r.expressBillNo,r.returnBillNo,r.beginDate,r.endDate,w.`name` warehouseName,s.`supplierName`,d.textField rentBillStatName
+            FROM
+              tb_rent r
+              LEFT JOIN
+              tb_warehouse w
+              ON r.warehouseId = w.id
+              LEFT JOIN
+              tb_supplier s
+              ON
+              r.supplierId = s.id
+                LEFT JOIN
+              (SELECT
+                valueField,
+                textField
+              FROM
+                tb_dic
+              WHERE keyWord = 'rentStatus') d
+              ON r.billStat = d.valueField
+        where r.id = #{rentId}
     </select>
     <select id="find" resultMap="ReversionResult">
         <include refid="v_reversion"/>
@@ -78,11 +98,26 @@
             limit #{start},#{size}
         </if>
     </select>
-    <insert id="save" parameterType="Reversion">
-		insert into tb_return(rentId,billNo,customerName,warehouseId,stat,statName,create_time,warehouseName,customerPhone,customerAddr,customerCard
-		,rentDay,rentMoney,repoMoney,damageMoney,beginDate,endDate,expressBillNo,rentBillNo,supplierId)
-		values(null,#{billNo},#{customerName},#{warehouseId},#{stat},#{statName},#{create_time},#{warehouseName},#{customerPhone},#{customerAddr},#{customerCard}
-		,#{rentDay},#{rentMoney},#{repoMoney},#{damageMoney},#{beginDate},#{endDate},#{expressBillNo},#{rentBillNo},#{supplierId})
+
+    <select id="loadReversionDtlsFromRentDtl" resultType="map">
+        SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+		FROM tb_rentdtl r
+		LEFT JOIN tb_sku sku ON r.skuId = sku.id
+		LEFT JOIN tb_item item ON sku.itemId = item.id
+		LEFT JOIN tb_color color ON sku.colorId = color.id
+		LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
+		WHERE r.rentId = #{rentId}
+    </select>
+
+    <insert id="save" parameterType="Reversion" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into tb_reversion(
+		  billNo,billStat, rentBillId, rentBillNo, rentBillStat, customerName,
+		  customerPhone, customerAddr, customerCard, warehouseId,supplierId ,
+		  expressBillNo, rentMoney, repoMoney, compensateMoney, beginDate, endDate, reversionDate)
+		values(
+		#{billNo},#{billStat},#{rentBillId},#{rentBillNo},#{rentBillStat},#{customerName},
+		#{customerPhone},#{customerAddr},#{customerCard},#{warehouseId},#{supplierId}
+		,#{expressBillNo},#{rentMoney},#{repoMoney},#{compensateMoney},#{beginDate},#{endDate},#{reversionDate})
 	</insert>
 
     <update id="update" parameterType="Reversion">
@@ -195,8 +230,8 @@
         </where>
     </select>
 
-    <delete id="delete">
-        DELETE FROM tb_return where rentId IN
+    <delete id="remove">
+        DELETE FROM tb_reversion where id IN
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
