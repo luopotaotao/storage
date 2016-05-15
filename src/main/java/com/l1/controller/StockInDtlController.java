@@ -1,10 +1,10 @@
 package com.l1.controller;
 
 import com.l1.entity.PageBean;
-import com.l1.entity.YcrkDtl;
+import com.l1.entity.StockInDtl;
 import com.l1.service.BillStatService;
+import com.l1.service.StockInDtlService;
 import com.l1.service.SkuService;
-import com.l1.service.YcrkDtlService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,10 +26,10 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("/ycrkDtl")
-public class YcrkDtlController {
+@RequestMapping("/stockInDtl")
+public class StockInDtlController {
     @Resource
-    private YcrkDtlService ycrkDtlService;
+    private StockInDtlService stockInDtlService;
 
     @Resource
     private BillStatService billStatService;
@@ -48,57 +48,49 @@ public class YcrkDtlController {
     @RequestMapping("/list")
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, YcrkDtl s_ycrkDtl
-    ) throws Exception {
+                                    @RequestParam(value = "rows", required = false) String rows, StockInDtl s_stockInDtl,
+                                    HttpServletResponse response) throws Exception {
         PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", s_ycrkDtl.getId());
+        map.put("id", s_stockInDtl.getId());
         map.put("start", pageBean.getStart());
         map.put("size", pageBean.getPageSize());
 
-        List<YcrkDtl> ycrkDtlList = ycrkDtlService.find(map);
-        Long total = ycrkDtlService.getTotal(map);
+        List<StockInDtl> stockInDtlList = stockInDtlService.find(map);
+        Long total = stockInDtlService.getTotal(map);
 
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("rows", ycrkDtlList);
+
+        result.put("rows", stockInDtlList);
         result.put("total", total);
 
         return result;
     }
 
-    @RequestMapping("/findAllById")
+    @RequestMapping(value = "/loadRentDtlsForStockIn",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "id", required = false) String id, HttpServletRequest request
-    ) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
-
-        List<YcrkDtl> linkManList = ycrkDtlService.find(map);
+    public Map<String, Object> loadRentDtlsForStockIn(@RequestParam  Integer rentId) throws Exception {
+        List<StockInDtl> list = stockInDtlService.loadRentDtlsForStockIn(rentId);
         Map<String, Object> result = new HashMap<String, Object>();
-
-//TODO 排除?		jsonConfig.setExcludes(new String[] { "customer" });
-
-        Long total = ycrkDtlService.getTotal(map);
-        result.put("rows", linkManList);
-        result.put("total", total);
-
-        request.setAttribute("combo", "hoho");
+        result.put("rows", list);
+        result.put("total", list.size());
         return result;
     }
-
-    @RequestMapping(value = "/save11", method = RequestMethod.POST)
+    @RequestMapping(value = "/findRentDtlsById",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> save(YcrkDtl ycrkDtl) {
-        ycrkDtlService.add(ycrkDtl);
-        Map<String, Object> ret = new HashMap<String, Object>();
-        ret.put("flag", true);
-        return ret;
+    public Map<String,Object> findRentDtlsById(Integer stockInId){
+        Map<String, Object> result = new HashMap<String, Object>();
+        List<StockInDtl> list = stockInDtlService.findRentDtlsById(stockInId);
+        result.put("rows", list);
+        result.put("total", list.size());
+        return result;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> update(YcrkDtl ycrkDtl) {
-        ycrkDtlService.update(ycrkDtl);
+    public Map<String, Object> update(StockInDtl stockInDtl) {
+
+        stockInDtlService.update(stockInDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -107,7 +99,7 @@ public class YcrkDtlController {
     @RequestMapping(value = "remove", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> remove(@RequestParam(value = "ids[]") String[] ids) {
-        ycrkDtlService.delete(ids);
+        stockInDtlService.delete(ids);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -115,29 +107,29 @@ public class YcrkDtlController {
 
     @RequestMapping(value = "/findById", method = RequestMethod.GET)
     @ResponseBody
-    public YcrkDtl findById(@RequestParam("id") int id) {
-        YcrkDtl ycrkDtl = ycrkDtlService.findById(id);
-        return ycrkDtl;
+    public StockInDtl findById(@RequestParam("id") int id) {
+        StockInDtl stockInDtl = stockInDtlService.findById(id);
+        return stockInDtl;
     }
 
-
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(YcrkDtl ycrkDtl, @RequestParam("id") int id) throws Exception {
-        ycrkDtl.setId(id);
+    public Map<String, Object> save(StockInDtl stockInDtl, @RequestParam("id") int id) throws Exception {
+        stockInDtl.setId(id);
 
-        int resultTotal = 0; // 操作的记录条数
-        if (ycrkDtl.getDtlId() == null) {
-            resultTotal = ycrkDtlService.add(ycrkDtl);
-        } else {
-            resultTotal = ycrkDtlService.update(ycrkDtl);
-        }
+//        int resultTotal = 0; // 操作的记录条数
+//        if (stockInDtl.getDtlId() == null) {
+//            resultTotal = stockInDtlService.add(stockInDtl);
+//        } else {
+//            resultTotal = stockInDtlService.update(stockInDtl);
+//        }
 
         Map<String, Object> result = new HashMap<String, Object>();
-        if (resultTotal > 0) {
-            result.put("success", true);
-        } else {
-            result.put("success", false);
-        }
+//        if (resultTotal > 0) {
+//            result.put("success", true);
+//        } else {
+//            result.put("success", false);
+//        }
 
         return result;
     }
@@ -146,7 +138,7 @@ public class YcrkDtlController {
     @ResponseBody
     public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids) throws Exception {
         if (ids != null && ids.length > 0) {
-            ycrkDtlService.delete(ids);
+            stockInDtlService.delete(ids);
         }
 
         Map<String, Object> result = new HashMap<String, Object>();

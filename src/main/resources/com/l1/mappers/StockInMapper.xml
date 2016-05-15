@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.l1.dao.StockInDao">
+
+    <resultMap type="StockIn" id="StockInResult">
+        <result property="stockOutId" column="stockOutId"/>
+        <result property="billNo" column="billNo"/>
+        <result property="billStat" column="billStat"/>
+        <result property="stockOutBillId" column="stockOutBillId"/>
+        <result property="stockOutBillNo" column="stockOutBillNo"/>
+        <result property="stockOutBillStat" column="stockOutBillStat"/>
+        <result property="stockOutBillStatName" column="stockOutBillStatName"/>
+        <result property="warehouseId" column="warehouseId"/>
+        <result property="warehouseName" column="warehouseName"/>
+        <result property="customerName" column="customerName"/>
+        <result property="customerPhone" column="customerPhone"/>
+        <result property="customerAddr" column="customerAddr"/>
+        <result property="customerCard" column="customerCard"/>
+        <result property="supplierId" column="supplierId"/>
+        <result property="supplierName" column="supplierName"/>
+        <result property="expressBillNo" column="expressBillNo"/>
+        <result property="beginDate" column="beginDate"/>
+        <result property="endDate" column="endDate"/>
+        <result property="stockInDate" column="stockInDate"/>
+        <result property="stockOutMoney" column="stockOutMoney"/>
+        <result property="repoMoney" column="repoMoney"/>
+        <result property="compensateMoney" column="compensateMoney"/>
+        <result property="create_by" column="create_by"/>
+        <result property="update_by" column="update_by"/>
+        <result property="create_time" column="create_time"/>
+        <result property="update_time" column="update_time"/>
+    </resultMap>
+
+    <sql id="v_stockIn">
+		SELECT
+              r.*,w.`name` warehouseName,s.`supplierName`,d.textField stockOutBillStatName
+            FROM
+              tb_stockIn r
+              LEFT JOIN
+              tb_warehouse w
+              ON r.warehouseId = w.id
+              LEFT JOIN
+              tb_supplier s
+              ON
+              r.supplierId = s.id
+                LEFT JOIN
+              (SELECT
+                valueField,
+                textField
+              FROM
+                tb_dic
+              WHERE keyWord = 'stockOutStatus') d
+              ON r.stockOutBillStat = d.valueField
+	</sql>
+
+    <select id="loadAvailableStockOutBillNos" resultType="map">
+		SELECT id,billNo FROM tb_stockOut WHERE billStat=1 and id not in(SELECT stockOutBillId FROM tb_stockIn)
+	</select>
+    <select id="loadStockInFromStockOut" resultMap="StockInResult">
+		SELECT
+              r.id stockOutBillId,r.billNo stockOutBillNo,r.customerName,r.warehouseId,r.stat stockOutBillStat,0 billStat,r.stockOutDay,r.stockOutMoney,r.repoMoney,r.customerPhone,r.customerAddr,r.customerCard,r.supplierId,
+              r.expressBillNo,r.returnBillNo,r.beginDate,r.endDate,w.`name` warehouseName,s.`supplierName`,d.textField stockOutBillStatName
+            FROM
+              tb_stockOut r
+              LEFT JOIN
+              tb_warehouse w
+              ON r.warehouseId = w.id
+              LEFT JOIN
+              tb_supplier s
+              ON
+              r.supplierId = s.id
+                LEFT JOIN
+              (SELECT
+                valueField,
+                textField
+              FROM
+                tb_dic
+              WHERE keyWord = 'stockOutStatus') d
+              ON r.billStat = d.valueField
+        where r.id = #{stockOutId}
+    </select>
+    <select id="find" resultMap="StockInResult">
+        <include refid="v_stockIn"/>
+        <where>
+            <if test="name!=null and name!='' ">
+                and name like #{name}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code like #{code}
+            </if>
+            <if test="stat!=null and stat!='' ">
+                and stat=#{stat}
+            </if>
+        </where>
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="loadStockInDtlsFromStockOutDtl" resultType="map">
+        SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+		FROM tb_stockOutdtl r
+		LEFT JOIN tb_sku sku ON r.skuId = sku.id
+		LEFT JOIN tb_item item ON sku.itemId = item.id
+		LEFT JOIN tb_color color ON sku.colorId = color.id
+		LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
+		WHERE r.stockOutId = #{stockOutId}
+    </select>
+
+    <insert id="save" parameterType="StockIn" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into tb_stockIn(
+		  billNo,billStat, stockOutBillId, stockOutBillNo, stockOutBillStat, customerName,
+		  customerPhone, customerAddr, customerCard, warehouseId,supplierId ,
+		  expressBillNo, stockOutMoney, repoMoney, compensateMoney, beginDate, endDate, stockInDate)
+		values(
+		#{billNo},#{billStat},#{stockOutBillId},#{stockOutBillNo},#{stockOutBillStat},#{customerName},
+		#{customerPhone},#{customerAddr},#{customerCard},#{warehouseId},#{supplierId}
+		,#{expressBillNo},#{stockOutMoney},#{repoMoney},#{compensateMoney},#{beginDate},#{endDate},#{stockInDate})
+	</insert>
+
+    <update id="update" parameterType="StockIn">
+        update tb_return
+        <set>
+            <if test="billNo!=null and billNo!='' ">
+                billNo=#{billNo},
+            </if>
+
+            <if test="customerName!=null and customerName!='' ">
+                customerName=#{customerName},
+            </if>
+
+            <if test="warehouseId!=null and warehouseId!='' ">
+                warehouseId=#{warehouseId},
+            </if>
+            <if test="warehouseName!=null and warehouseName!='' ">
+                warehouseName=#{warehouseName},
+            </if>
+            <if test="stat!=null and stat!='' ">
+                stat=#{stat},
+            </if>
+            <if test="statName!=null and statName!='' ">
+                statName=#{statName},
+            </if>
+            <if test="update_time!=null">
+                update_time=#{update_time},
+            </if>
+            <if test="customerPhone!=null">
+                customerPhone=#{customerPhone},
+            </if>
+            <if test="customerAddr!=null">
+                customerAddr=#{customerAddr},
+            </if>
+            <if test="customerCard!=null">
+                customerCard=#{customerCard},
+            </if>
+            <if test="stockOutDay!=null">
+                stockOutDay=#{stockOutDay},
+            </if>
+
+            <if test="repoMoney!=null">
+                repoMoney=#{repoMoney},
+            </if>
+            <if test="stockOutMoney!=null">
+                stockOutMoney=#{stockOutMoney},
+            </if>
+
+            <if test="damageMoney !=null">
+                damageMoney=#{damageMoney},
+            </if>
+            <if test="beginDate!=null">
+                beginDate=#{beginDate},
+            </if>
+            <if test="endDate!=null">
+                endDate=#{endDate},
+            </if>
+            <if test="expressBillNo!=null">
+                expressBillNo=#{expressBillNo},
+            </if>
+
+            <if test="stockOutBillNo !=null">
+                stockOutBillNo=#{stockOutBillNo},
+            </if>
+            <if test="supplierId!=null">
+                supplierId=#{supplierId},
+            </if>
+        </set>
+        where id=#{stockOutId}
+    </update>
+
+    <!--<select id="find" parameterType="Map" resultMap="StockInResult">-->
+        <!--select * from tb_return-->
+        <!--<where>-->
+            <!--<if test="name!=null and name!='' ">-->
+                <!--and name like #{name}-->
+            <!--</if>-->
+            <!--<if test="code!=null and code!='' ">-->
+                <!--and code like #{code}-->
+            <!--</if>-->
+            <!--<if test="stat!=null and stat!='' ">-->
+                <!--and stat=#{stat}-->
+            <!--</if>-->
+        <!--</where>-->
+        <!--<if test="start!=null and size!=null">-->
+            <!--limit #{start},#{size}-->
+        <!--</if>-->
+    <!--</select>-->
+
+    <select id="findByIds" parameterType="string" resultMap="StockInResult">
+		select * from tb_return
+		where stockOutId in (#{ids})
+	</select>
+
+    <select id="findById" parameterType="int" resultMap="StockInResult">
+		select * from tb_return
+		where stockOutId =#{stockOutId}
+	</select>
+
+
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        select count(*) from tb_return
+        <where>
+            <if test="name!=null and name!='' ">
+                and name like #{name}
+            </if>
+            <if test="code!=null and code!='' ">
+                and code like #{code}
+            </if>
+        </where>
+    </select>
+
+    <delete id="remove">
+        DELETE FROM tb_stockIn where id IN
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteById" parameterType="int">
+		DELETE FROM tb_return where id=#{stockOutId}
+	</delete>
+
+</mapper> 
