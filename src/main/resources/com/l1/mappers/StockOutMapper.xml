@@ -43,6 +43,12 @@
             #{item}
         </foreach>
     </update>
+    <update id="unfinish">
+        UPDATE tb_stockOut set billStat = 0 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
     <sql id="v_stockOut">
         SELECT stock.*,w_o.name stockOutWarehouseName,w_i.name StockInWarehouseName,d.textField billStatName
         FROM tb_stockout stock

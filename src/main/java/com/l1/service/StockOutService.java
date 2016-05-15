@@ -32,7 +32,9 @@ public interface StockOutService {
 
     int updateWithDetails(StockOut stockOut, List<StockOutDtl> inserted, List<StockOutDtl> updated, Integer[] ids);
 
-    int finish(Integer[] ids);
+    int finish(Integer[] ids, Integer[] warhosueIds);
 
-    List<Map<Integer,String>> findListFinishedForCombo();
+    int unfinish(Integer[] ids, Integer[] warhosueIds);
+
+    List<Map<Integer, String>> findListFinishedForCombo();
 }

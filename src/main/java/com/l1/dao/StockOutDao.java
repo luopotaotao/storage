@@ -8,27 +8,30 @@ import java.util.Map;
 
 @Repository
 public interface StockOutDao {
-  List<StockOut> find(Map<String, Object> map);
+    List<StockOut> find(Map<String, Object> map);
 
-  List<StockOut> findByIds(String ids);
+    List<StockOut> findByIds(String ids);
 
-  StockOut findById(Integer id);
+    StockOut findById(Integer id);
 
-  List<String> findNamesByIds(String ids);
+    List<String> findNamesByIds(String ids);
 
-  Long getTotal(Map<String, Object> map);
+    Long getTotal(Map<String, Object> map);
 
-  Integer add(StockOut color);
+    Integer add(StockOut color);
 
-  Integer update(StockOut color);
+    Integer update(StockOut color);
 
-  Integer delete(Integer[] ids);
+    Integer delete(Integer[] ids);
 
-  Integer deleteById(int id);
+    Integer deleteById(int id);
 
-  int save(StockOut rent);
+    int save(StockOut rent);
 
-  int finish(Integer[] ids);
+    int finish(Integer[] ids);
 
-  List<Map<Integer,String>> findListFinishedForCombo();
+    int unfinish(Integer[] ids);
+
+
+    List<Map<Integer, String>> findListFinishedForCombo();
 }

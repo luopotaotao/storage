@@ -72,6 +72,12 @@
             #{item}
         </foreach>
     </update>
+    <update id="unfinish">
+        UPDATE tb_rent set stat = 0 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
     <select id="find" resultMap="RentResult">
         SELECT
         r.*,w.`name` warehouseName,s.`supplierName`,d.textField billStatName

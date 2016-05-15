@@ -21,6 +21,7 @@ $(function () {
         $('#btn_query').bind('click', query);
         $('#btn_remove').bind('click', remove);
         $('#btn_finish').bind('click', finish);
+        $('#btn_unfinish').bind('click', unfinish);
 
         $('#btn_edit_save').bind('click', save);
         $('#btn_edit_close').bind('click', closeEditPanel);
@@ -214,7 +215,7 @@ $(function () {
         var ids = [];
         if (rows && rows.length > 0) {
             $(rows).each(function (i, v, r) {
-                if (v['stat'] != 6) {
+                if (v['stat'] ==0) {
                     ids.push(v['id']);
                 }
             });
@@ -227,6 +228,44 @@ $(function () {
                         type: 'post',
                         dataType: 'json',
                         data: {ids: ids}
+                    }).success(function (ret) {
+                        if (ret && ret.flag) {
+                            $.messager.alert('系统提示', '审核完成!');
+                            query();
+                        } else {
+                            $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+                        }
+                    }).error(function (e) {
+                        $.messager.alert('系统提示', '操作失败,请重新尝试或联系管理员!');
+                    });
+                }
+            });
+
+        } else {
+            $.messager.alert('系统提示', '请选择未完成的条目进行审核!');
+        }
+    }
+
+    function unfinish() {
+        var rows = $('#dg').datagrid('getChecked');
+        var ids = [];
+        var warehouseIds=[];
+        if (rows && rows.length > 0) {
+            $(rows).each(function (i, v, r) {
+                if (v['stat'] ==1) {
+                    ids.push(v['id']);
+                    warehouseIds.push(v['warehouseId']);
+                }
+            });
+        }
+        if (ids && ids.length > 0) {
+            $.messager.confirm('确认', '出租单确认是不可逆流程，是否确认审核？', function (r) {
+                if (r) {
+                    $.ajax({
+                        url: t1Url + '/unfinish',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {ids: ids,warehouseIds:warehouseIds}
                     }).success(function (ret) {
                         if (ret && ret.flag) {
                             $.messager.alert('系统提示', '审核完成!');

@@ -22,4 +22,8 @@ public interface ReversionDao {
     List<Reversion> loadReversionDtlsFromRentDtl(Integer rentId);
 
     int save(Reversion reversion);
+
+    int finish(Integer[] ids);
+
+    int unfinish(Integer[] ids);
 }

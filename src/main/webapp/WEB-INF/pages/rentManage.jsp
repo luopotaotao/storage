@@ -34,6 +34,7 @@
         <th data-options="field:'billStat',hidden:true">单据状态</th>
         <th data-options="field:'billStatName',width:80">单据状态</th>
         <th data-options="field:'warehouseName',width:80">出库仓库</th>
+        <th data-options="field:'warehouseId',width:80,hidder:true">出库仓库</th>
         <th data-options="field:'rentDay',width:60">租用天数</th>
         <th data-options="field:'rentMoney',width:70">租金总金额</th>
         <th data-options="field:'repoMoney',width:60">押金总额</th>
@@ -71,6 +72,7 @@
     <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
     <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
     <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
+    <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
 </div>
 <%--以下为编辑面板的内容--%>
 <div id="editPanel" class="easyui-dialog edit-panel" title="编辑" style="height: 650px;height: 500px;"

@@ -1,13 +1,17 @@
 package com.l1.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.l1.dao.RentDtlDao;
+import com.l1.entity.Inventory;
 import com.l1.entity.RentDtl;
+import com.l1.service.InventoryService;
 import com.l1.service.SeqService;
+import com.l1.util.StorageConstant;
 import org.springframework.stereotype.Service;
 
 import com.l1.dao.RentDao;
@@ -27,6 +31,9 @@ public class RentServiceImpl implements RentService {
 
     @Resource
     private SeqService seqService;
+
+    @Resource
+    private InventoryService inventoryService;
 
     @Override
     public List<Rent> find(Map<String, Object> map) {
@@ -54,7 +61,7 @@ public class RentServiceImpl implements RentService {
         return rentDao.deleteById(id);
     }
 
-    @Transactional(isolation = Isolation.DEFAULT,propagation = Propagation.REQUIRES_NEW)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW)
     @Override
     public Integer delete(Integer[] ids) {
         rentDtlDao.deleteByRentIds(ids);
@@ -83,7 +90,7 @@ public class RentServiceImpl implements RentService {
         return ret > 0 ? rent.getId() : -1;
     }
 
-    @Transactional(isolation = Isolation.DEFAULT,propagation = Propagation.REQUIRES_NEW)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW)
     @Override
     public int saveRentWithDetails(Rent rent, List<RentDtl> details) {
         String billNo = seqService.next("CZ");
@@ -100,7 +107,7 @@ public class RentServiceImpl implements RentService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public int updateWithDetails(Rent rent, List<RentDtl> inserted,List<RentDtl> updated,Integer[] ids) {
+    public int updateWithDetails(Rent rent, List<RentDtl> inserted, List<RentDtl> updated, Integer[] ids) {
         int id = this.update(rent);
         if (inserted != null && inserted.size() > 0) {
             for (RentDtl item : inserted) {
@@ -114,16 +121,55 @@ public class RentServiceImpl implements RentService {
                 rentDtlDao.update(item);
             }
         }
-        if(ids!=null&&ids.length>0){
+        if (ids != null && ids.length > 0) {
             rentDtlDao.delete(ids);
         }
         return id;
     }
 
     @Override
-    public int finish(Integer[] ids) {
-        //TODO 将出租明细数量添加回仓库
-        return rentDao.finish(ids);
+    public int unfinish(Integer[] ids, Integer[] warehouseIds) {
+        int count = rentDao.unfinish(ids);
+        if (count > 0) {
+            int inventoryCount = changeInventory(ids, warehouseIds, StorageConstant.UNFINISH);
+            if (inventoryCount < 1) {
+                throw new RuntimeException("更新库存失败!");
+            }
+        }else {
+            throw new RuntimeException("反审核单据失败!");
+        }
+
+        return count;
+    }
+
+    @Override
+    public int finish(Integer[] ids, Integer[] warehouseIds) {
+        int count = rentDao.finish(ids);
+        if (count > 0) {
+            int inventoryCount = changeInventory(ids, warehouseIds, StorageConstant.FINISH);
+            if (inventoryCount < 1) {
+                throw new RuntimeException("更新库存失败!");
+            }
+        } else {
+            throw new RuntimeException("审核单据失败!");
+        }
+        return count;
+    }
+
+    private int changeInventory(Integer[] ids, Integer[] warehouseIds, int finishType) {
+        int count = 0;
+        for (int i = 0; i < ids.length; i++) {
+            int id = ids[i];
+            int warehouseId = warehouseIds[i];
+
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("rentId", id);
+            List<RentDtl> dtls = rentDtlDao.find(map);
+            for (RentDtl rentDtl : dtls) {
+                count += inventoryService.addAmount(warehouseId, rentDtl.getSkuId(), -rentDtl.getItemAmount(), finishType);
+            }
+        }
+        return count;
     }
 
     @Override

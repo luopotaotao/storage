@@ -241,4 +241,17 @@
 		DELETE FROM tb_return where id=#{rentId}
 	</delete>
 
+    <update id="finish">
+        UPDATE tb_reversion set stat = 1 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="unfinish">
+        UPDATE tb_reversion set stat = 0 WHERE id IN
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
 </mapper> 

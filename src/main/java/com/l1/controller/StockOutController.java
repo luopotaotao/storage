@@ -170,11 +170,21 @@ public class StockOutController {
         StockOut stockOut = stockOutService.findById(id);
         return stockOut;
     }
+
     @RequestMapping(value = "/finish",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> finish(@RequestParam(value = "ids[]")Integer[] ids){
+    public Map<String,Object> finish(@RequestParam(value = "ids[]")Integer[] ids,@RequestParam(value = "stockOutWarehouseIds[]")Integer[] stockOutWarehouseIds){
         Map<String,Object> ret = new HashMap<String, Object>();
-        int count = stockOutService.finish(ids);
+        int count = stockOutService.finish(ids,stockOutWarehouseIds);
+        ret.put("flag",count>0);
+        return ret;
+    }
+
+    @RequestMapping(value = "/unfinish",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> unfinish(@RequestParam(value = "ids[]")Integer[] ids,@RequestParam(value = "stockOutWarehouseIds[]")Integer[] stockOutWarehouseIds){
+        Map<String,Object> ret = new HashMap<String, Object>();
+        int count = stockOutService.unfinish(ids,stockOutWarehouseIds);
         ret.put("flag",count>0);
         return ret;
     }
