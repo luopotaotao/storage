@@ -5,28 +5,18 @@
 <mapper namespace="com.l1.dao.StockInDao">
 
     <resultMap type="StockIn" id="StockInResult">
-        <result property="stockOutId" column="stockOutId"/>
+        <result property="id" column="id"/>
         <result property="billNo" column="billNo"/>
         <result property="billStat" column="billStat"/>
+        <result property="billStatName" column="billStatName"/>
         <result property="stockOutBillId" column="stockOutBillId"/>
         <result property="stockOutBillNo" column="stockOutBillNo"/>
-        <result property="stockOutBillStat" column="stockOutBillStat"/>
-        <result property="stockOutBillStatName" column="stockOutBillStatName"/>
-        <result property="warehouseId" column="warehouseId"/>
-        <result property="warehouseName" column="warehouseName"/>
-        <result property="customerName" column="customerName"/>
-        <result property="customerPhone" column="customerPhone"/>
-        <result property="customerAddr" column="customerAddr"/>
-        <result property="customerCard" column="customerCard"/>
-        <result property="supplierId" column="supplierId"/>
-        <result property="supplierName" column="supplierName"/>
-        <result property="expressBillNo" column="expressBillNo"/>
-        <result property="beginDate" column="beginDate"/>
-        <result property="endDate" column="endDate"/>
-        <result property="stockInDate" column="stockInDate"/>
-        <result property="stockOutMoney" column="stockOutMoney"/>
-        <result property="repoMoney" column="repoMoney"/>
-        <result property="compensateMoney" column="compensateMoney"/>
+        <result property="stockOutWarehouseId" column="stockOutWarehouseId"/>
+        <result property="stockOutWarehouseName" column="stockOutWarehouseName"/>
+        <result property="stockInWarehouseId" column="stockInWarehouseId"/>
+        <result property="stockInWarehouseName" column="stockInWarehouseName"/>
+        <result property="billDate" column="billDate"/>
+        <result property="totalStockIn" column="totalStockIn"/>
         <result property="create_by" column="create_by"/>
         <result property="update_by" column="update_by"/>
         <result property="create_time" column="create_time"/>
@@ -35,24 +25,12 @@
 
     <sql id="v_stockIn">
 		SELECT
-              r.*,w.`name` warehouseName,s.`supplierName`,d.textField stockOutBillStatName
-            FROM
-              tb_stockIn r
-              LEFT JOIN
-              tb_warehouse w
-              ON r.warehouseId = w.id
-              LEFT JOIN
-              tb_supplier s
-              ON
-              r.supplierId = s.id
-                LEFT JOIN
-              (SELECT
-                valueField,
-                textField
-              FROM
-                tb_dic
-              WHERE keyWord = 'stockOutStatus') d
-              ON r.stockOutBillStat = d.valueField
+              stock.*,w_o.name stockOutWarehouseName,w_i.name StockInWarehouseName,d.textField billStatName,stock_out.billNo stockOutBillNo
+          FROM tb_stockin stock
+            LEFT JOIN tb_stockout stock_out ON stock_out.id = stock.stockOutBillId
+            LEFT JOIN tb_warehouse w_o ON stock.StockOutWarehouseId = w_o.id
+            LEFT JOIN tb_warehouse w_i ON stock.StockInWarehouseId = w_i.id
+            LEFT JOIN (SELECT valueField, textField FROM tb_dic WHERE keyWord = 'stockOutStatus') d ON stock.billStat = d.valueField
 	</sql>
 
     <select id="loadAvailableStockOutBillNos" resultType="map">
@@ -60,26 +38,11 @@
 	</select>
     <select id="loadStockInFromStockOut" resultMap="StockInResult">
 		SELECT
-              r.id stockOutBillId,r.billNo stockOutBillNo,r.customerName,r.warehouseId,r.stat stockOutBillStat,0 billStat,r.stockOutDay,r.stockOutMoney,r.repoMoney,r.customerPhone,r.customerAddr,r.customerCard,r.supplierId,
-              r.expressBillNo,r.returnBillNo,r.beginDate,r.endDate,w.`name` warehouseName,s.`supplierName`,d.textField stockOutBillStatName
-            FROM
-              tb_stockOut r
-              LEFT JOIN
-              tb_warehouse w
-              ON r.warehouseId = w.id
-              LEFT JOIN
-              tb_supplier s
-              ON
-              r.supplierId = s.id
-                LEFT JOIN
-              (SELECT
-                valueField,
-                textField
-              FROM
-                tb_dic
-              WHERE keyWord = 'stockOutStatus') d
-              ON r.billStat = d.valueField
-        where r.id = #{stockOutId}
+		      stock.id stockOutBillId,0 billStat,stock.billNo stockOutBillNo,stockOutWarehouseId,stockInWarehouseId,totalStockOut,w_o.name stockOutWarehouseName,w_i.name stockInWarehouseName,'未审核' billStatName
+		      from tb_stockOut stock
+		      LEFT JOIN tb_warehouse w_o  ON stock.stockOutWarehouseId = w_o.id
+		      LEFT JOIN tb_warehouse w_i  ON stock.stockInWarehouseId = w_i.id
+        where stock.id = #{stockOutId}
     </select>
     <select id="find" resultMap="StockInResult">
         <include refid="v_stockIn"/>
@@ -111,13 +74,11 @@
 
     <insert id="save" parameterType="StockIn" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		insert into tb_stockIn(
-		  billNo,billStat, stockOutBillId, stockOutBillNo, stockOutBillStat, customerName,
-		  customerPhone, customerAddr, customerCard, warehouseId,supplierId ,
-		  expressBillNo, stockOutMoney, repoMoney, compensateMoney, beginDate, endDate, stockInDate)
+		  billNo,billStat, stockOutBillId, stockOutWarehouseId, stockInWarehouseId, billDate,
+		  totalStockIn)
 		values(
-		#{billNo},#{billStat},#{stockOutBillId},#{stockOutBillNo},#{stockOutBillStat},#{customerName},
-		#{customerPhone},#{customerAddr},#{customerCard},#{warehouseId},#{supplierId}
-		,#{expressBillNo},#{stockOutMoney},#{repoMoney},#{compensateMoney},#{beginDate},#{endDate},#{stockInDate})
+		#{billNo},#{billStat},#{stockOutBillId},#{stockOutWarehouseId},#{stockInWarehouseId},#{billDate},
+		#{totalStockIn})
 	</insert>
 
     <update id="update" parameterType="StockIn">
@@ -190,21 +151,21 @@
     </update>
 
     <!--<select id="find" parameterType="Map" resultMap="StockInResult">-->
-        <!--select * from tb_return-->
-        <!--<where>-->
-            <!--<if test="name!=null and name!='' ">-->
-                <!--and name like #{name}-->
-            <!--</if>-->
-            <!--<if test="code!=null and code!='' ">-->
-                <!--and code like #{code}-->
-            <!--</if>-->
-            <!--<if test="stat!=null and stat!='' ">-->
-                <!--and stat=#{stat}-->
-            <!--</if>-->
-        <!--</where>-->
-        <!--<if test="start!=null and size!=null">-->
-            <!--limit #{start},#{size}-->
-        <!--</if>-->
+    <!--select * from tb_return-->
+    <!--<where>-->
+    <!--<if test="name!=null and name!='' ">-->
+    <!--and name like #{name}-->
+    <!--</if>-->
+    <!--<if test="code!=null and code!='' ">-->
+    <!--and code like #{code}-->
+    <!--</if>-->
+    <!--<if test="stat!=null and stat!='' ">-->
+    <!--and stat=#{stat}-->
+    <!--</if>-->
+    <!--</where>-->
+    <!--<if test="start!=null and size!=null">-->
+    <!--limit #{start},#{size}-->
+    <!--</if>-->
     <!--</select>-->
 
     <select id="findByIds" parameterType="string" resultMap="StockInResult">

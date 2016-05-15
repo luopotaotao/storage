@@ -10,11 +10,11 @@ import java.util.List;
  */
 @Repository
 public interface StockInDtlDao {
-    List<StockInDtl> loadStockInDtlFromRentDtl(Integer id);
+    List<StockInDtl> loadStockInDtlFromStockOutDtl(Integer id);
 
     int batchSave(List<StockInDtl> details);
 
-    List<StockInDtl> findRentDtlsById(Integer id);
+    List<StockInDtl> findStockInDtlsById(Integer id);
 
     int deleteByStockInIds(Integer[] ids);
 }

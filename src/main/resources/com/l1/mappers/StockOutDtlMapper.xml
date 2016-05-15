@@ -7,42 +7,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<resultMap type="StockOutDtl" id="StockOutDtlResult">
 		<result property="id" column="id"/>
 		<result property="stockOutId" column="stockOutId"/>
+		<result property="skuImageSuffix" column="skuImageSuffix"/>
 		<result property="skuId" column="skuId"/>
 		<result property="itemName" column="itemName"/>
 		<result property="colorName" column="colorName"/>
 		<result property="sizeName" column="sizeName"/>
-		<result property="itemPrice" column="itemPrice"/>
-		<result property="itemAmount" column="itemAmount"/>
-		<result property="itemStockOut" column="itemStockOut"/>
-		<result property="itemRepo" column="itemRepo"/>
+		<result property="stockOutAmount" column="stockOutAmount"/>
 
 	</resultMap>
-	
-	<insert id="add" parameterType="StockOutDtl" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
-		insert into tb_stockOutdtl(stockOutId,skuId,itemPrice,itemAmount,itemStockOut,itemRepo)
-		values(#{stockOutId},#{skuId},#{itemPrice},#{itemAmount},#{itemStockOut},#{itemRepo})
-	</insert>
+
 	<insert id="batchSave" parameterType="list">
-		insert into tb_stockOutdtl(stockOutId,skuId,itemPrice,itemAmount,itemStockOut,itemRepo)
+		insert into tb_stockOutDtl(stockOutId,skuId,stockOutAmount)
 		values
 		<foreach item="item" index="index" collection="list"  separator=",">
-			(#{item.stockOutId},#{item.skuId},#{item.itemPrice},#{item.itemAmount},#{item.itemStockOut},#{item.itemRepo})
+			(#{item.stockOutId},#{item.skuId},#{item.stockOutAmount})
 		</foreach>
 	</insert>
 
 	<update id="update" parameterType="StockOutDtl">
-		update tb_stockOutdtl
+		update tb_stockOutDtl
 		<set>
-			itemPrice=#{itemPrice},
-			itemAmount=#{itemAmount},
-			itemStockOut=#{itemStockOut},
-			itemRepo=#{itemRepo}
+			skuId=#{skuId},
+			stockOutAmount=#{stockOutAmount}
 		</set>
 		where id=#{id}
 	</update>
 	
-	<select id="find" parameterType="Map" resultMap="StockOutDtlResult">
-		SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+	<select id="find" parameterType="map" resultMap="StockOutDtlResult">
+		SELECT r.*,sku.text skuName,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
 		FROM tb_stockOutdtl r
 		LEFT JOIN tb_sku sku ON r.skuId = sku.id
 		LEFT JOIN tb_item item ON sku.itemId = item.id
@@ -99,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DELETE FROM tb_stockOutdtl where id=#{id}
 	</delete>
 
-	<delete id="deleteByReversionIds">
+	<delete id="deleteByStockOutIds">
 		DELETE FROM tb_stockOutdtl where stockOutId IN
 		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
 			#{item}

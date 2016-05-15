@@ -15,13 +15,7 @@ public class Purchase {
 	private int warehouseId;
 	private String warehouseName;
 
-	private int makerId;
-	private String makerName;
-
 	private BigDecimal total;
-
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date billDate;
 
 	private int stat;
 	private String statName;
@@ -51,21 +45,6 @@ public class Purchase {
 		this.supplierName = supplierName;
 	}
 
-	public int getMakerId() {
-		return makerId;
-	}
-
-	public void setMakerId(int makerId) {
-		this.makerId = makerId;
-	}
-
-	public String getMakerName() {
-		return makerName;
-	}
-
-	public void setMakerName(String makerName) {
-		this.makerName = makerName;
-	}
 
 	public BigDecimal getTotal() {
 		return total;
@@ -75,13 +54,6 @@ public class Purchase {
 		this.total = total;
 	}
 
-	public Date getBillDate() {
-		return billDate;
-	}
-
-	public void setBillDate(Date billDate) {
-		this.billDate = billDate;
-	}
 
 	public Integer getId() {
 		return id;

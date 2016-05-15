@@ -17,7 +17,7 @@
             };
         });
     </script>
-    <script type="text/javascript" src="resources/js/rent.js"></script>
+    <script type="text/javascript" src="resources/js/stockOut.js"></script>
     <script type="text/javascript" src="resources/js/databox-formatter.js"></script>
 </head>
 <body>
@@ -34,12 +34,13 @@
     <tr>
         <th data-options="field:'billStat',hidden:true"> 单据状态码</th>
         <th data-options="field:'billStatName',width:80">单据状态</th>
-        <th data-options="field:'StockOutWarehouseId',hidden:true">出库仓库Id</th>
-        <th data-options="field:'StockOutWarehouseName',width:80">出库仓库</th>
-        <th data-options="field:'StockInWarehouseId',hidden:true">入库仓库id</th>
-        <th data-options="field:'StockInWarehouseName',width:80">入库仓库</th>
-        <th data-options="field:'billDate',width:60">制单日期</th>
-        <th data-options="field:'totalStockIn',width:70">移仓出库总数</th>
+        <th data-options="field:'stockOutWarehouseId',hidden:true">出库仓库Id</th>
+        <th data-options="field:'stockOutWarehouseName',width:80">出库仓库</th>
+        <th data-options="field:'stockInWarehouseId',hidden:true">入库仓库id</th>
+        <th data-options="field:'stockInWarehouseName',width:80">入库仓库</th>
+        <th data-options="field:'billDate',hidden:true">制单日期</th>
+        <th data-options="field:'billDateStr',width:80,formatter:function(value,row){ if(row.billDate) {return new Date(row.billDate).format('yyyy-MM-dd')};}">制单日期</th>
+        <th data-options="field:'totalStockOut',width:80">移仓出库总数</th>
     </tr>
     </thead>
 </table>
@@ -75,7 +76,7 @@
             <tr>
                 <td class="label">出库仓库</td>
                 <td>
-                    <select class="easyui-combobox input" name="warehouseId" id="StockOutWarehouseId" data-options="
+                    <select class="easyui-combobox input" name="stockOutWarehouseId" id="stockOutWarehouseId" data-options="
                     required:true,
                     editable:false,
                     valueField: 'id',
@@ -96,24 +97,20 @@
                 </td>
                 <td class="label">入库仓库</td>
                 <td>
-                    <select class="easyui-combobox input" name="warehouseId" id="StockInWarehouseId" data-options="
+                    <select class="easyui-combobox input" name="stockInWarehouseId" id="stockInWarehouseId" data-options="
                     required:true,
                     editable:false,
                     valueField: 'id',
                     textField: 'text',
                     method:'get',
-                    url: 'warehouse/comboList',
-                    onSelect:function(ret){
-                        var rows = $('#t2_dg').datagrid('getRows');
-                        if(rows&&rows.length>0){
-                            $.messager.confirm('系统提示','重新选择仓库需要重新填写出租明细,是否继续?？',function(r){
-                                if (r){
-                                    $('#t2_dg').datagrid('loadData',{total:0,rows:[]});
-                                }
-                            });
-                        }
-                    }">
+                    url: 'warehouse/comboList'">
                     </select>
+                </td>
+            </tr>
+            <tr>
+
+                <td class="label">移仓出库总数</td>
+                <td><input id="totalStockOut" class="easyui-numberbox input" data-options="required:true,readonly:true" name="totalStockOut">
                 </td>
             </tr>
             <tr>
@@ -121,15 +118,8 @@
                 <td><input id="billDate" class="easyui-datebox input" name="billDate"
                            data-options="editable:false,required:true">
                 </td>
-                <td class="label">移仓出库总数</td>
-                <td><input id="totalStockOut" class="easyui-numberbox input" type="text" name="totalStockOut">
-                </td>
-            </tr>
-            <tr>
                 <td class="label">操作员</td>
                 <td><input class="easyui-textbox input" readonly type="text" name="createdBy" id="createdBy">
-                </td>
-                </td>
             </tr>
         </table>
     </form>
@@ -144,10 +134,8 @@
                 <th data-options="field:'skuId',width:80">SKU</th>
                 <th data-options="field:'itemName',width:80">商品名称</th>
                 <th data-options="field:'colorName',width:80,align:'right'">颜色</th>
-                <th data-options="field:'sizeName',width:60,align:'right'">尺码</th>
+                <th data-options="field:'sizeDtlName',width:60,align:'right'">尺码</th>
                 <th data-options="field:'stockOutAmount',width:60">数量</th>
-                <th data-options="field:'remainInventory',width:60,align:'center'">当前库存</th>
-
             </tr>
             </thead>
         </table>
@@ -186,8 +174,8 @@
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="sizeName"
-                                   id="sizeName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName"
+                                   id="sizeDtlName"
                                    style="width:150px">
                         </td>
                     </tr>
@@ -196,11 +184,7 @@
                         <td>
                             <input class="easyui-numberbox" type="text" name="stockOutAmount" id="stockOutAmount"
                                    style="width:150px"
-                                   data-options="min:1,precision:0,required:true,missingMessage:'请填写数量',
-                               onChange:function(newValue,oldValue){
-                                    var itemPrice = $('#itemPrice').numberbox('getValue');
-                                    $('#itemRent').numberbox('setValue',newValue*itemPrice);
-                                }">
+                                   data-options="min:1,precision:0,required:true,missingMessage:'请填写数量'">
                         </td>
                         <td>当前库存</td>
                         <td>
@@ -211,7 +195,7 @@
                                    icons: [{
                                 iconCls:'icon-reload',
                                 handler: function(e){
-                                    $.rent.loadInventory();
+                                    $.stockOut.loadInventory();
                                 }
                             }]">
                         </td>

@@ -5,51 +5,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.l1.dao.StockInDtlDao">
 
 	<resultMap type="StockInDtl" id="StockInDtlResult">
-		<result property="rentDtlId" column="rentDtlId"/>
+		<result property="id" column="id"/>
 		<result property="stockInId" column="stockInId"/>
 		<result property="skuId" column="skuId"/>
+		<result property="stockOutDtlId" column="stockOutDtlId"/>
 		<result property="itemName" column="itemName"/>
-		<result property="itemPrice" column="itemPrice"/>
-		<result property="itemAmount" column="itemAmount"/>
-		<result property="colorId" column="colorId"/>
+		<!--<result property="colorId" column="colorId"/>-->
 		<result property="colorName" column="colorName"/>
-		<result property="sizeId" column="sizeId"/>
+		<!--<result property="sizeId" column="sizeId"/>-->
 		<result property="sizeName" column="sizeName"/>
-		<result property="stockInStat" column="stockInStat"/>
-		<result property="stockInStatName" column="stockInStatName"/>
+		<result property="stockOutAmount" column="stockOutAmount"/>
 		<result property="stockInAmount" column="stockInAmount"/>
-		<result property="itemRent" column="itemRent"/>
-		<result property="itemRepo" column="itemRepo"/>
-		<result property="itemCompensate" column="itemCompensate"/>
 	</resultMap>
 
-	<select id="loadStockInDtlFromRentDtl" resultMap="StockInDtlResult">
-		SELECT r.id rentDtlId,r.rentId,r.skuId,r.itemPrice,r.itemAmount,r.itemRepo,r.itemRent,
+	<select id="loadStockInDtlFromStockOutDtl" resultMap="StockInDtlResult">
+		SELECT r.id stockOutDtlId,r.stockOutId,r.skuId,r.stockOutAmount,
 		item.id itemId,item.name itemName,color.id colorId,color.name colorName,sizedtl.id sizeId,sizedtl.name sizeName
-		FROM tb_rentdtl r
+		FROM tb_stockOutdtl r
 		LEFT JOIN tb_sku sku ON r.skuId = sku.id
 		LEFT JOIN tb_item item ON sku.itemId = item.id
 		LEFT JOIN tb_color color ON sku.colorId = color.id
 		LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
-		where r.rentId = #{rentId}
+		where r.stockOutId = #{stockOutId}
 	</select>
-	<select id="findRentDtlsById" resultMap="StockInDtlResult">
-		SELECT r.*,dic.*,sku.id skuId,item.name itemName,rentdtl.itemAmount,rentdtl.itemPrice,color.name colorName,sizedtl.name sizeName
+	<select id="findStockInDtlsById" resultMap="StockInDtlResult">
+		SELECT r.id,r.skuId,r.stockInAmount,r.stockOutAmount,item.name itemName,color.name colorName,sizedtl.name sizeName
 		FROM tb_stockIndtl r
-		LEFT JOIN tb_rentdtl rentdtl ON r.rentDtlId = rentdtl.id
-		LEFT JOIN tb_sku sku ON rentdtl.skuId = sku.id
+		LEFT JOIN tb_stockOutdtl stockOutdtl ON r.stockOutDtlId = stockOutdtl.id
+		LEFT JOIN tb_sku sku ON stockOutdtl.skuId = sku.id
 		LEFT JOIN tb_item item ON sku.itemId = item.id
 		LEFT JOIN tb_color color ON sku.colorId = color.id
 		LEFT JOIN tb_sizedtl sizedtl ON sku.sizeDtlId = sizedtl.id
-		LEFT JOIN (SELECT valueField stockInStat,textField stockInStatName FROM tb_dic WHERE keyWord='stockInStatus') dic
-		 ON r.stockInStat= dic.stockInStat
 		where r.stockInId = #{stockInId}
 	</select>
 	<insert id="batchSave" parameterType="StockInDtl">
-		insert into tb_stockIndtl(stockInId,rentDtlId, stockInAmount,stockInStat, itemRent, itemRepo, itemCompensate)
+		insert into tb_stockIndtl(stockInId,skuId, stockOutDtlId,stockOutAmount, stockInAmount)
 		values
 		<foreach item="item" index="index" collection="list"  separator=",">
-			(#{item.stockInId},#{item.rentDtlId},#{item.stockInAmount},#{item.stockInStat},#{item.itemRent},#{item.itemRepo},#{item.itemCompensate})
+			(#{item.stockInId},#{item.skuId},#{item.stockOutDtlId},#{item.stockOutAmount},#{item.stockInAmount})
 		</foreach>
 	</insert>
 
@@ -69,8 +62,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="itemAmount!=null and itemAmount!='' ">
 				itemAmount=#{itemAmount},
 			</if>
-			<if test="itemRent!=null">
-				itemRent=#{itemRent},
+			<if test="itemStockOut!=null">
+				itemStockOut=#{itemStockOut},
 			</if>
 			<if test="itemRepo!=null">
 				itemRepo=#{itemRepo},
@@ -99,8 +92,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="find" parameterType="Map" resultMap="StockInDtlResult">
 		select * from tb_returndtl
 		<where>
-			<if test="rentId!=null and rentId!='' ">
-				and rentId = #{rentId}
+			<if test="stockOutId!=null and stockOutId!='' ">
+				and stockOutId = #{stockOutId}
 			</if>
 			<if test="dtlId!=null and dtlId!='' ">
 				and dtlId= #{dtlId}
@@ -116,7 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="findByIds" parameterType="string" resultMap="StockInDtlResult">
 		select * from tb_returndtl
-		where rentId in (#{ids})
+		where stockOutId in (#{ids})
 	</select>
 	
 	<select id="findById" parameterType="int" resultMap="StockInDtlResult">
@@ -129,8 +122,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getTotal" parameterType="Map" resultType="Long">
 		select count(*) from tb_returndtl
 		<where>
-			<if test="rentId!=null and rentId!='' ">
-				and rentId =#{rentId}
+			<if test="stockOutId!=null and stockOutId!='' ">
+				and stockOutId =#{stockOutId}
 			</if>
 		</where>
 	</select>

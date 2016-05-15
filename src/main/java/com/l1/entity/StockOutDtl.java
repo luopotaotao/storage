@@ -11,7 +11,6 @@ public class StockOutDtl {
 	private String itemName;
 	private String colorName;
 	private String sizeName;
-	private BigDecimal remainInventory;
 	private Integer stockOutAmount;
 
 
@@ -69,14 +68,6 @@ public class StockOutDtl {
 
 	public void setSizeName(String sizeName) {
 		this.sizeName = sizeName;
-	}
-
-	public BigDecimal getRemainInventory() {
-		return remainInventory;
-	}
-
-	public void setRemainInventory(BigDecimal remainInventory) {
-		this.remainInventory = remainInventory;
 	}
 
 	public Integer getStockOutAmount() {

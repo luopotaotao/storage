@@ -85,8 +85,9 @@ public class ItemController {
                                     @RequestParam(value = "rows", required = false) Integer rows, Item s_item)
             throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("name", StringUtil.formatLike(s_item.getName()));
-        map.put("code", StringUtil.formatLike(s_item.getCode()));
+        map.put("name", s_item.getName());
+        map.put("stat",0);
+        map.put("code",s_item.getCode());
         map.put("stat", "1");
         map.put("start", rows!=null&&page!=null?(page>0?page-1:0)*rows:null);
         map.put("size", rows);
@@ -105,7 +106,7 @@ public class ItemController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> save(Item item) throws Exception {
-        int resultTotal = 0; // 操作的记录条数
+        int resultTotal ; // 操作的记录条数
         Integer brandId = item.getBrandId();
         if (brandId != null) {
             Brand brand = brandService.findById(brandId);
@@ -125,33 +126,11 @@ public class ItemController {
         }
 
         String color = item.getColor();
-        String[] colorIds = null;
-        if (!StringUtil.isEmpty(color)) {
-            colorIds = color.split(",");
-            if (colorIds.length > 0) {
-                List<String> names = colorService.findNamesByIds(colorIds);
-                if (names != null && names.size() > 0) {
-                    String colorNames = StringUtils.join(names, ",");
-                    item.setColorName(colorNames);
-                }
-            }
-
-        }
-
-        String[] sizeIds = null;
         String size = item.getSize();
-        if (!StringUtil.isEmpty(size)) {
-            sizeIds = size.split(",");
-            if (sizeIds.length > 0) {
-                List<String> sizeNames = sizeDtlService.findNamesByIds(sizeIds);
-                String sizeName = StringUtils.join(sizeNames, ",");
-                item.setSizeName(sizeName);
-            }
-        }
 
         if (item.getId() == null) {
+            item.setStat(1);
             item.setCreate_time(DateUtil.now());
-            item.setStat("使用");
             resultTotal = itemService.add(item);
 
             createSku(item);
@@ -177,12 +156,8 @@ public class ItemController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> delete(@RequestParam(value = "ids") String ids) throws Exception {
-        String[] idsStr = ids.split(",");
-        for (int i = 0; i < idsStr.length; i++) {
-            itemService.delete(Integer.parseInt(idsStr[i]));
-        }
-
+    public Map<String, Object> delete(@RequestParam(value = "ids") String idStr) throws Exception {
+       itemService.delete(idStr.split(","));
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("success", true);
         return result;
@@ -209,13 +184,10 @@ public class ItemController {
 
                     Sku sku = new Sku();
                     sku.setSizeDtlId(Integer.valueOf(sizeId));
-                    sku.setSizeDtlName(dtl.getName());
 
                     sku.setColorId(Integer.valueOf(colorId));
-                    sku.setColorName(color.getName());
-
                     sku.setItemId(item.getId());
-                    sku.setItemName(item.getStyle());
+                    sku.setText(item.getStyle());
 
                     skuService.add(sku);
                 }

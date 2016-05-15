@@ -1,50 +1,34 @@
 package com.l1.controller;
 
+import com.l1.entity.StockOutDtl;
+import com.l1.entity.Sku;
+import com.l1.service.BillStatService;
+import com.l1.service.StockOutDtlService;
+import com.l1.service.SkuService;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.l1.entity.BillStat;
-import com.l1.entity.PageBean;
-import com.l1.entity.KctzDtl;
-import com.l1.entity.Sku;
-import com.l1.service.BillStatService;
-import com.l1.service.KctzDtlService;
-import com.l1.service.SkuService;
-import com.l1.util.DateJsonValueProcessor;
-import com.l1.util.ResponseUtil;
-
-import net.sf.json.JSONArray;
-
-import net.sf.json.JsonConfig;
-
 /**
  * @Description:
- * @Author: hongxp
+ * @Author: luopotaotao
  * @Since: 2016年4月12日
  */
 
 @Controller
-@RequestMapping("/kctzDtl")
-public class KctzDtlController {
+@RequestMapping("/stockOutDtl")
+public class StockOutDtlController {
     @Resource
-    private KctzDtlService kctzDtlService;
+    private StockOutDtlService stockOutDtlService;
 
     @Resource
     private BillStatService billStatService;
@@ -63,19 +47,18 @@ public class KctzDtlController {
     @RequestMapping("/list")
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, KctzDtl s_kctzDtl) throws Exception {
-        PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", s_kctzDtl.getId());
-        map.put("start", pageBean.getStart());
-        map.put("size", pageBean.getPageSize());
+                                    @RequestParam(value = "rows", required = false) String rows, @RequestParam(required = true) String id) throws Exception {
 
-        List<KctzDtl> kctzDtlList = kctzDtlService.find(map);
-        Long total = kctzDtlService.getTotal(map);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", id);
+        map.put("start", page);
+        map.put("size", rows);
+
+        List<StockOutDtl> stockOutDtlList = stockOutDtlService.find(map);
+        Long total = stockOutDtlService.getTotal(map);
 
         Map<String, Object> result = new HashMap<String, Object>();
-
-        result.put("rows", kctzDtlList);
+        result.put("rows", stockOutDtlList);
         result.put("total", total);
 
         return result;
@@ -83,24 +66,21 @@ public class KctzDtlController {
 
     @RequestMapping("/findAllById")
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "id", required = false) String id) throws Exception {
+    public Map<String, Object> list(@RequestParam(value = "stockOutId", required = false) String stockOutId) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
+        map.put("stockOutId", stockOutId);
 
-        List<KctzDtl> linkManList = kctzDtlService.find(map);
+        List<StockOutDtl> linkManList = stockOutDtlService.find(map);
         Map<String, Object> result = new HashMap<String, Object>();
-
-        Long total = kctzDtlService.getTotal(map);
         result.put("rows", linkManList);
-        result.put("total", total);
 
         return result;
     }
 
     @RequestMapping(value = "/save11", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(KctzDtl kctzDtl) {
-        kctzDtlService.add(kctzDtl);
+    public Map<String, Object> save(StockOutDtl stockOutDtl) {
+        stockOutDtlService.add(stockOutDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -108,8 +88,15 @@ public class KctzDtlController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> update(KctzDtl kctzDtl) {
-        kctzDtlService.update(kctzDtl);
+    public Map<String, Object> update(StockOutDtl stockOutDtl) {
+        if (stockOutDtl != null && stockOutDtl.getSkuId() > 0) {
+            Sku sku = skuService.findById(stockOutDtl.getSkuId());
+            if (sku != null) {
+                stockOutDtl.setItemName(sku.getItemName());
+            }
+        }
+
+        stockOutDtlService.update(stockOutDtl);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -117,8 +104,8 @@ public class KctzDtlController {
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> remove(@RequestParam(value = "ids[]") String[] ids) {
-        kctzDtlService.delete(ids);
+    public Map<String, Object> remove(@RequestParam(value = "ids[]") Integer[] ids) {
+        stockOutDtlService.delete(ids);
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
         return ret;
@@ -126,21 +113,23 @@ public class KctzDtlController {
 
     @RequestMapping(value = "/findById", method = RequestMethod.GET)
     @ResponseBody
-    public KctzDtl findById(@RequestParam("id") int id) {
-        KctzDtl kctzDtl = kctzDtlService.findById(id);
-        return kctzDtl;
+    public StockOutDtl findById(@RequestParam("id") int id) {
+        StockOutDtl stockOutDtl = stockOutDtlService.findById(id);
+        return stockOutDtl;
     }
+
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(KctzDtl kctzDtl, @RequestParam("id") int id) throws Exception {
-        kctzDtl.setId(id);
+    public Map<String, Object> save(StockOutDtl stockOutDtl, @RequestParam("id") int id)
+            throws Exception {
+        stockOutDtl.setStockOutId(id);
 
         int resultTotal = 0; // 操作的记录条数
-        if (kctzDtl.getDtlId() == null) {
-            resultTotal = kctzDtlService.add(kctzDtl);
+        if (stockOutDtl.getId() == null) {
+            resultTotal = stockOutDtlService.add(stockOutDtl);
         } else {
-            resultTotal = kctzDtlService.update(kctzDtl);
+            resultTotal = stockOutDtlService.update(stockOutDtl);
         }
 
         Map<String, Object> result = new HashMap<String, Object>();
@@ -155,9 +144,10 @@ public class KctzDtlController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids) throws Exception {
+    public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids)
+            throws Exception {
         if (ids != null && ids.length > 0) {
-            kctzDtlService.delete(ids);
+            stockOutDtlService.delete(ids);
         }
 
         Map<String, Object> result = new HashMap<String, Object>();

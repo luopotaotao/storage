@@ -44,7 +44,8 @@ public class InventoryController {
     @ResponseBody
     public Map<String,Integer> getInventory(Integer warehouseId,Integer skuId){
         Map<String,Integer> ret = new HashMap<String, Integer>();
-        ret.put("amount",inventoryService.getInventory(warehouseId,skuId));
+        Inventory inventory = inventoryService.getInventory(warehouseId,skuId);
+        ret.put("amount",inventory==null?null:inventory.getAmount());
         return ret;
     }
 }

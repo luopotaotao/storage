@@ -6,12 +6,12 @@ $(function () {
     bindHandlers();
     bindT2Handlers();
     $.extend({
-        reversion: {
-            loadRentBillInfo: loadRentBillInfo
+        stockIn: {
+            loadStockOutBillInfo: loadStockOutBillInfo
         }
     });
-    var t1Url = 'reversion';
-    var t2Url = 'reversionDtl'
+    var t1Url = 'stockIn';
+    var t2Url = 'stockInDtl'
 
     function bindHandlers() {
         $('a.easyui-linkbutton').unbind();
@@ -38,10 +38,10 @@ $(function () {
     function toAdd() {
 
         setEditable(true);
-        loadAvailableRentBillNos(function () {
+        loadAvailableStockOutBillNos(function () {
             $('#editForm').form('clear');
             $('#editPanel').dialog('open');
-            $('#rentBillNo').combobox({disabled:false});
+            $('#stockOutBillNo').combobox({disabled:false});
 
             $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
         });
@@ -65,16 +65,16 @@ $(function () {
             if (rows.length > 1) {
                 $.messager.alert('系统提示!', '只能对一行进行编辑!')
             } else if (rows.length == 1) {
-                // loadAvailableRentBillNos();
+                // loadAvailableStockOutBillNos();
                 var row = rows[0];
 
-                formatDate(row, ['beginDate', 'endDate','reversionDate', 'create_time', 'update_time']);
+                formatDate(row, ['billDate', 'create_time', 'update_time']);
                 $('#editForm').form('load', row);
                 setEditable(row.billStat != 1);//已完成状态不可编辑
                 t2Query();
                 $('#editPanel').dialog('open');
-                $('#rentBillNo').combobox({disabled:true});
-                $('#rentBillNo').combobox('setValue',row.rentBillNo);
+                $('#stockOutBillNo').combobox({disabled:true});
+                $('#stockOutBillNo').combobox('setValue',row.stockOutBillNo);
 
             }
         } else {
@@ -148,7 +148,7 @@ $(function () {
         var isDetailsAvailable = true;
         var rows = $('#t2_dg').datagrid('getRows');
         $.each(rows, function (i, row) {
-            if (!$.isNumeric(row['reversionAmount'])) {
+            if (!$.isNumeric(row['stockInAmount'])) {
                 isDetailsAvailable = false;
                 return false;
             }
@@ -158,24 +158,24 @@ $(function () {
             return;
         }
 
-        var reversion = {};
+        var stockIn = {};
         $('#editForm input').each(function (i, val) {
             var name = $(val).attr('name');
             if (name && $(val).val()) {
-                reversion[name] = $(val).val();
+                stockIn[name] = $(val).val();
             }
         });
 
         var details = $('#t2_dg').datagrid('getChanges', 'updated');
         if (details && details.length > 0) {
-            reversion.details = JSON.stringify(details);
+            stockIn.details = JSON.stringify(details);
         }
 
         $('#editPanel').loading('保存中,请稍后...');
         $.ajax({
             url: t1Url + '/save',
             type: 'post',
-            data: reversion
+            data: stockIn
         }).success(function (ret) {
             if (ret && ret.flag) {
                 $.messager.alert('系统提示!', '保存成功!');
@@ -264,6 +264,10 @@ $(function () {
 
     function t2Save() {
         if ($('#t2EditForm').form('validate')) {
+            if($('#stockInAmount').numberbox('getValue')>$('#stockOutAmount').numberbox('getValue')){
+                $.messager.alert('系统提示','收货数量不可大于发货数量!');
+                return;
+            }
             var row = $('#t2_dg').datagrid('getChecked')[0];
             var index = $('#t2_dg').datagrid('getRowIndex', row);
             var item = {};
@@ -286,25 +290,25 @@ $(function () {
 
     function calcTotal() {
         var rows = $('#t2_dg').datagrid('getRows');
-        var compensateMoney = null;
+        var totalStockIn = null;
         if (rows && rows.length) {
-            compensateMoney = 0;
+            totalStockIn = 0;
             $.each(rows, function (i, row) {
-                var itemCompensate = parseFloat(row['itemCompensate']);
-                compensateMoney += (isNaN(itemCompensate) ? 0 : itemCompensate);
+                var stockInAmount = parseFloat(row['stockInAmount']);
+                totalStockIn += (isNaN(stockInAmount) ? 0 : stockInAmount);
             });
 
         }
-        $('#compensateMoney').numberbox('setValue', compensateMoney);
+        $('#totalStockIn').numberbox('setValue', totalStockIn);
     }
 
 
     function t2Query() {
         var url = null;
         if($('#id').val()){
-            url = t2Url + '/findRentDtlsById?reversionId=' + $('#id').val();
+            url = t2Url + '/findStockInDtlsById?stockInId=' + $('#id').val();
         }else{
-            url = t2Url + '/loadRentDtlsForReversion?rentId=' + $('#id').val();
+            url = t2Url + '/loadStockOutDtlsForStockIn?stockOutId=' + $('#id').val();
         }
         $.ajax({
             url: url,
@@ -329,22 +333,22 @@ $(function () {
         $('#t2EditPanel').dialog('close');
     }
 
-    function loadAvailableRentBillNos(callback) {
+    function loadAvailableStockOutBillNos(callback) {
         $('#editPanel').loading('加载可用出租单信息,请稍后...');
         $.ajax({
-            url: 'reversion/loadAvailableRentBillNos',
+            url: 'stockIn/loadAvailableStockOutBillNos',
             type: 'get',
             dataType: 'json'
         }).success(function (ret) {
             if (ret ) {
                 if( ret.length > 0){
-                    $('#rentBillNo').combobox({
+                    $('#stockOutBillNo').combobox({
                         required: true,
                         valueField: 'id',
                         textField: 'billNo',
                         data:ret,
                         onSelect: function (rec) {
-                            loadRentBillInfo(rec.id);
+                            loadStockOutBillInfo(rec.id);
                         }
                     });
                     if(typeof callback=='function'){
@@ -362,19 +366,19 @@ $(function () {
         });
     }
 
-    function loadRentBillInfo(rentId) {
-        if (rentId) {
+    function loadStockOutBillInfo(stockOutId) {
+        if (stockOutId) {
             $('#editPanel').loading('加载所选出租单信息中,请稍后...');
             $.ajax({
-                url: 'reversion/loadReversionFromRent',
+                url: 'stockIn/loadStockInFromStockOut',
                 type: 'get',
-                data: {rentId: rentId},
+                data: {stockOutId: stockOutId},
                 dataType: 'json'
             }).success(function (ret) {
-                if (ret && ret.rentBillId) {
-                    formatDate(ret, ['beginDate', 'endDate']);
+                if (ret && ret.stockOutBillId) {
+                    formatDate(ret, ['billDate']);
                     $('#editForm').form('load', ret);
-                    loadRentBillDtlInfo(ret.rentBillId)
+                    loadStockOutBillDtlInfo(ret.stockOutBillId)
                 }
             }).error(function (e) {
                 $.messager.alert('系统提示', '加载所选出租单信息失败,请刷新页面重新尝试或联系管理员!');
@@ -384,13 +388,13 @@ $(function () {
         }
     }
 
-    function loadRentBillDtlInfo(rentId) {
-        if (rentId) {
+    function loadStockOutBillDtlInfo(stockOutId) {
+        if (stockOutId) {
             $('#editPanel').loading('加载出租单明细信息中,请稍后...');
             $.ajax({
-                url: 'reversionDtl/'+($('#id').val()?'findRentDtlsById':'loadRentDtlsForReversion'),
+                url: 'stockInDtl/'+($('#id').val()?'findStockInDtlsById':'loadStockOutDtlsForStockIn'),
                 type: 'get',
-                data: $('#id').val()?{reversionId:$('#id').val()}:{rentId: rentId},
+                data: $('#id').val()?{stockInId:$('#id').val()}:{stockOutId: stockOutId},
                 dataType: 'json'
             }).success(function (ret) {
                 if (ret && ret.rows) {

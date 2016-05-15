@@ -10,25 +10,29 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SkuDao {
 
-    public List<Sku> find(Map<String, Object> map);
+     List<Sku> find(Map<String, Object> map);
 
-    public List<Map<String, String>> findForCombo(Map<String, Object> map);
-    public List<Map<String, String>> findForUploadCombo(Map<String, Object> map);
+     List<Map<String, String>> findForCombo(Map<String, Object> map);
+     List<Map<String, String>> findAllForCombo();
+     List<Map<String, String>> findForStockOutDtlCombo(@Param("warehouseId") Integer warehouseId,@Param("stockOutId") Integer stockOutId);
 
-    public List<Sku> findByIds(String ids);
 
-    public Sku findById(Integer id);
+     List<Map<String, String>> findForUploadCombo(Map<String, Object> map);
 
-    public Long getTotal(Map<String, Object> map);
+     List<Sku> findByIds(String ids);
 
-    public Integer add(Sku sku);
+     Sku findById(Integer id);
 
-    public Integer update(Sku sku);
+     Long getTotal(Map<String, Object> map);
 
-    public Integer deleteById(Integer id);
+     Integer add(Sku sku);
 
-    public Integer deleteByItemId(Integer itemId);
+     Integer update(Sku sku);
 
-    public Integer updateImageId(Integer id, Integer ImageId);
+     Integer deleteById(Integer id);
+
+     Integer deleteByItemId(Integer itemId);
+
+     Integer updateImageId(Integer id, Integer ImageId);
 
 }

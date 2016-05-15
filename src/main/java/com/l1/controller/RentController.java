@@ -165,11 +165,12 @@ public class RentController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids) throws Exception {
+        int count = 0;
         if (ids != null && ids.length > 0) {
-            rentService.delete(ids);
+            count = rentService.delete(ids);
         }
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", true);
+        result.put("flag", count>0);
         return result;
     }
 

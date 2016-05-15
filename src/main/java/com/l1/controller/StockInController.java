@@ -120,8 +120,10 @@ public class StockInController {
         StockInDtl ret = new StockInDtl();
         ret.setId(item.getInteger("Id"));
         ret.setStockInId(item.getInteger("stockInId"));
-        ret.setStockOutDtlId(item.getString("rentDtlId"));
+        ret.setSkuId(item.getInteger("skuId"));
+        ret.setStockOutDtlId(item.getString("stockOutDtlId"));
         ret.setStockInAmount(item.getInteger("stockInAmount"));
+        ret.setStockOutAmount(item.getInteger("stockOutAmount"));
 
         return ret;
     }
@@ -163,8 +165,8 @@ public class StockInController {
     }
     @RequestMapping(value = "loadStockInFromStockOut",method = RequestMethod.GET)
     @ResponseBody
-    public StockIn loadStockInFromStockOut(Integer rentId){
-        return stockInService.loadStockInFromStockOut(rentId);
+    public StockIn loadStockInFromStockOut(Integer stockOutId){
+        return stockInService.loadStockInFromStockOut(stockOutId);
     }
     @RequestMapping(value = "/finish",method = RequestMethod.POST)
     @ResponseBody

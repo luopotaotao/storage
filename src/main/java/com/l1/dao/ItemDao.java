@@ -5,18 +5,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+
 @Repository
 public interface ItemDao {
-  public List<Item> find(Map<String, Object> map);
+    public List<Item> find(Map<String, Object> map);
 
-  public Long getTotal(Map<String, Object> map);
+    public Long getTotal(Map<String, Object> map);
 
-  public Integer add(Item item);
+    public Integer add(Item item);
 
-  public Integer update(Item item);
+    public Integer update(Item item);
 
-  public Integer delete(Integer id);
+    public Integer delete(String[] id);
 
-  public Item findById(Integer id);
+    public Integer deleteById(Integer id);
+
+    public Item findById(Integer id);
 
 }

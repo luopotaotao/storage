@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author hongxp 2016年4月12日
+ * @author luopotaotao 2016年4月12日
  */
 
 @Controller
@@ -79,6 +79,13 @@ public class SkuController {
         List<Map<String, String>> skuList = skuService.findForCombo(map);
         return skuList;
     }
+    @RequestMapping("/allComboList")
+    @ResponseBody
+    public List<Map<String, String>> allComboList() throws Exception {
+        List<Map<String, String>> skuList = skuService.findAllForCombo();
+        return skuList;
+    }
+
     @RequestMapping("/getAvailableSkuInfo")
     @ResponseBody
     public List<Map<String, String>> getAvailableSkuInfo(Integer warehouseId,Integer billId) {
@@ -88,6 +95,12 @@ public class SkuController {
             map.put("billId",billId);
         }
         List<Map<String, String>> skuList = skuService.findForCombo(map);
+        return skuList;
+    }
+    @RequestMapping("/getAvailableSkuInfoForStockOut")
+    @ResponseBody
+    public List<Map<String, String>> getAvailableSkuInfoForStockOut(Integer warehouseId,Integer stockOutId) {
+        List<Map<String, String>> skuList = skuService.findForStockOutDtlCombo(warehouseId,stockOutId);
         return skuList;
     }
 

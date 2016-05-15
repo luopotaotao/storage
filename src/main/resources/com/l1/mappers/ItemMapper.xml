@@ -47,16 +47,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="find" parameterType="map" resultMap="ItemResult">
-		select i.*,d.statName from tb_item i LEFT JOIN (SELECT valueField,textField statName FROM tb_dic WHERE keyWord='itemStatus') d ON i.stat = d.valueField
+       select  i.id,i.name,i.style,i.stat,i.code,i.create_time,i.create_by,i.update_time,i.update_by,i.brandId,i.deposit,i.primaryCategoryId,i.minorCategoryId,i.rental1,i.rental2,i.color,i.size ,
+        d.statName,b.name as brandName,mc.name as minorCategoryName,pc.name as primaryCategoryName
+       from tb_item i
+        LEFT JOIN  (SELECT valueField,textField statName FROM tb_dic WHERE keyWord='itemStatus') d ON i.stat = d.valueField
+        LEFT JOIN  tb_brand b ON  i.brandId = b.id
+        LEFT  JOIN tb_minor_category mc on mc.id = i.minorCategoryId
+        LEFT  JOIN tb_primary_category pc on pc.id = i.primaryCategoryId
+
 		<where>
 			<if test="name!=null and name!='' ">
-				and name like concat('%',#{name},'%')
+				and i.name like concat('%',#{name},'%')
 			</if>
 			<if test="stat!=null and stat!='' ">
-				and stat = #{stat}
+				and i.stat = #{stat}
 			</if>
 			<if test="code!=null and code!='' ">
-				and code like #{code}
+                and i.code like concat('%',#{code},'%')
 			</if>
 		</where>
 		<if test="start!=null and size!=null">
@@ -85,8 +92,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<insert id="add" useGeneratedKeys="true" keyProperty="id" parameterType="Item">
-		insert into tb_item(name,style,stat,code,create_time,brandId,brandName,deposit,primaryCategoryId,primaryCategoryName,minorCategoryId,minorCategoryName,rental1,rental2,color,colorName,size,sizeName) 
-		values(#{name},#{style},#{stat},#{code},#{create_time},#{brandId},#{brandName},#{deposit},#{primaryCategoryId},#{primaryCategoryName},#{minorCategoryId},#{minorCategoryName},#{rental1},#{rental2},#{color},#{colorName},#{size},#{sizeName})
+		insert into tb_item(name,style,stat,code,create_time,create_by,brandId,deposit,primaryCategoryId,minorCategoryId,rental1,rental2,color,size)
+		values(#{name},#{style},#{stat},#{code},#{create_time},#{create_by},#{brandId},#{deposit},#{primaryCategoryId},#{minorCategoryId},#{rental1},#{rental2},#{color},#{size})
 	</insert>
 	
 	<update id="update" parameterType="Item">
@@ -109,27 +116,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="brandId!=null and brandId!='' ">
 				brandId=#{brandId},
 			</if>
-			
-			<if test="brandName!=null and brandName!='' ">
-				brandName=#{brandName},
-			</if>
-			
+
 			<if test="primaryCategoryId!=null and primaryCategoryId!='' ">
 				primaryCategoryId=#{primaryCategoryId},
 			</if>
 			
-			<if test="primaryCategoryName!=null and primaryCategoryName!='' ">
-				primaryCategoryName=#{primaryCategoryName},
-			</if>
-			
+
 			<if test="minorCategoryId!=null and minorCategoryId!='' ">
 				minorCategoryId=#{minorCategoryId},
 			</if>
 			
-			<if test="minorCategoryName!=null and minorCategoryName!='' ">
-				minorCategoryName=#{minorCategoryName},
-			</if>
-			
+
 			
 			<if test="rental1!=null and rental1!='' ">
 				rental1=#{rental1},
@@ -150,25 +147,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="color!=null and color!='' ">
 				color=#{color},
 			</if>
-			
-			<if test="colorName!=null and colorName!='' ">
-				colorName=#{colorName},
-			</if>
-			
+
 			<if test="size!=null and size!='' ">
 				size=#{size},
-			</if>
-			
-			<if test="sizeName!=null and sizeName!='' ">
-				sizeName=#{sizeName},
 			</if>
 			
 		</set>
 		where id=#{id}
 	</update>
 	
-	<delete id="delete" parameterType="Integer">
-		update tb_item set stat='停用' where id=#{id}
+	<delete id="delete">
+		update tb_item set stat=0 where id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
 	</delete>
+
+    <delete id="deleteById" parameterType="Integer">
+        update tb_item set stat=0 where id=#{id}
+    </delete>
 	
 </mapper> 

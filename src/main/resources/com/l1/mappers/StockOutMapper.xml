@@ -14,7 +14,7 @@
         <result property="StockInWarehouseId" column="StockInWarehouseId"/>
         <result property="StockInWarehouseName" column="StockInWarehouseName"/>
         <result property="billDate" column="billDate"/>
-        <result property="totalStockIn" column="totalStockIn"/>
+        <result property="totalStockOut" column="totalStockOut"/>
 
         <result property="create_by" column="create_by"/>
         <result property="create_time" column="create_time"/>
@@ -23,32 +23,36 @@
     </resultMap>
 
     <insert id="save" parameterType="com.l1.entity.StockOut" useGeneratedKeys="true" keyProperty="id">
-		insert into tb_stockOut (billNo,billStat,StockOutWarehouseId,StockInWarehouseId,billDate,totalStockIn)
-		values(#{billNo},#{billStat},#{StockOutWarehouseId},#{StockInWarehouseId},#{billDate},#{totalStockIn})
+		insert into tb_stockOut (billNo,billStat,StockOutWarehouseId,StockInWarehouseId,billDate,totalStockOut)
+		values(#{billNo},#{billStat},#{StockOutWarehouseId},#{StockInWarehouseId},#{billDate},#{totalStockOut})
 	</insert>
 
     <update id="update" parameterType="com.l1.entity.StockOut">
-        update tb_rent
+        update tb_stockOut
         <set>
             StockOutWarehouseId=#{StockOutWarehouseId},
             StockInWarehouseId=#{StockInWarehouseId},
             billDate=#{billDate},
-            totalStockIn=#{totalStockIn}
+            totalStockOut=#{totalStockOut}
         </set>
         where id=#{id}
     </update>
     <update id="finish">
-        UPDATE tb_rent set billStat = 1 WHERE id IN
+        UPDATE tb_stockOut set billStat = 1 WHERE id IN
         <foreach collection="array" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
     </update>
-    <select id="find" resultMap="StockOutResult">
+    <sql id="v_stockOut">
         SELECT stock.*,w_o.name stockOutWarehouseName,w_i.name StockInWarehouseName,d.textField billStatName
         FROM tb_stockout stock
         LEFT JOIN tb_warehouse w_o ON stock.StockOutWarehouseId = w_o.id
         LEFT JOIN tb_warehouse w_i ON stock.StockInWarehouseId = w_i.id
         LEFT JOIN (SELECT valueField, textField FROM tb_dic WHERE keyWord = 'stockOutStatus') d ON stock.billStat = d.valueField
+
+    </sql>
+    <select id="find" resultMap="StockOutResult">
+        <include refid="v_stockOut"></include>
         <where>
             <if test="billStat!=null and billStat!='' ">
                 and billStat=#{billStat}
@@ -60,38 +64,20 @@
     </select>
 
     <select id="findByIds" parameterType="string" resultMap="StockOutResult">
-		select r.*,w.name warehouseName,s.supplierName supplierId from tb_rent r,tb_warehouse w,tb_supplier s,tb_dic d
+		select r.*,w.name warehouseName,s.supplierName supplierId from tb_stockOut r,tb_warehouse w,tb_supplier s,tb_dic d
 		where id in (#{ids}) and r.warehouseId = w.id
 	</select>
 
     <select id="findById" parameterType="int" resultMap="StockOutResult">
-		SELECT
-              r.*,w.`name` warehouseName,s.`supplierName`,d.textField billStatName
-            FROM
-              tb_rent r
-              LEFT JOIN
-              tb_warehouse w
-              ON r.warehouseId = w.id
-              LEFT JOIN
-              tb_supplier s
-              ON
-              r.supplierId = s.id
-                LEFT JOIN
-              (SELECT
-                valueField,
-                textField
-              FROM
-                tb_dic
-              WHERE keyWord = 'rentBillStatus') d
-              ON r.billStat = d.valueField
-              where r.id = #{id}
-	</select>
+        <include refid="v_stockOut"></include>
+        WHERE stock.id = #{id}
+    </select>
     <select id="findListFinishedForCombo" resultType="map">
-        SELECT id,billNo FROM tb_rent WHERE billStat=2
+        SELECT id,billNo FROM tb_stockOut WHERE billStat=2
     </select>
 
     <select id="getTotal" parameterType="map" resultType="Long">
-        select count(*) from tb_rent
+        select count(*) from tb_stockOut
         <where>
             <if test="name!=null and name!='' ">
                 and name like #{name}
@@ -103,14 +89,14 @@
     </select>
 
     <delete id="delete">
-        DELETE FROM tb_rent where id IN
+        DELETE FROM tb_stockout where id IN
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
     </delete>
 
     <delete id="deleteById" parameterType="int">
-		DELETE FROM tb_rent where id=#{id}
+		DELETE FROM tb_stockOut where id=#{id}
 	</delete>
 
 </mapper> 

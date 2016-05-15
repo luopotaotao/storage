@@ -1,6 +1,5 @@
 package com.l1.entity;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class StockOut {
@@ -16,7 +15,7 @@ public class StockOut {
     private String StockInWarehouseName;
 
     private Date billDate;
-    private Integer totalStockIn;
+    private Integer totalStockOut;
 
 
     private Integer create_by;
@@ -98,12 +97,12 @@ public class StockOut {
         this.billDate = billDate;
     }
 
-    public Integer getTotalStockIn() {
-        return totalStockIn;
+    public Integer getTotalStockOut() {
+        return totalStockOut;
     }
 
-    public void setTotalStockIn(Integer totalStockIn) {
-        this.totalStockIn = totalStockIn;
+    public void setTotalStockOut(Integer totalStockOut) {
+        this.totalStockOut = totalStockOut;
     }
 
     public Integer getCreate_by() {

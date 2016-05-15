@@ -4,25 +4,36 @@ import java.util.List;
 import java.util.Map;
 
 import com.l1.entity.Purchase;
+import com.l1.entity.PurchaseDtl;
 
-public interface PurchaseService {
-  public List<Purchase> find(Map<String, Object> map);
+ public interface PurchaseService {
+   List<Purchase> find(Map<String, Object> map);
 
-  public List<Purchase> findByIds(String ids);
+   List<Purchase> findByIds(String ids);
 
-  public Purchase findById(Integer id);
+   Purchase findById(Integer id);
 
-  public List<String> findNamesByIds(String ids);
+   List<String> findNamesByIds(String ids);
 
-  public Long getTotal(Map<String, Object> map);
+   Long getTotal(Map<String, Object> map);
 
-  public Integer add(Purchase Purchase);
+   Integer add(Purchase Purchase);
 
-  public Integer update(Purchase Purchase);
+   Integer update(Purchase Purchase);
 
-  public Integer deleteById(Integer id);
+   Integer deleteById(Integer id);
 
-  public void save(Purchase rent);
+   int save(Purchase purchase);
 
-  public Integer delete(String[] ids);
+   Integer delete(Integer[] ids);
+  
+   int finish(Integer[] ids, Integer[] warehouseIds);
+
+  int unfinish(Integer[] ids, Integer[] warehouseIds);
+
+   int updatePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> insertList, List<PurchaseDtl> updateList,
+                                       Integer[] deleted);
+
+   int savePurchaseWithDetails(Purchase purchase, List<PurchaseDtl> insertList);
+  
 }

@@ -210,11 +210,11 @@
             <a href="javascript:openTab('盘点单','pd','icon-khgxfx')" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-khgxfx'" style="width: 150px;">盘点单</a>
             <a href="javascript:openTab('盘点录入','pdlr','icon-khgcfx')" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-khgcfx'" style="width: 150px;">盘点录入</a>
              -->
-            <a href="javascript:openTab('库存调整','kctz','icon-khfwfx')" class="easyui-linkbutton"
+            <a href="javascript:openTab('库存调整','stockAdjust','icon-khfwfx')" class="easyui-linkbutton"
                data-options="plain:true,iconCls:'icon-khfwfx'" style="width: 150px;">库存调整</a>
-            <a href="javascript:openTab('移仓入库','ycrk','icon-khlsfx')" class="easyui-linkbutton"
+            <a href="javascript:openTab('移仓入库','stockIn','icon-khlsfx')" class="easyui-linkbutton"
                data-options="plain:true,iconCls:'icon-khlsfx'" style="width: 150px;">移仓入库</a>
-            <a href="javascript:openTab('移仓出库','ycck','icon-khlsfx')" class="easyui-linkbutton"
+            <a href="javascript:openTab('移仓出库','stockOut','icon-khlsfx')" class="easyui-linkbutton"
                data-options="plain:true,iconCls:'icon-khlsfx'" style="width: 150px;">移仓出库</a>
             <a href="javascript:openTab('Sku库存','inventory','icon-khgcfx')" class="easyui-linkbutton"
                data-options="plain:true,iconCls:'icon-khgcfx'" style="width: 150px;">Sku库存</a>

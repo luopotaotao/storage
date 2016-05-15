@@ -25,8 +25,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="save" parameterType="Inventory">
 		insert into
-		tb_inventory(id,skuId,colorId,warehouseId,sizeId,style,amount,locationId)
-		values(null,#{skuId},#{colorId},#{warehouseId},#{sizeId},#{style},#{amount},#{locationId})
+		tb_inventory(skuId,colorId,warehouseId,sizeId,style,amount,locationId)
+		values(#{skuId},#{colorId},#{warehouseId},#{sizeId},#{style},#{amount},#{locationId})
 	</insert>
 
 	<select id="findBySkuAndWarehouse" parameterType="Map">
@@ -44,9 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="update" parameterType="Inventory">
 		update tb_inventory
 		<set>
-			<if test="skuId !=null ">
-				billNo=#{billNo},
-			</if>
+
 			<if test="colorId !=null">
 				colorId=#{colorId},
 			</if>
@@ -61,9 +59,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="amount !=null  ">
 				amount=#{amount},
-			</if>
-			<if test="locationId !=null">
-				makerName=#{makerName},
 			</if>
 		</set>
 		where id=#{id}
@@ -106,8 +101,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where id =#{id}
 	</select>
 
-	<select id="getInventory" resultType="int">
-		SELECT amount FROM  tb_inventory WHERE warehouseId=#{0} and skuId=#{1}
+	<select id="getInventory" resultType="Inventory">
+		SELECT * FROM  tb_inventory WHERE warehouseId=#{0} and skuId=#{1}
 	</select>
 
 

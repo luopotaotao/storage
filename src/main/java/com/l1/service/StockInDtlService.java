@@ -21,7 +21,7 @@ public interface StockInDtlService {
 
     StockInDtl findById(int id);
 
-    List<StockInDtl> loadRentDtlsForStockIn(Integer id);
+    List<StockInDtl> loadStockOutDtlsForStockIn(Integer id);
 
-    List<StockInDtl> findRentDtlsById(Integer stockInId);
+    List<StockInDtl> findStockInDtlsById(Integer stockInId);
 }

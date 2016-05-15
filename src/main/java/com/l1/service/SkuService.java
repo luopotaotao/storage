@@ -8,24 +8,26 @@ import com.l1.entity.Sku;
 public interface SkuService {
 
 
-  public List<Sku> find(Map<String, Object> map);
+    List<Sku> find(Map<String, Object> map);
 
- public List<Map<String,String>> findForCombo(Map<String, Object> map);
+    List<Map<String, String>> findForCombo(Map<String, Object> map);
+    List<Map<String, String>> findForStockOutDtlCombo(Integer warehouseId,Integer stockOutId);
 
-  public List<Sku> findByIds(String ids);
+    List<Map<String, String>> findAllForCombo();
 
-  public Sku findById(Integer id);
+    List<Sku> findByIds(String ids);
 
-  public Long getTotal(Map<String, Object> map);
+    Sku findById(Integer id);
 
-  public Integer add(Sku sku);
+    Long getTotal(Map<String, Object> map);
 
-  public Integer update(Sku sku);
+    Integer add(Sku sku);
 
-  public Integer deleteById(Integer id);
+    Integer update(Sku sku);
 
-  public Integer deleteByItemId(Integer itemId);
+    Integer deleteById(Integer id);
 
+    Integer deleteByItemId(Integer itemId);
 
 
 }

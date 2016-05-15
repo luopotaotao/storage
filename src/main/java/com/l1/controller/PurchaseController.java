@@ -3,23 +3,33 @@ package com.l1.controller;
 import com.l1.entity.BillStat;
 import com.l1.entity.PageBean;
 import com.l1.entity.Purchase;
+import com.l1.entity.PurchaseDtl;
 import com.l1.entity.Warehouse;
 import com.l1.service.BillStatService;
 import com.l1.service.PurchaseService;
 import com.l1.service.WarehouseService;
 import com.l1.util.DateUtil;
 import com.l1.util.StringUtil;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +67,8 @@ public class PurchaseController {
     @RequestMapping("/list")
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, Purchase s_purchase, HttpServletResponse response)
-            throws Exception {
+                                    @RequestParam(value = "rows", required = false) String rows, Purchase s_purchase,
+                                    HttpServletResponse response) throws Exception {
         if (page == null) {
             page = "1";
         }
@@ -84,99 +94,78 @@ public class PurchaseController {
         return result;
     }
 
-    @RequestMapping(value = "save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(Purchase purchase) {
-        Integer warehouseId = purchase.getWarehouseId();
-        if (warehouseId != null && warehouseId > 0) {
-            Warehouse warehouse = warehouseService.findById(warehouseId);
-            if (warehouse != null) {
-                purchase.setWarehouseName(warehouse.getName());
-            }
-        }
-
-        if (purchase.getStat() > 0) {
-            BillStat billStat = billStatService.findById(purchase.getStat());
-            if (billStat != null) {
-                purchase.setStatName(billStat.getName());
-            }
-        }
-
+    public Map<String, Object> save(Purchase purchase, @RequestParam(value = "inserted", required = false) String insertedStr,
+                                    @RequestParam(value = "updated", required = false) String updatedStr,
+                                    @RequestParam(value = "deleted", required = false) Integer[] deleted, BindingResult err) {
         purchase.setCreate_time(DateUtil.now());
-        purchaseService.save(purchase);
+        List<PurchaseDtl> updateList = null;
+
+        if (purchase.getId() != null && purchase.getId() > 0) {
+            if (updatedStr != null && updatedStr.length() > 0) {
+                updateList = jsonArrayToDetailList(JSONArray.fromObject(updatedStr));
+            }
+        }
+
+        List<PurchaseDtl> insertList = null;
+        if (insertedStr != null && insertedStr.length() > 0) {
+            insertList = jsonArrayToDetailList(JSONArray.fromObject(insertedStr));
+        }
+
+        int count = 0;
+        if (purchase.getId() != null && purchase.getId() > 0) {
+            count = purchaseService.updatePurchaseWithDetails(purchase, insertList, updateList, deleted);
+        } else {
+            count = purchaseService.savePurchaseWithDetails(purchase, insertList);
+        }
 
         Map<String, Object> ret = new HashMap<String, Object>();
-        ret.put("flag", true);
+        ret.put("flag", count > 0);
+        return ret;
+    }
+
+    private List<PurchaseDtl> jsonArrayToDetailList(JSONArray array) {
+        List<PurchaseDtl> dtls = new LinkedList<PurchaseDtl>();
+        if (array != null && array.size() > 0) {
+            for (int i = 0; i < array.size(); i++) {
+                dtls.add(jsonToPurchaseDtl(array.getJSONObject(i)));
+            }
+        }
+
+        return dtls;
+    }
+
+    private PurchaseDtl jsonToPurchaseDtl(JSONObject json) {
+        WrappedJSON item = new WrappedJSON(json);
+        PurchaseDtl ret = new PurchaseDtl();
+
+        ret.setDtlId(item.getInteger("dtlId"));
+        ret.setSkuId(item.getInteger("skuId"));
+        ret.setItemName(item.getString("itemName"));
+        ret.setItemPrice(item.getBigDecimal("itemPrice"));
+        ret.setItemAmount(item.getInteger("itemAmount"));
+        ret.setItemTotal(item.getBigDecimal("itemTotal"));
+
         return ret;
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> update(Purchase purchase) {
-        Integer warehouseId = purchase.getWarehouseId();
-        if (warehouseId != null && warehouseId > 0) {
-            Warehouse warehouse = warehouseService.findById(warehouseId);
-            if (warehouse != null) {
-                purchase.setWarehouseName(warehouse.getName());
-            }
-        }
-
-        if (purchase.getStat() > 0) {
-            BillStat billStat = billStatService.findById(purchase.getStat());
-            if (billStat != null) {
-                purchase.setStatName(billStat.getName());
-            }
-        }
-
         purchase.setUpdate_time(DateUtil.now());
         purchaseService.update(purchase);
 
         Map<String, Object> ret = new HashMap<String, Object>();
         ret.put("flag", true);
+
         return ret;
-    }
-
-    @RequestMapping("/save11")
-    @ResponseBody
-    public Map<String, Object> save(Purchase purchase, HttpServletResponse response) throws Exception {
-        Integer warehouseId = purchase.getWarehouseId();
-        if (warehouseId != null && warehouseId > 0) {
-            Warehouse warehouse = warehouseService.findById(warehouseId);
-            if (warehouse != null) {
-                purchase.setWarehouseName(warehouse.getName());
-            }
-        }
-
-        Integer statId = purchase.getStat();
-        if (statId != null && statId > 0) {
-            BillStat billStat = billStatService.findById(statId);
-            if (billStat != null) {
-                purchase.setStatName(billStat.getName());
-            }
-        }
-
-        int resultTotal = 0; // 操作的记录条数
-        if (purchase.getId() == null) {
-            purchase.setCreate_time(DateUtil.now());
-            resultTotal = purchaseService.add(purchase);
-        } else {
-            purchase.setUpdate_time(DateUtil.now());
-            resultTotal = purchaseService.update(purchase);
-        }
-
-        Map<String, Object> result = new HashMap<String, Object>();
-        if (resultTotal > 0) {
-            result.put("success", true);
-        } else {
-            result.put("success", false);
-        }
-
-        return result;
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> delete(@RequestParam(value = "ids[]") String[] ids, HttpServletResponse response) throws Exception {
+    public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids,
+                                      HttpServletResponse response) throws Exception {
         if (ids != null && ids.length > 0) {
             purchaseService.delete(ids);
         }
@@ -188,9 +177,53 @@ public class PurchaseController {
 
     @RequestMapping("/findById")
     @ResponseBody
-    public Purchase findById(@RequestParam(value = "id") Integer id, HttpServletResponse response) throws Exception {
+    public Purchase findById(@RequestParam(value = "id") Integer id, HttpServletResponse response)
+            throws Exception {
         Purchase purchase = purchaseService.findById(id);
         return purchase;
+    }
+
+    @RequestMapping(value = "/unfinish", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> unfinish(@RequestParam(value = "ids[]") Integer[] ids, @RequestParam(value = "warehouseIds[]") Integer[] warehouseIds) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        int count = purchaseService.unfinish(ids, warehouseIds);
+        ret.put("flag", count > 0);
+        return ret;
+    }
+
+    @RequestMapping(value = "/finish", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> finish(@RequestParam(value = "ids[]") Integer[] ids, @RequestParam(value = "warehouseIds[]") Integer[] warehouseIds) {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        int count = purchaseService.finish(ids, warehouseIds);
+        ret.put("flag", count > 0);
+        return ret;
+    }
+
+
+    private class WrappedJSON {
+        private JSONObject source;
+
+        public WrappedJSON(JSONObject source) {
+            this.source = source;
+        }
+
+        public String getString(String key) {
+            return source.get(key) == null || source.get(key) instanceof JSONNull ? null : source.getString(key);
+        }
+
+        public Integer getInteger(String key) {
+            return source.get(key) == null || source.get(key) instanceof JSONNull ? null : source.getInt(key);
+        }
+
+        public Double getDouble(String key) {
+            return source.get(key) == null || source.get(key) instanceof JSONNull ? null : source.getDouble(key);
+        }
+
+        public BigDecimal getBigDecimal(String key) {
+            return source.get(key) == null || source.get(key) instanceof JSONNull ? null : BigDecimal.valueOf(source.getDouble(key));
+        }
     }
 
 }

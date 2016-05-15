@@ -49,12 +49,12 @@ public class StockInDtlServiceImpl implements StockInDtlService{
     }
 
     @Override
-    public List<StockInDtl> loadRentDtlsForStockIn(Integer id) {
-        return stockInDtlDao.loadStockInDtlFromRentDtl(id);
+    public List<StockInDtl> loadStockOutDtlsForStockIn(Integer id) {
+        return stockInDtlDao.loadStockInDtlFromStockOutDtl(id);
     }
 
     @Override
-    public List<StockInDtl> findRentDtlsById(Integer id) {
-        return stockInDtlDao.findRentDtlsById(id);
+    public List<StockInDtl> findStockInDtlsById(Integer id) {
+        return stockInDtlDao.findStockInDtlsById(id);
     }
 }

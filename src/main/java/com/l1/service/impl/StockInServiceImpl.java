@@ -46,7 +46,7 @@ public class StockInServiceImpl implements StockInService{
     @Transactional(isolation = Isolation.SERIALIZABLE,propagation = Propagation.REQUIRES_NEW)
     @Override
     public int save(StockIn stockIn, List<StockInDtl> details) {
-        stockIn.setBillNo(seqService.next("GH"));
+        stockIn.setBillNo(seqService.next("RK"));
         int count = stockInDao.save(stockIn);
         int id = stockIn.getId();
         for(StockInDtl item:details){
@@ -84,7 +84,7 @@ public class StockInServiceImpl implements StockInService{
     }
 
     @Override
-    public StockIn loadStockInFromStockOut(Integer rentId) {
-        return stockInDao.loadStockInFromStockOut(rentId);
+    public StockIn loadStockInFromStockOut(Integer stockOutId) {
+        return stockInDao.loadStockInFromStockOut(stockOutId);
     }
 }

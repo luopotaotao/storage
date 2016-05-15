@@ -27,6 +27,16 @@ public class SkuServiceImpl implements SkuService {
         return skuDao.findForCombo(map);
     }
 
+  @Override
+  public List<Map<String, String>> findForStockOutDtlCombo(Integer warehouseId,Integer stockOutId) {
+    return skuDao.findForStockOutDtlCombo(warehouseId,stockOutId);
+  }
+
+  @Override
+    public List<Map<String, String>> findAllForCombo() {
+        return skuDao.findAllForCombo();
+    }
+
     @Override
   public List<Sku> findByIds(String ids) {
     return skuDao.findByIds(ids);

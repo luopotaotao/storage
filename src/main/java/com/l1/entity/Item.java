@@ -7,7 +7,7 @@ public class Item {
   private Integer id;
   private String name;
   private String code;
-  private String stat;
+  private Integer stat;
   private String statName;
   private Integer create_by;
   private Integer update_by;
@@ -165,11 +165,11 @@ public class Item {
     this.code = code;
   }
 
-  public String getStat() {
+  public Integer getStat() {
     return stat;
   }
 
-  public void setStat(String stat) {
+  public void setStat(Integer stat) {
     this.stat = stat;
   }
 

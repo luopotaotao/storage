@@ -14,37 +14,43 @@ import com.l1.service.ItemService;
 @Service("itemService")
 public class ItemServiceImpl implements ItemService {
 
-  @Resource
-  private ItemDao itemDao;
+    @Resource
+    private ItemDao itemDao;
 
-  @Override
-  public List<Item> find(Map<String, Object> map) {
-    return itemDao.find(map);
-  }
+    @Override
+    public List<Item> find(Map<String, Object> map) {
+        return itemDao.find(map);
+    }
 
-  @Override
-  public Long getTotal(Map<String, Object> map) {
-    return itemDao.getTotal(map);
-  }
+    @Override
+    public Long getTotal(Map<String, Object> map) {
+        return itemDao.getTotal(map);
+    }
 
-  @Override
-  public Integer add(Item item) {
-    return itemDao.add(item);
-  }
+    @Override
+    public Integer add(Item item) {
+        return itemDao.add(item);
+    }
 
-  @Override
-  public Integer update(Item item) {
-    return itemDao.update(item);
-  }
+    @Override
+    public Integer update(Item item) {
+        return itemDao.update(item);
+    }
 
-  @Override
-  public Integer delete(Integer id) {
-    return itemDao.delete(id);
-  }
+    @Override
+    public Integer deleteById(Integer id) {
+        return itemDao.deleteById(id);
+    }
 
-  @Override
-  public Item findById(Integer id) {
-    return itemDao.findById(id);
-  }
+    @Override
+    public Integer delete(String[] ids) {
+        return itemDao.delete(ids);
+    }
+
+
+    @Override
+    public Item findById(Integer id) {
+        return itemDao.findById(id);
+    }
 
 }

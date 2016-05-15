@@ -65,15 +65,30 @@
             limit #{start},#{size}
         </if>
     </select>
-    <select id="findForCombo"  resultType="map">
+    <sql id="v_findForCombo">
         SELECT sku.id,item.name text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
+    </sql>
+    <select id="findAllForCombo" resultType="map">
+        <include refid="v_findForCombo"></include>
+    </select>
+    <select id="findForCombo"  resultType="map">
+        <include refid="v_findForCombo"></include>
         WHERE sku.id in(SELECT skuId FROM tb_inventory inventory WHERE inventory.warehouseId=#{warehouseId})
         <if test="billId!=null">
             and sku.id NOT IN (SELECT skuId FROM tb_rentdtl WHERE id=#{billId})
         </if>
+    </select>
+    <select id="findForStockOutDtlCombo"  resultType="map">
+        <include refid="v_findForCombo"></include>
+        <where>
+            <if test="stockOutId!=null">
+                AND sku.id NOT in(SELECT skuId FROM tb_stockoutdtl WHERE stockOutId=#{stockOutId})
+            </if>
+            AND sku.id in(SELECT skuId FROM tb_inventory WHERE warehouseId = #{warehouseId})
+        </where>
+
 
     </select>
-
 
     <select id="getTotal" resultType="Long">
         select count(*) from tb_sku
@@ -85,8 +100,8 @@
     </select>
 
     <insert id="add" parameterType="Sku">
-		insert into tb_sku(id,itemId,itemName,text,colorName,sizeDtlName,colorId,sizeDtlId) 
-					values(null,#{itemId},#{itemName},#{itemName},#{colorName},#{sizeDtlName},#{colorId},#{sizeDtlId})
+		insert into tb_sku(id,itemId,text,colorId,sizeDtlId)
+					values(null,#{itemId},#{text},#{colorId},#{sizeDtlId})
 	</insert>
 
     <update id="update" parameterType="Sku">

@@ -31,12 +31,6 @@ public class StockInDtlController {
     @Resource
     private StockInDtlService stockInDtlService;
 
-    @Resource
-    private BillStatService billStatService;
-
-    @Resource
-    private SkuService skuService;
-
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -67,20 +61,20 @@ public class StockInDtlController {
         return result;
     }
 
-    @RequestMapping(value = "/loadRentDtlsForStockIn",method = RequestMethod.GET)
+    @RequestMapping(value = "/loadStockOutDtlsForStockIn",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> loadRentDtlsForStockIn(@RequestParam  Integer rentId) throws Exception {
-        List<StockInDtl> list = stockInDtlService.loadRentDtlsForStockIn(rentId);
+    public Map<String, Object> loadStockOutDtlsForStockIn(@RequestParam  Integer stockOutId) throws Exception {
+        List<StockInDtl> list = stockInDtlService.loadStockOutDtlsForStockIn(stockOutId);
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("rows", list);
         result.put("total", list.size());
         return result;
     }
-    @RequestMapping(value = "/findRentDtlsById",method = RequestMethod.GET)
+    @RequestMapping(value = "/findStockInDtlsById",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> findRentDtlsById(Integer stockInId){
+    public Map<String,Object> findStockOutDtlsById(Integer stockInId){
         Map<String, Object> result = new HashMap<String, Object>();
-        List<StockInDtl> list = stockInDtlService.findRentDtlsById(stockInId);
+        List<StockInDtl> list = stockInDtlService.findStockInDtlsById(stockInId);
         result.put("rows", list);
         result.put("total", list.size());
         return result;

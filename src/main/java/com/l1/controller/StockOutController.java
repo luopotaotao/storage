@@ -36,13 +36,6 @@ import java.util.*;
 public class StockOutController {
     @Resource
     private StockOutService stockOutService;
-
-    @Resource
-    private WarehouseService warehouseService;
-
-    @Resource
-    private BillStatService billStatService;
-
     @Resource
     private DicService dicService;
 
@@ -114,7 +107,7 @@ public class StockOutController {
             inserted = jsonArrayToStockOutDetailList(JSONArray.fromObject(insertedStr));
         }
 
-        int count = 0;
+        int count;
         if (stockOut.getId() != null) {
             count = stockOutService.updateWithDetails(stockOut, inserted,updated,deleted);
         } else {
@@ -162,11 +155,12 @@ public class StockOutController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> delete(@RequestParam(value = "ids[]") Integer[] ids) throws Exception {
+        int count = 0;
         if (ids != null && ids.length > 0) {
-            stockOutService.delete(ids);
+            count = stockOutService.delete(ids);
         }
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", true);
+        result.put("flag", count>0);
         return result;
     }
 
