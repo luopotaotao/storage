@@ -10,7 +10,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="text" column="supplierName"/>
 		<result property="supplierCode" column="supplierCode"/>
 		<result property="stat" column="stat"/>
+		<result property="statName" column="statName"/>
 		<result property="type" column="type"/>
+		<result property="typeName" column="typeName"/>
 		<result property="mobile" column="mobile"/>
 		<result property="create_by" column="create_by"/>
 		<result property="create_time" column="create_time"/>
@@ -18,14 +20,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="update_time" column="update_time"/>
 	</resultMap>
 	
-	<select id="find" parameterType="Map" resultMap="SupplierResult">
-		select * from tb_supplier
+	<select id="find" parameterType="map" resultMap="SupplierResult">
+		select s.*,stat.textField statName,type.textField typeName
+		from tb_supplier s
+		LEFT JOIN (SELECT valueField,textField FROM tb_dic WHERE keyWord='supplierStatus') stat ON s.stat = stat.valueField
+		LEFT JOIN (SELECT valueField,textField FROM tb_dic WHERE keyWord='supplierType') type ON s.type = type.valueField
 		<where>
-			<if test="supplierName!=null and supplierName!='' ">
-				and supplierName like #{supplierName}
+			<if test="type!=null">
+				and type = #{type}
 			</if>
-			<if test="stat!=null and stat!='' ">
-				and stat like #{stat}
+			<if test="stat!=null">
+				and stat = #{stat}
 			</if>
 		</where>
 		<if test="start!=null and size!=null">
@@ -37,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select count(*) from tb_supplier
 		<where>
 			<if test="supplierName!=null and supplierName!='' ">
-				and supplierName like #{supplierName}
+				and supplierName like CONCAT('%',#{supplierName},'%')
 			</if>
 		</where>
 	</select>

@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<select id="find" parameterType="Map" resultMap="RentDtlResult">
-		SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+		SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeName
 		FROM tb_rentdtl r
 		LEFT JOIN tb_sku sku ON r.skuId = sku.id
 		LEFT JOIN tb_item item ON sku.itemId = item.id

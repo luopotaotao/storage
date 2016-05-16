@@ -70,9 +70,9 @@ public class RentDtlController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("rentId", rentId);
 
-        List<RentDtl> linkManList = rentDtlService.find(map);
+        List<RentDtl> list = rentDtlService.find(map);
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("rows", linkManList);
+        result.put("rows", list);
 
         return result;
     }

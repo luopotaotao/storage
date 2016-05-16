@@ -364,7 +364,7 @@ $(function () {
             $.ajax({
                 url: 'sku/getAvailableSkuInfo',
                 type: 'get',
-                data: {warehouseId: $('#warehouseId').val(), billId: $('#id').val()},
+                data: {warehouseId: $('#warehouseId').combobox('getValue'), billId: $('#id').val()},
                 dataType: 'json',
                 async: true
             }).success(function (ret) {
@@ -545,8 +545,8 @@ $(function () {
                 ret.skuId = ret.id;
                 delete ret.id;
                 $('#t2EditForm').form('load', ret);
-                if (ret.suffix) {
-                    $('#skuImage').attr('src', 'resources/images/upload' + ret.id + ret.suffix);
+                if (ret.imgSuffix) {
+                    $('#skuImage').attr('src', 'resources/images/upload/' + ret.skuId + ret.imgSuffix);
                 }
             } else {
                 $.messager.alert('系统提示', '加载SKU信息失败!');
@@ -559,20 +559,20 @@ $(function () {
     }
 
     function loadInventory() {
-        $('#t2EditForm').loading('查询库存信息,请稍后...');
+        $('#t2EditPanel').loading('查询库存信息,请稍后...');
         $.ajax({
             url: '/inventory/getInventory',
-            data: {warehouseId: $('#warehouseId').val(), skuId: $('#skuId').val()},
+            data: {warehouseId: $('#warehouseId').combobox('getValue'), skuId: $('#skuId').combobox('getValue')},
             type: 'get',
             dataType: 'json'
         }).success(function (ret) {
             if (ret && $.isPlainObject(ret)) {
-                $('#amount').numberbox('setValue', ret.amount);
+                $('#amount').textbox('setValue', ret.amount);
             }
         }).error(function () {
             $.messager.alert('系统提示', '加载库存信息失败,请重新尝试或联系管理员!');
         }).complete(function () {
-            $('#t2EditForm').loaded();
+            $('#t2EditPanel').loaded();
         });
     }
 })

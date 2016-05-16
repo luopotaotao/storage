@@ -141,9 +141,9 @@
                     <select class="easyui-combobox" id="type" name="type" style="width: 173px" editable="false"
                             panelHeight="auto">
                         <option value="">请选择供应商类型...</option>
-                        <option value="委外">委外</option>
-                        <option value="供货">供货</option>
-                        <option value="物流">物流</option>
+                        <option value="0">委外</option>
+                        <option value="1">供货</option>
+                        <option value="2">物流</option>
                     </select>
                     &nbsp;<span class="required">*</span>
                 </td>
@@ -155,8 +155,8 @@
                     <select class="easyui-combobox" id="stat" name="stat" style="width: 173px" editable="false"
                             panelHeight="auto">
                         <option value="">请选择状态...</option>
-                        <option value="使用" selected="selected">使用</option>
-                        <option value="停用">停用</option>
+                        <option value="0" selected="selected">使用</option>
+                        <option value="1">停用</option>
                     </select>
                     &nbsp;<span class="required">*</span>
                 </td>

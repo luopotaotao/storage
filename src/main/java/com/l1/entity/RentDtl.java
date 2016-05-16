@@ -8,7 +8,7 @@ public class RentDtl {
 
 	private Integer skuId;
 	private String colorName;
-	private String sizeDtlName;
+	private String sizeName;
 	private String itemName;
 	private BigDecimal itemPrice;
 	private Integer itemAmount;
@@ -47,12 +47,12 @@ public class RentDtl {
 		this.colorName = colorName;
 	}
 
-	public String getSizeDtlName() {
-		return sizeDtlName;
+	public String getSizeName() {
+		return sizeName;
 	}
 
-	public void setSizeDtlName(String sizeDtlName) {
-		this.sizeDtlName = sizeDtlName;
+	public void setSizeName(String sizeName) {
+		this.sizeName = sizeName;
 	}
 
 	public String getItemName() {

@@ -6,10 +6,8 @@ import com.l1.service.SupplierService;
 import com.l1.util.DateUtil;
 import com.l1.util.StringUtil;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -46,15 +44,14 @@ public class SupplierController {
 
     @RequestMapping("/list")
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, Supplier s_supplier
+    public Map<String, Object> list(@RequestParam(value = "page", required = false) Integer page,
+                                    @RequestParam(value = "rows", required = false) Integer rows, Supplier s_supplier,BindingResult r
     ) throws Exception {
-        PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("supplierName", StringUtil.formatLike(s_supplier.getSupplierName()));
-        map.put("supplierState", StringUtil.formatLike(s_supplier.getStat()));
-        map.put("start", pageBean.getStart());
-        map.put("size", pageBean.getPageSize());
+        map.put("supplierName", s_supplier.getSupplierName());
+        map.put("state", s_supplier.getStat());
+        map.put("start", page!=null&&rows!=null?(page-1)*rows:null);
+        map.put("size", rows);
 
         List<Supplier> supplierList = supplierService.find(map);
         Long total = supplierService.getTotal(map);
@@ -76,10 +73,8 @@ public class SupplierController {
     public Map<String, Object> save(Supplier supplier) throws Exception {
         int resultTotal = 0; // 操作的记录条数
         if (supplier.getId() == null) {
-            supplier.setCreate_time(DateUtil.now());
             resultTotal = supplierService.add(supplier);
         } else {
-            supplier.setUpdate_time(DateUtil.now());
             resultTotal = supplierService.update(supplier);
         }
 
@@ -114,9 +109,14 @@ public class SupplierController {
 
     @RequestMapping("/comboList")
     @ResponseBody
-    public List<Supplier> itemManagerComboList() throws Exception {
+    public List<Supplier> itemManagerComboList(Integer type, Integer stat) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("stat", "使用");
+        if(type !=null){
+            map.put("type", type);
+        }
+        if(stat!=null){
+            map.put("stat",stat);
+        }
         List<Supplier> supplierList = supplierService.find(map);
 
         return supplierList;

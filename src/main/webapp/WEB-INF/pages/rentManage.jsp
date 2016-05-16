@@ -154,7 +154,7 @@
                     editable:false,
                     valueField: 'id',
                     textField: 'text',
-                    url: '${pageContext.request.contextPath}/supplier/comboList'">
+                    url: '${pageContext.request.contextPath}/supplier/comboList?type=2&stat=0'">
                     </select>
                 </td>
             </tr>
@@ -211,11 +211,13 @@
             <tr>
                 <th field="cb" checkbox="true" align="center"></th>
                 <th data-options="field:'id',width:80,hidden:true">id</th>
-                <th data-options="field:'skuId',width:80">SKU</th>
-                <th data-options="field:'itemName',width:80">商品名称</th>
-                <th data-options="field:'itemPrice',width:80,align:'right'">单价</th>
-                <th data-options="field:'itemAmount',width:60,align:'right'">数量</th>
-                <th data-options="field:'itemRent',width:60">金额</th>
+                <th data-options="field:'skuId',width:80,align:'center'">SKU</th>
+                <th data-options="field:'itemName',width:80,align:'center'">商品名称</th>
+                <th data-options="field:'colorName',width:80,align:'center'">颜色</th>
+                <th data-options="field:'sizeName',width:80,align:'center'">尺码</th>
+                <th data-options="field:'itemPrice',width:80,align:'center'">单价</th>
+                <th data-options="field:'itemAmount',width:60,align:'center'">数量</th>
+                <th data-options="field:'itemRent',width:60,align:'center'">金额</th>
                 <th data-options="field:'itemRepo',width:60,align:'center'">押金</th>
 
             </tr>
@@ -256,8 +258,8 @@
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName"
-                                   id="sizeDtlName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeName"
+                                   id="sizeName"
                                    style="width:150px">
                         </td>
                     </tr>
