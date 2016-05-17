@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -150,8 +150,8 @@
                 <img alt="logo" src="${pageContext.request.contextPath}/resources/images/bglogo.png">
             </td>
             <td valign="bottom" align="right" width="50%">
-                <font size="4">&nbsp;&nbsp;<strong>欢迎：</strong>${currentUser.userName }【${currentUser.trueName }】</font>
-                <a href="javascript:logout()" style="height:17px;width:52px"><font size="4">退出系统</font></a>
+                <font size="4">&nbsp;&nbsp;<strong>欢迎：</strong>${currentUser.userName }【<shiro:principal/>】</font>
+                <a href="/logout" style="height:17px;width:52px"><font size="4">退出系统</font></a>
             </td>
         </tr>
     </table>

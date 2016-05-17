@@ -294,12 +294,26 @@ $(function () {
                 $('#t2EditForm').form('clear');
                 $('#t2EditForm').form('load', rows[0]);
                 $('#t2EditPanel').dialog('open');
+                loadSkuImage(rows[0]['skuId']);
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
         }
     }
-
+    function loadSkuImage(skuId){
+        $.ajax({
+            url:'image/findById',
+            type:'get',
+            data:{id:skuId},
+            dataType:'json'
+        }).success(function (ret) {
+            if($.isPlainObject(ret)){
+                if(ret.suffix){
+                    $('#skuImage').attr('src', 'resources/images/upload/' + skuId + ret.suffix);
+                }
+            }
+        });
+    }
 
     function t2Save() {
         if ($('#t2EditForm').form('validate')) {

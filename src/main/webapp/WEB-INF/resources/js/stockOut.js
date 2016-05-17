@@ -343,12 +343,26 @@ $(function () {
                 $('#t2EditPanel').dialog('open');
                 $('#skuId').combobox({disabled:true,value:rows[0].skuId});
                 // $('#skuId').combobox('setValue',rows[0].skuId);
+                loadSkuImage(rows[0]['skuId']);
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
         }
     }
-
+    function loadSkuImage(skuId){
+        $.ajax({
+            url:'image/findById',
+            type:'get',
+            data:{id:skuId},
+            dataType:'json'
+        }).success(function (ret) {
+            if($.isPlainObject(ret)){
+                if(ret.suffix){
+                    $('#skuImage').attr('src', 'resources/images/upload/' + skuId + ret.suffix);
+                }
+            }
+        });
+    }
     function initSkuCombo(callback) {
         var rows = $('#t2_dg').datagrid('getRows');
         if (!rows || rows.length < 1) {
@@ -536,8 +550,8 @@ $(function () {
                 ret.skuId = ret.id;
                 delete ret.id;
                 $('#t2EditForm').form('load', ret);
-                if (ret.suffix) {
-                    $('#skuImage').attr('src', 'resources/images/upload' + ret.id + ret.suffix);
+                if (ret.imgSuffix) {
+                    $('#skuImage').attr('src', 'resources/images/upload/' + ret.skuId + ret.imgSuffix);
                 }
             } else {
                 $.messager.alert('系统提示', '加载SKU信息失败!');
