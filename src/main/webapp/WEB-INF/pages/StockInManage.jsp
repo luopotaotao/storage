@@ -171,7 +171,7 @@
                         <td>
                             <input type="hidden" name="sizeId">
 
-                            <input class="easyui-textbox" data-options="disabled:true" name="itemName" id="sizeName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeName" id="sizeName"
                                    style="width:150px">
                         </td>
                     </tr>

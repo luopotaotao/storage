@@ -12,7 +12,7 @@
         <result property="colorId" column="colorId"/>
         <result property="colorName" column="colorName"/>
         <result property="sizeDtlId" column="sizeDtlId"/>
-        <result property="sizeDtlName" column="sizeDtlName"/>
+        <result property="sizeName" column="sizeName"/>
         <result property="imgSuffix" column="imgSuffix"/>
         <result property="amount" column="amount"/>
         <result property="text" column="text"/>
@@ -20,7 +20,7 @@
 
     <sql id="v_sku">
       SELECT * FROM (
-        SELECT sku.*,item.name itemName,item.rental1 itemPrice,color.name colorName,sizedtl.name sizeDtlName
+        SELECT sku.*,item.name itemName,item.rental1 itemPrice,color.name colorName,sizedtl.name sizeName
         FROM tb_sku sku
           LEFT JOIN tb_item item ON sku.itemId = item.id
            LEFT JOIN tb_color color ON sku.colorId = color.id
@@ -49,8 +49,8 @@
                 and sizeDtlId = #{sizeDtlId}
             </if>
 
-            <if test="sizeDtlName!=null and sizeDtlName!='' ">
-                and sizeDtlName = #{sizeDtlName}
+            <if test="sizeName!=null and sizeName!='' ">
+                and sizeName = #{sizeName}
             </if>
 
             <if test="sizeDtlId!=null and sizeDtlId!='' ">
@@ -119,8 +119,8 @@
             <if test="itemName!=null and itemName!='' ">
                 text=#{itemName},
             </if>
-            <if test="sizeDtlName!=null and sizeDtlName!='' ">
-                sizeDtlName=#{sizeDtlName},
+            <if test="sizeName!=null and sizeName!='' ">
+                sizeName=#{sizeName},
             </if>
             <if test="colorName!=null and colorName!='' ">
                 colorName=#{colorName},

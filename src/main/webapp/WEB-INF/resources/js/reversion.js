@@ -295,6 +295,7 @@ $(function () {
                 $('#t2EditForm').form('load', rows[0]);
                 $('#t2EditPanel').dialog('open');
                 loadSkuImage(rows[0]['skuId']);
+                
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')

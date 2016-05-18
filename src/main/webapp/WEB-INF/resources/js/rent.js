@@ -335,10 +335,8 @@ $(function () {
             $.messager.alert('系统提示', '填写明细单前请选择出库仓库');
             return;
         }
-        $.t2CurrentItem = {rentId: $('#id').val()};
-        $('#t2EditForm').form('clear');
-        $('#t2EditForm').form('load', $.t2CurrentItem);
         $('#t2EditPanel').dialog('open');
+        $('#t2EditForm').form('clear');
 
     }
 
@@ -351,6 +349,7 @@ $(function () {
                 $('#t2EditForm').form('clear');
                 $('#t2EditForm').form('load', rows[0]);
                 $('#t2EditPanel').dialog('open');
+                loadInventory();
                 loadSkuImage(rows[0]['skuId']);
             }
         } else {
@@ -414,10 +413,13 @@ $(function () {
                                         return;
                                     }
                                 }
+
                                 if (!contains) {
                                     $.messager.alert('系统提示', '只能从下拉框中选择值!');
                                     $(this).combobox('reset');
                                 }
+                            },onSelect:function (ret) {
+                                loadInventory();
                             }
                         }
                     );

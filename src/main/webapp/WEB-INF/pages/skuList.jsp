@@ -107,7 +107,7 @@
         <th field="id" width="50" align="center" hidden="true">ID</th>
         <th field="itemName" width="50" align="center">商品名称</th>
         <th field="colorName" width="50" align="center">颜色</th>
-        <th field="sizeDtlName" width="50" align="center">尺码</th>
+        <th field="sizeName" width="50" align="center">尺码</th>
     </tr>
     </thead>
 </table>

@@ -10,7 +10,7 @@ public class Sku {
 	private String colorName;
 
 	private Integer sizeDtlId;
-	private String sizeDtlName;
+	private String sizeName;
 
 	private String imgSuffix;
 	private Integer amount;
@@ -73,12 +73,12 @@ public class Sku {
 		this.colorName = colorName;
 	}
 
-	public String getSizeDtlName() {
-		return sizeDtlName;
+	public String getSizeName() {
+		return sizeName;
 	}
 
-	public void setSizeDtlName(String sizeDtlName) {
-		this.sizeDtlName = sizeDtlName;
+	public void setSizeName(String sizeName) {
+		this.sizeName = sizeName;
 	}
 
 	public String getImgSuffix() {

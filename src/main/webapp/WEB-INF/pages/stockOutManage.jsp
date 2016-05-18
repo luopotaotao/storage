@@ -135,7 +135,7 @@
                 <th data-options="field:'skuId',width:80">SKU</th>
                 <th data-options="field:'itemName',width:80">商品名称</th>
                 <th data-options="field:'colorName',width:80,align:'right'">颜色</th>
-                <th data-options="field:'sizeDtlName',width:60,align:'right'">尺码</th>
+                <th data-options="field:'sizeName',width:60,align:'right'">尺码</th>
                 <th data-options="field:'stockOutAmount',width:60">数量</th>
             </tr>
             </thead>
@@ -175,8 +175,8 @@
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName"
-                                   id="sizeDtlName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeName"
+                                   id="sizeName"
                                    style="width:150px">
                         </td>
                     </tr>

@@ -327,6 +327,8 @@ $(function () {
             $.messager.alert('系统提示', '填写明细单前请选择出库仓库');
             return;
         }
+        $('#skuId').combobox({disabled:false});
+
         $('#t2EditForm').form('clear');
         $('#t2EditPanel').dialog('open');
 
@@ -344,6 +346,7 @@ $(function () {
                 $('#skuId').combobox({disabled:true,value:rows[0].skuId});
                 // $('#skuId').combobox('setValue',rows[0].skuId);
                 loadSkuImage(rows[0]['skuId']);
+                loadInventory();
             }
         } else {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
@@ -409,6 +412,8 @@ $(function () {
                                     $.messager.alert('系统提示', '只能从下拉框中选择值!');
                                     $(this).combobox('reset');
                                 }
+                            },onSelect:function (ret) {
+                                loadInventory();
                             }
                         }
                     );

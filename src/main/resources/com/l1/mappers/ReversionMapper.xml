@@ -100,7 +100,7 @@
     </select>
 
     <select id="loadReversionDtlsFromRentDtl" resultType="map">
-        SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeDtlName
+        SELECT r.*,item.name itemName,color.name colorName,sizedtl.name sizeName
 		FROM tb_rentdtl r
 		LEFT JOIN tb_sku sku ON r.skuId = sku.id
 		LEFT JOIN tb_item item ON sku.itemId = item.id

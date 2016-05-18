@@ -167,7 +167,7 @@
                         </td>
                         <td>尺码</td>
                         <td>
-                            <input class="easyui-textbox" data-options="disabled:true" name="sizeDtlName" id="sizeDtlName"
+                            <input class="easyui-textbox" data-options="disabled:true" name="sizeName" id="sizeName"
                                    style="width:150px">
                         </td>
                     </tr>
