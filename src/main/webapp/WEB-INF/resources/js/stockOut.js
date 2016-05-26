@@ -530,7 +530,7 @@ $(function () {
     }
 
     function closeEditPanel(msg) {
-        if (msg) {
+        if (typeof msg == 'string') {
             $.messager.alert('系统提示', msg);
         }
         $('#editForm').form('clear');

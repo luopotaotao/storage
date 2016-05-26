@@ -66,23 +66,21 @@ public class RentController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, Rent s_rent)
+    public Map<String, Object> list(@RequestParam(value = "page", required = false) Integer page,
+                                    @RequestParam(value = "rows", required = false) Integer rows,@RequestParam(value = "billStat[]",required = false) Integer[] billStat)
             throws Exception {
         if (page == null) {
-            page = "1";
+            page = 1;
         }
 
         if (rows == null) {
-            rows = "10";
+            rows = 10;
         }
 
-        PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("customerName", StringUtil.formatLike(s_rent.getCustomerName()));
-        map.put("start", pageBean.getStart());
-        map.put("size", pageBean.getPageSize());
-
+        map.put("start", (page-1)*rows);
+        map.put("size", rows);
+        map.put("billStat",billStat);
         List<Rent> rentList = rentService.find(map);
         Long total = rentService.getTotal(map);
 

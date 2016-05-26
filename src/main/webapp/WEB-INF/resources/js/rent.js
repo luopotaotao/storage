@@ -7,7 +7,8 @@ $(function () {
     $.extend({
         rent: {
             loadInventory: loadInventory,
-            loadSkuInfo: loadSkuInfo
+            loadSkuInfo: loadSkuInfo,
+            query:query
         }
     })
     bindHandlers();
@@ -75,7 +76,7 @@ $(function () {
 
         $('#billStat').combobox('setValue', 0);
         $('#stat').combobox('setValue', 1);
-
+        $('#createdBy').textbox('setValue',$('#createdBy').attr('value'));
         $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
     }
 
@@ -160,7 +161,8 @@ $(function () {
         $.ajax({
             url: url,
             dataType: 'json',
-            type: 'get'
+            type: 'get',
+            data:{'billStat':$('#query_billStat').combobox('getValues')}
         }).success(function (ret) {
             if (ret && ret.rows) {
                 $('#dg').datagrid('loadData', ret);

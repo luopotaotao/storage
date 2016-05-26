@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -66,13 +67,33 @@
     </tr>
     </thead>
 </table>
+<div id="tb">
+    <div>
+        &nbsp;商品名称：&nbsp;<input type="text" id="s_itemName" size="20" onkeydown="if(event.keyCode==13) searchColor()"/>
+        <a href="javascript:searchColor()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+    </div>
+</div>
 <div id="menu" style="padding:2px 5px;">
-    <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
-    <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
-    <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
-    <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
-    <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
-    <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    <div>
+        <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
+        <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
+        <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
+        <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    </div>
+    <div>
+        &nbsp;单据状态：&nbsp;
+        <select class="easyui-combobox input" name="billStat" id="query_billStat" style="width:120px;"
+                data-options="
+                    editable:false,
+                    multiple:true,
+                    valueField: 'valueField',
+                    textField: 'textField',
+                    data:[{valueField:'0',textField:'未审核'},{valueField:'1',textField:'已审核'}]">
+        </select>
+        <a href="javascript:$.rent.query()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+    </div>
 </div>
 <%--以下为编辑面板的内容--%>
 <div id="editPanel" class="easyui-dialog edit-panel" title="编辑" style="height: 650px;height: 500px;"
@@ -198,7 +219,7 @@
             </tr>
             <tr>
                 <td class="label">操作员</td>
-                <td><input class="easyui-textbox input" readonly type="text" name="createdBy" id="createdBy">
+                <td><input class="easyui-textbox input" readonly type="text" name="createdBy" id="createdBy" value="<shiro:principal/>">
                 </td>
                 </td>
             </tr>
@@ -276,7 +297,7 @@
                         </td>
                         <td>当前库存</td>
                         <td>
-                            <input class="easyui-textbox"  name="amount" id="amount"
+                            <input class="easyui-textbox" id="amount"
                                    style="width:150px"
                                    data-options="
                                    editable:false,

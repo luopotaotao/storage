@@ -84,14 +84,23 @@
                     textField: 'text',
                     method:'get',
                     url: 'warehouse/comboList',
-                    onSelect:function(ret){
+                    onSelect:function(rec){
                         var rows = $('#t2_dg').datagrid('getRows');
                         if(rows&&rows.length>0){
                             $.messager.confirm('系统提示','重新选择仓库需要重新填写出租明细,是否继续?？',function(r){
                                 if (r){
                                     $('#t2_dg').datagrid('loadData',{total:0,rows:[]});
+                                }else{
+                                debugger;
+                                    $('#stockOutWarehouseId').combobox('setValue',$('#stockOutWarehouseId').combobox('getValue'));
                                 }
                             });
+                        }
+                    },onChange:function(newValue, oldValue){
+                        var inValue = $('#stockInWarehouseId').combobox('getValue');
+                        if(newValue==inValue){
+                            $.messager.alert('系统提示','出库仓库和入库仓库不能相同!');
+                            $(this).combobox('setValue',oldValue);
                         }
                     }">
                     </select>
@@ -104,7 +113,14 @@
                     valueField: 'id',
                     textField: 'text',
                     method:'get',
-                    url: 'warehouse/comboList'">
+                    url: 'warehouse/comboList',
+                    onChange:function(newValue, oldValue){
+                        var outValue = $('#stockOutWarehouseId').combobox('getValue');
+                        if(newValue==outValue){
+                            $.messager.alert('系统提示','出库仓库和入库仓库不能相同!');
+                            $(this).combobox('setValue',oldValue);
+                        }
+                    }">
                     </select>
                 </td>
             </tr>
@@ -211,8 +227,8 @@
     </div>
 </div>
 <div id="editPanel-buttons">
-    <a id="btn_edit_save" href="javascript:void(0)" class="easyui-linkbutton">保存</a>
-    <a id="btn_edit_close" href="javascript:void(0)" class="easyui-linkbutton">取消</a>
+    <a id="btn_edit_save" href="#" class="easyui-linkbutton">保存</a>
+    <a id="btn_edit_close" href="#" class="easyui-linkbutton">取消</a>
 </div>
 
 </body>

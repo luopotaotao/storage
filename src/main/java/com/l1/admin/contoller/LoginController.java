@@ -58,6 +58,7 @@ public class LoginController {
                 expMsg = "登录异常 :" + authExp.getMessage();
             }
         }
+
         result.setFlag(expMsg==null);
         result.setMsg(expMsg);
         return result;

@@ -99,19 +99,19 @@
         WHERE keyWord = 'rentBillStatus') d
         ON r.billStat = d.valueField
         <where>
-            <if test="name!=null and name!='' ">
-                and name like #{name}
+            <if test="billStat!=null and billStat.length>0 ">
+                and r.billStat IN
+                <foreach item="item" index="index" collection="billStat" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
-            <if test="code!=null and code!='' ">
-                and code like #{code}
-            </if>
-            <if test="stat!=null and stat!='' ">
-                and stat=#{stat}
-            </if>
+
         </where>
+        ORDER  BY r.billNo desc
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>
+
     </select>
 
     <select id="findByIds" parameterType="string" resultMap="RentResult">
@@ -148,11 +148,11 @@
     <select id="getTotal" parameterType="map" resultType="Long">
         select count(*) from tb_rent
         <where>
-            <if test="name!=null and name!='' ">
-                and name like #{name}
-            </if>
-            <if test="code!=null and code!='' ">
-                and code like #{code}
+            <if test="billStat!=null and billStat.length>0 ">
+                and billStat IN
+                <foreach item="item" index="index" collection="billStat" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
     </select>

@@ -5,7 +5,7 @@ public class Sku {
 	private Integer itemId;
 	private String itemName;
 	private Double itemPrice;
-
+	private Double itemRepo;
 	private Integer colorId;
 	private String colorName;
 
@@ -49,7 +49,15 @@ public class Sku {
         this.itemPrice = itemPrice;
     }
 
-    public Integer getColorId() {
+	public Double getItemRepo() {
+		return itemRepo;
+	}
+
+	public void setItemRepo(Double itemRepo) {
+		this.itemRepo = itemRepo;
+	}
+
+	public Integer getColorId() {
 		return colorId;
 	}
 
