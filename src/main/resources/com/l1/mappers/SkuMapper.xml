@@ -67,7 +67,7 @@
         </if>
     </select>
     <sql id="v_findForCombo">
-        SELECT sku.id,item.name text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
+        SELECT sku.id,concat(sku.id,' ',item.name) text from tb_sku sku LEFT JOIN tb_item item ON sku.itemId = item.id
     </sql>
     <select id="findAllForCombo" resultType="map">
         <include refid="v_findForCombo"></include>

@@ -67,12 +67,6 @@
     </tr>
     </thead>
 </table>
-<div id="tb">
-    <div>
-        &nbsp;商品名称：&nbsp;<input type="text" id="s_itemName" size="20" onkeydown="if(event.keyCode==13) searchColor()"/>
-        <a href="javascript:searchColor()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
-    </div>
-</div>
 <div id="menu" style="padding:2px 5px;">
     <div>
         <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
@@ -259,7 +253,7 @@
                     <tr>
                         <td>SKU</td>
                         <td>
-                            <select class="easyui-combobox" name="skuId" id="skuId" style="width:150px;">
+                            <select class="easyui-combobox" id="skuId" style="width:150px;">
                             </select>
                         </td>
 

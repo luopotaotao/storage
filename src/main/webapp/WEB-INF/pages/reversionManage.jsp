@@ -67,12 +67,26 @@
     </thead>
 </table>
 <div id="menu" style="padding:2px 5px;">
-    <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
-    <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
-    <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
-    <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
-    <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
-    <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    <div>
+        <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
+        <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
+        <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
+        <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    </div>
+    <div>
+        &nbsp;单据状态：&nbsp;
+        <select class="easyui-combobox input" name="billStat" id="query_billStat" style="width:120px;"
+                data-options="
+                    editable:false,
+                    multiple:true,
+                    valueField: 'valueField',
+                    textField: 'textField',
+                    data:[{valueField:'0',textField:'未审核'},{valueField:'1',textField:'已审核'}]">
+        </select>
+        <a href="javascript:$.reversion.query()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+    </div>
 </div>
 <%--以下为编辑面板的内容--%>
 <div id="editPanel" class="easyui-dialog edit-panel" title="编辑" style="height: 650px;height: 500px;"
@@ -106,8 +120,9 @@
                 <td class="label">出租单状态</td>
                 <td>
                     <input type="hidden" name="rentBillStat">
-                    <input class="easyui-textbox input" name="rentBillStatName" id="rentBillStatName" style="width:120px;"
-                            data-options="disabled:true">
+                    <input class="easyui-textbox input" name="rentBillStatName" id="rentBillStatName"
+                           style="width:120px;"
+                           data-options="disabled:true">
                     </input>
                 </td>
             </tr>
@@ -181,7 +196,8 @@
             </tr>
             <tr>
                 <td class="label">赔偿总金额</td>
-                <td><input class="easyui-numberbox input" data-options="disabled:true" type="text" name="compensateMoney"
+                <td><input class="easyui-numberbox input" data-options="disabled:true" type="text"
+                           name="compensateMoney"
                            id="compensateMoney">
                 </td>
                 <td class="label">操作员</td>
@@ -293,7 +309,8 @@
                         </td>
                         <td>归还数量</td>
                         <td>
-                            <input class="easyui-numberbox" data-options="required:true" name="reversionAmount" id="reversionAmount"
+                            <input class="easyui-numberbox" data-options="required:true" name="reversionAmount"
+                                   id="reversionAmount"
                                    style="width:150px">
                         </td>
                     </tr>
@@ -304,7 +321,8 @@
                                    style="width:150px"></td>
 
                         <td>押金</td>
-                        <td><input class="easyui-numberbox" data-options="disabled:true" type="text" name="itemRepo" style="width:150px">
+                        <td><input class="easyui-numberbox" data-options="disabled:true" type="text" name="itemRepo"
+                                   style="width:150px">
                         </td>
                     </tr>
                     <tr>

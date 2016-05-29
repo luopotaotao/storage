@@ -7,7 +7,8 @@ $(function () {
     bindT2Handlers();
     $.extend({
         reversion: {
-            loadRentBillInfo: loadRentBillInfo
+            loadRentBillInfo: loadRentBillInfo,
+            query: query
         }
     });
     var t1Url = 'reversion';
@@ -125,20 +126,7 @@ $(function () {
     }
 
     function query() {
-        var url = t1Url + '/list';
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            type: 'get'
-        }).success(function (ret) {
-            if (ret && ret.rows) {
-                $('#dg').datagrid('loadData', ret);
-            } else {
-                $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-            }
-        }).error(function (err) {
-            $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-        });
+        $('#dg').datagrid('reload',{'billStat': $('#query_billStat').combobox('getValues')});
     }
 
     function save() {

@@ -8,7 +8,7 @@ $(function () {
         rent: {
             loadInventory: loadInventory,
             loadSkuInfo: loadSkuInfo,
-            query:query
+            query: query
         }
     })
     bindHandlers();
@@ -76,7 +76,7 @@ $(function () {
 
         $('#billStat').combobox('setValue', 0);
         $('#stat').combobox('setValue', 1);
-        $('#createdBy').textbox('setValue',$('#createdBy').attr('value'));
+        $('#createdBy').textbox('setValue', $('#createdBy').attr('value'));
         $('#t2_dg').datagrid('loadData', {total: 0, rows: []});
     }
 
@@ -157,21 +157,7 @@ $(function () {
     }
 
     function query() {
-        var url = t1Url + '/list';
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            type: 'get',
-            data:{'billStat':$('#query_billStat').combobox('getValues')}
-        }).success(function (ret) {
-            if (ret && ret.rows) {
-                $('#dg').datagrid('loadData', ret);
-            } else {
-                $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-            }
-        }).error(function (err) {
-            $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-        });
+        $('#dg').datagrid('reload',{'billStat': $('#query_billStat').combobox('getValues')});
     }
 
     function save() {
@@ -227,8 +213,6 @@ $(function () {
                         $('#editForm').form('clear');
                         $('#editPanel').dialog('close');
                     }
-
-                    query();
                 } else {
                     $.messager.alert('系统提示!', '保存失败,请重新尝试或联系管理员!');
                 }
@@ -249,7 +233,7 @@ $(function () {
         var ids = [];
         if (rows && rows.length > 0) {
             $(rows).each(function (i, v, r) {
-                if (v['stat'] ==0) {
+                if (v['stat'] == 0) {
                     ids.push(v['id']);
                 }
             });
@@ -286,10 +270,10 @@ $(function () {
     function unfinish() {
         var rows = $('#dg').datagrid('getChecked');
         var ids = [];
-        var warehouseIds=[];
+        var warehouseIds = [];
         if (rows && rows.length > 0) {
             $(rows).each(function (i, v, r) {
-                if (v['stat'] ==1) {
+                if (v['stat'] == 1) {
                     ids.push(v['id']);
                     warehouseIds.push(v['warehouseId']);
                 }
@@ -303,7 +287,7 @@ $(function () {
                         url: t1Url + '/unfinish',
                         type: 'post',
                         dataType: 'json',
-                        data: {ids: ids,warehouseIds:warehouseIds}
+                        data: {ids: ids, warehouseIds: warehouseIds}
                     }).success(function (ret) {
                         if (ret && ret.flag) {
                             $.messager.alert('系统提示', '审核完成!');
@@ -358,20 +342,22 @@ $(function () {
             $.messager.alert('系统提示!', '请选择要编辑的行!')
         }
     }
-    function loadSkuImage(skuId){
+
+    function loadSkuImage(skuId) {
         $.ajax({
-            url:'image/findById',
-            type:'get',
-            data:{id:skuId},
-            dataType:'json'
+            url: 'image/findById',
+            type: 'get',
+            data: {id: skuId},
+            dataType: 'json'
         }).success(function (ret) {
-            if($.isPlainObject(ret)){
-                if(ret.suffix){
+            if ($.isPlainObject(ret)) {
+                if (ret.suffix) {
                     $('#skuImage').attr('src', 'resources/images/upload/' + skuId + ret.suffix);
                 }
             }
         });
     }
+
     function initSkuCombo() {
         var rows = $('#t2_dg').datagrid('getRows');
         if (!rows || rows.length < 1) {
@@ -383,9 +369,9 @@ $(function () {
                 dataType: 'json',
                 async: true
             }).success(function (ret) {
-                if($.isArray(ret)){
-                    if(ret.length<1){
-                        $.messager.alert('系统提示','该仓库内无可选SKU信息,请选择其他仓库!');
+                if ($.isArray(ret)) {
+                    if (ret.length < 1) {
+                        $.messager.alert('系统提示', '该仓库内无可选SKU信息,请选择其他仓库!');
                         $('#t2EditPanel').dialog('close');
                         return;
                     }
@@ -395,12 +381,9 @@ $(function () {
                             data: ret,
                             required: true,
                             missingMessage: '必填字段',
-                            formatter: function (row) {
-                                var opts = $(this).combobox('options');
-                                return row[opts.valueField] + ' ' + row[opts.textField];
-                            },
                             onHidePanel: function () {
-                                var val = $('input[name=skuId]').val();
+                                var val_input =  $('#skuId ~ span > input[type=hidden].textbox-value');
+                                var val = val_input.val();
                                 if (!val) {
                                     return;
                                 }
@@ -409,8 +392,8 @@ $(function () {
                                 var contains = false;
                                 for (var i = 0; i < data.length; i++) {
                                     if (data[i][opt.valueField] == val) {
-                                        $(this).combobox('setValue', val + ' ' + data[i][opt.textField]);
-                                        $('input[name=skuId]').val(val);
+                                        $(this).combobox('setText', val);
+                                        val_input.val(val);
                                         $.rent.loadSkuInfo(val);
                                         return;
                                     }
@@ -420,7 +403,8 @@ $(function () {
                                     $.messager.alert('系统提示', '只能从下拉框中选择值!');
                                     $(this).combobox('reset');
                                 }
-                            },onSelect:function (ret) {
+                            },
+                            onSelect: function (ret) {
                                 loadInventory();
                             }
                         }
