@@ -22,4 +22,5 @@ public interface StockInDao {
     List<StockIn> loadStockInDtlsFromStockOutDtl(Integer stockOutId);
 
     int save(StockIn stockIn);
+    int update(StockIn stockIn);
 }

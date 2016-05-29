@@ -39,18 +39,34 @@
         <th data-options="field:'stockInWarehouseId',hidden:true">入库仓库id</th>
         <th data-options="field:'stockInWarehouseName',width:80">入库仓库</th>
         <th data-options="field:'billDate',hidden:true">制单日期</th>
-        <th data-options="field:'billDateStr',width:80,formatter:function(value,row){ if(row.billDate) {return new Date(row.billDate).format('yyyy-MM-dd')};}">制单日期</th>
+        <th data-options="field:'billDateStr',width:80,formatter:function(value,row){ if(row.billDate) {return new Date(row.billDate).format('yyyy-MM-dd')};}">
+            制单日期
+        </th>
         <th data-options="field:'totalStockOut',width:80">移仓出库总数</th>
     </tr>
     </thead>
 </table>
 <div id="menu" style="padding:2px 5px;">
-    <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
-    <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
-    <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
-    <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
-    <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
-    <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    <div>
+        <a id="btn_query" href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="true">刷新</a>
+        <a id="btn_add" href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        <a id="btn_edit" href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">编辑</a>
+        <a id="btn_remove" href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        <a id="btn_finish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">审核</a>
+        <a id="btn_unfinish" href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true">取消审核</a>
+    </div>
+    <div>
+        &nbsp;单据状态：&nbsp;
+        <select class="easyui-combobox input" name="billStat" id="query_billStat" style="width:120px;"
+                data-options="
+                    editable:false,
+                    multiple:true,
+                    valueField: 'valueField',
+                    textField: 'textField',
+                    data:[{valueField:'0',textField:'未审核'},{valueField:'1',textField:'已审核'}]">
+        </select>
+        <a href="javascript:$.stockOut.query()" class="easyui-linkbutton" iconCls="icon-search" plain="true">搜索</a>
+    </div>
 </div>
 <%--以下为编辑面板的内容--%>
 <div id="editPanel" class="easyui-dialog edit-panel" title="编辑" style="height: 650px;height: 500px;"
@@ -77,7 +93,8 @@
             <tr>
                 <td class="label">出库仓库</td>
                 <td>
-                    <select class="easyui-combobox input" name="stockOutWarehouseId" id="stockOutWarehouseId" data-options="
+                    <select class="easyui-combobox input" name="stockOutWarehouseId" id="stockOutWarehouseId"
+                            data-options="
                     required:true,
                     editable:false,
                     valueField: 'id',
@@ -107,7 +124,8 @@
                 </td>
                 <td class="label">入库仓库</td>
                 <td>
-                    <select class="easyui-combobox input" name="stockInWarehouseId" id="stockInWarehouseId" data-options="
+                    <select class="easyui-combobox input" name="stockInWarehouseId" id="stockInWarehouseId"
+                            data-options="
                     required:true,
                     editable:false,
                     valueField: 'id',
@@ -127,7 +145,8 @@
             <tr>
 
                 <td class="label">移仓出库总数</td>
-                <td><input id="totalStockOut" class="easyui-numberbox input" data-options="required:true,readonly:true" name="totalStockOut">
+                <td><input id="totalStockOut" class="easyui-numberbox input" data-options="required:true,readonly:true"
+                           name="totalStockOut">
                 </td>
             </tr>
             <tr>
@@ -171,7 +190,7 @@
                     <tr>
                         <td>SKU</td>
                         <td>
-                            <select class="easyui-combobox" name="skuId" id="skuId" style="width:150px;">
+                            <select class="easyui-combobox" id="skuId" style="width:150px;">
                             </select>
                         </td>
 

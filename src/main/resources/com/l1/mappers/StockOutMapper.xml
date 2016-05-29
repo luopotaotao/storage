@@ -60,10 +60,15 @@
     <select id="find" resultMap="StockOutResult">
         <include refid="v_stockOut"></include>
         <where>
-            <if test="billStat!=null and billStat!='' ">
-                and billStat=#{billStat}
+            <if test="billStat!=null and billStat.length>0 ">
+                and stock.billStat IN
+                <foreach item="item" index="index" collection="billStat" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
+
         </where>
+        ORDER BY stock.billNo DESC
         <if test="start!=null and size!=null">
             limit #{start},#{size}
         </if>

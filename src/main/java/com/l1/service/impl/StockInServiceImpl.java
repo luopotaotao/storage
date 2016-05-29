@@ -70,7 +70,13 @@ public class StockInServiceImpl implements StockInService{
 
     @Override
     public int update(StockIn stockIn, List<StockInDtl> details) {
-        return 0;
+        int count = stockInDao.update(stockIn);
+        int id = stockIn.getId();
+        for(StockInDtl item:details){
+            item.setStockInId(id);
+        }
+        stockInDtlDao.batchSave(details);
+        return count;
     }
 
     @Override

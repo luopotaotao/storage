@@ -7,7 +7,8 @@ $(function () {
     $.extend({
         stockOut: {
             loadInventory: loadInventory,
-            loadSkuInfo: loadSkuInfo
+            loadSkuInfo: loadSkuInfo,
+            query:query
         }
     });
     bindHandlers();
@@ -158,7 +159,7 @@ $(function () {
     }
 
     function query() {
-        $('#dg').datagrid('reload', t1Url + '/list');
+        $('#dg').datagrid('reload',{'billStat': $('#query_billStat').combobox('getValues')});
     }
 
     function save() {
@@ -392,7 +393,8 @@ $(function () {
                                 return row[opts.valueField] + ' ' + row[opts.textField];
                             },
                             onHidePanel: function () {
-                                var val = $('input[name=skuId]').val();
+                                var val_input =  $('#skuId ~ span > input[type=hidden].textbox-value');
+                                var val = val_input.val();
                                 if (!val) {
                                     return;
                                 }
@@ -402,8 +404,8 @@ $(function () {
                                 var contains = false;
                                 for (var i = 0; i < data.length; i++) {
                                     if (data[i][opt.valueField] == val) {
-                                        $(this).combobox('setValue', val + ' ' + data[i][opt.textField]);
-                                        $('input[name=skuId]').val(val);
+                                        $(this).combobox('setText', val);
+                                        val_input.val(val);
                                         $.stockOut.loadSkuInfo(val);
                                         return;
                                     }
