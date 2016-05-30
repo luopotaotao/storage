@@ -51,28 +51,26 @@ public class StockInController {
     @RequestMapping
     public String showPage(Model model) {
         List<Dic> statusDic = dicService.query("stockInStatus");
-        model.addAttribute("statusDic",statusDic);
+        model.addAttribute("statusDic", statusDic);
         return "stockInManage";
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> list(@RequestParam(value = "page", required = false) String page,
-                                    @RequestParam(value = "rows", required = false) String rows, StockIn s_stockIn)
+    public Map<String, Object> list(@RequestParam(value = "page", required = false) Integer page,
+                                    @RequestParam(value = "rows", required = false) Integer rows,
+                                    @RequestParam(value = "billStat[]", required = false) Integer[] billStat)
             throws Exception {
         if (page == null) {
-            page = "1";
+            page = 1;
         }
-
         if (rows == null) {
-            rows = "10";
+            rows = 10;
         }
-
-        PageBean pageBean = new PageBean(Integer.parseInt(page), Integer.parseInt(rows));
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("start", pageBean.getStart());
-        map.put("size", pageBean.getPageSize());
-
+        map.put("start", (page - 1) * rows);
+        map.put("size", rows);
+        map.put("billStat", billStat);
         List<StockIn> stockInList = stockInService.find(map);
         Long total = stockInService.getTotal(map);
 
@@ -85,10 +83,10 @@ public class StockInController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> save(StockIn stockIn,@RequestParam(value = "details",required = false) String detailsStr, BindingResult err) {
+    public Map<String, Object> save(StockIn stockIn, @RequestParam(value = "details", required = false) String detailsStr, BindingResult err) {
         stockIn.setCreate_time(DateUtil.now());
         List<StockInDtl> details = null;
-        if(detailsStr!=null&&detailsStr.length()>0){
+        if (detailsStr != null && detailsStr.length() > 0) {
             details = jsonArrayToStockInDetailList(JSONArray.fromObject(detailsStr));
         }
 
@@ -104,11 +102,11 @@ public class StockInController {
         return ret;
     }
 
-    private List<StockInDtl> jsonArrayToStockInDetailList(JSONArray array){
+    private List<StockInDtl> jsonArrayToStockInDetailList(JSONArray array) {
         List<StockInDtl> ret = null;
-        if(array!=null&&array.size()>0){
+        if (array != null && array.size() > 0) {
             ret = new LinkedList<StockInDtl>();
-            for(int i = 0;i<array.size();i++){
+            for (int i = 0; i < array.size(); i++) {
                 ret.add(jsonToStockInDetail(array.getJSONObject(i)));
             }
         }
@@ -118,24 +116,13 @@ public class StockInController {
     private StockInDtl jsonToStockInDetail(JSONObject json) {
         WrappedJSON item = new WrappedJSON(json);
         StockInDtl ret = new StockInDtl();
-        ret.setId(item.getInteger("Id"));
+        ret.setId(item.getInteger("id"));
         ret.setStockInId(item.getInteger("stockInId"));
         ret.setSkuId(item.getInteger("skuId"));
         ret.setStockOutDtlId(item.getString("stockOutDtlId"));
         ret.setStockInAmount(item.getInteger("stockInAmount"));
         ret.setStockOutAmount(item.getInteger("stockOutAmount"));
 
-        return ret;
-    }
-
-    @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> update(StockIn stockIn) {
-        stockIn.setUpdate_time(DateUtil.now());
-        stockInService.update(stockIn);
-
-        Map<String, Object> ret = new HashMap<String, Object>();
-        ret.put("flag", true);
         return ret;
     }
 
@@ -147,7 +134,7 @@ public class StockInController {
             count = stockInService.delete(ids);
         }
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("flag", count>0);
+        result.put("flag", count > 0);
         return result;
     }
 
@@ -158,22 +145,24 @@ public class StockInController {
         return stockIn;
     }
 
-    @RequestMapping(value = "loadAvailableStockOutBillNos",method = RequestMethod.GET)
+    @RequestMapping(value = "loadAvailableStockOutBillNos", method = RequestMethod.GET)
     @ResponseBody
-    public List<Map<Integer,String>> loadAvailableStockOutBillNos(){
+    public List<Map<Integer, String>> loadAvailableStockOutBillNos() {
         return stockInService.loadAvailableStockOutBillNos();
     }
-    @RequestMapping(value = "loadStockInFromStockOut",method = RequestMethod.GET)
+
+    @RequestMapping(value = "loadStockInFromStockOut", method = RequestMethod.GET)
     @ResponseBody
-    public StockIn loadStockInFromStockOut(Integer stockOutId){
+    public StockIn loadStockInFromStockOut(Integer stockOutId) {
         return stockInService.loadStockInFromStockOut(stockOutId);
     }
-    @RequestMapping(value = "/finish",method = RequestMethod.POST)
+
+    @RequestMapping(value = "/finish", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> finish(@RequestParam(value = "ids[]")Integer[] ids){
-        Map<String,Object> ret = new HashMap<String, Object>();
+    public Map<String, Object> finish(@RequestParam(value = "ids[]") Integer[] ids) {
+        Map<String, Object> ret = new HashMap<String, Object>();
         int count = stockInService.finish(ids);
-        ret.put("flag",count>0);
+        ret.put("flag", count > 0);
         return ret;
     }
 }

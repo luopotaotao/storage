@@ -14,6 +14,8 @@ public interface StockInDtlDao {
 
     int batchSave(List<StockInDtl> details);
 
+    int update(StockInDtl detail);
+
     List<StockInDtl> findStockInDtlsById(Integer id);
 
     int deleteByStockInIds(Integer[] ids);

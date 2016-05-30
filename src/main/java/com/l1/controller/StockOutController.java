@@ -63,7 +63,8 @@ public class StockOutController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> list(@RequestParam(value = "page", required = false) Integer page,
-                                    @RequestParam(value = "rows", required = false) Integer rows,@RequestParam(value = "billStat[]",required = false) Integer[] billStat)
+                                    @RequestParam(value = "rows", required = false) Integer rows,
+                                    @RequestParam(value = "billStat[]",required = false) Integer[] billStat)
             throws Exception {
         if (page == null) {
             page = 1;

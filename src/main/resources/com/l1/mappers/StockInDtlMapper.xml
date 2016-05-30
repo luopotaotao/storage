@@ -47,46 +47,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 
 	<update id="update" parameterType="StockInDtl">
-		update tb_returndtl
+		update tb_stockindtl
 		<set>
-			<if test="skuId!=null and skuId!='' ">
-				skuId=#{skuId},
+			<if test="stockInId!=null">
+                stockInId=#{stockInId},
 			</if>
-			
-			<if test="itemName!=null and itemName!='' ">
-				itemName=#{itemName},
+			<if test="skuId!=null">
+                skuId=#{skuId},
 			</if>
-			<if test="itemPrice!=null and itemPrice!='' ">
-				itemPrice=#{itemPrice},
+			<if test="stockOutDtlId!=null">
+                stockOutDtlId=#{stockOutDtlId},
 			</if>
-			<if test="itemAmount!=null and itemAmount!='' ">
-				itemAmount=#{itemAmount},
+			<if test="stockOutAmount!=null">
+                stockOutAmount=#{stockOutAmount},
 			</if>
-			<if test="itemStockOut!=null">
-				itemStockOut=#{itemStockOut},
+			<if test="stockInAmount!=null">
+                stockInAmount=#{stockInAmount},
 			</if>
-			<if test="itemRepo!=null">
-				itemRepo=#{itemRepo},
-			</if>
-			<if test="itemDamage !=null">
-				itemDamage=#{itemDamage},
-			</if>
-			<if test="stat!=null">
-				stat=#{stat},
-			</if>
-			<if test="statName!=null">
-				statName=#{statName},
-			</if>
-			
-			<if test="warehouseId !=null">
-				warehouseId=#{warehouseId},
-			</if>
-			<if test="warehouseName !=null">
-				warehouseName=#{warehouseName},
-			</if>
-			
 		</set>
-		where dtlId=#{dtlId}
+		where id=#{id}
 	</update>
 	
 	<select id="find" parameterType="Map" resultMap="StockInDtlResult">

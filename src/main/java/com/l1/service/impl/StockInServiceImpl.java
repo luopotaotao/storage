@@ -62,20 +62,13 @@ public class StockInServiceImpl implements StockInService{
         stockInDtlDao.deleteByStockInIds(ids);
         return stockInDao.remove(ids);
     }
-
-    @Override
-    public void update(StockIn stockIn) {
-
-    }
-
+    @Transactional(isolation = Isolation.SERIALIZABLE,propagation = Propagation.REQUIRES_NEW)
     @Override
     public int update(StockIn stockIn, List<StockInDtl> details) {
         int count = stockInDao.update(stockIn);
-        int id = stockIn.getId();
-        for(StockInDtl item:details){
-            item.setStockInId(id);
+        for(StockInDtl dtl:details){
+            count+=stockInDtlDao.update(dtl);
         }
-        stockInDtlDao.batchSave(details);
         return count;
     }
 

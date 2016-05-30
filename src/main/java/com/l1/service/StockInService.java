@@ -20,8 +20,6 @@ public interface StockInService {
 
     int delete(Integer[] ids);
 
-    void update(StockIn reversion);
-
     int update(StockIn reversion, List<StockInDtl> details);
 
     int finish(Integer[] ids);

@@ -7,7 +7,8 @@ $(function () {
     bindT2Handlers();
     $.extend({
         stockIn: {
-            loadStockOutBillInfo: loadStockOutBillInfo
+            loadStockOutBillInfo: loadStockOutBillInfo,
+            query:query
         }
     });
     var t1Url = 'stockIn';
@@ -124,20 +125,7 @@ $(function () {
     }
 
     function query() {
-        var url = t1Url + '/list';
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            type: 'get'
-        }).success(function (ret) {
-            if (ret && ret.rows) {
-                $('#dg').datagrid('loadData', ret);
-            } else {
-                $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-            }
-        }).error(function (err) {
-            $.messager.alert('系统提示!', '获取数据失败!请重新尝试或联系管理员!');
-        });
+        $('#dg').datagrid('reload',{'billStat': $('#query_billStat').combobox('getValues')});
     }
 
     function save() {
@@ -181,7 +169,7 @@ $(function () {
                 $.messager.alert('系统提示!', '保存成功!');
                 //如果是修改的话不关闭当前页面,新增的话才关闭
                 if ($('#id').val()) {
-                    $.get(t1Url + '/findById', {id: ('#id').val()}, function (data) {
+                    $.get(t1Url + '/findById', {id: $('#id').val()}, function (data) {
                         formatDate(data, ['beginDate', 'endDate', 'create_time', 'update_time']);
                         $('#editForm').form('load', data);
                     });
@@ -191,8 +179,6 @@ $(function () {
                     $('#editForm').form('clear');
                     $('#editPanel').dialog('close');
                 }
-
-                query();
             } else {
                 $.messager.alert('系统提示!', '保存失败,请重新尝试或联系管理员!');
             }
